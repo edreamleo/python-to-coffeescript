@@ -92,10 +92,9 @@ class CoffeeScriptFormatter(object):
     def __init__(self, controller):
         '''Ctor for CoffeeScriptFormatter class.'''
         self.controller = controller
+        self.first_statement = False
         self.trace_visitors = controller.trace_visitors
 
-
-    # Entries...
 
     def format(self, node):
         '''Format the node (or list of nodes) and its descendants.'''
@@ -103,8 +102,15 @@ class CoffeeScriptFormatter(object):
         val = self.visit(node)
         return val or ''
 
+    def indent(self, s):
+        '''Return s, properly indented.'''
+        assert not s.startswith('\n'), g.callers()
+        return '%s%s' % (' ' * 4 * self.level, s)
+
     def visit(self, node):
         '''Return the formatted version of an Ast node, or list of Ast nodes.'''
+        if self.trace_visitors:
+            g.trace(node.__class__.__name__)
         if isinstance(node, (list, tuple)):
             return ', '.join([self.visit(z) for z in node])
         elif node is None:
@@ -131,8 +137,9 @@ class CoffeeScriptFormatter(object):
             result.append(self.indent('class %s(%s):\n' % (name, ', '.join(bases))))
         else:
             result.append(self.indent('class %s:\n' % name))
-        for z in node.body:
+        for i, z in enumerate(node.body):
             self.level += 1
+            self.first_statement = i == 0
             result.append(self.visit(z))
             self.level -= 1
         return ''.join(result)
@@ -149,8 +156,9 @@ class CoffeeScriptFormatter(object):
         args = self.visit(node.args) if node.args else ''
         result.append('\n')
         result.append(self.indent('def %s(%s):\n' % (name, args)))
-        for z in node.body:
+        for i, z in enumerate(node.body):
             self.level += 1
+            self.first_statement = i == 0
             result.append(self.visit(z))
             self.level -= 1
         return ''.join(result)
@@ -206,8 +214,6 @@ class CoffeeScriptFormatter(object):
     def do_arguments(self, node):
         '''Format the arguments node.'''
         assert isinstance(node, ast.arguments)
-        ### kind = self.kind(node)
-        ### assert kind == 'arguments', kind
         args = [self.visit(z) for z in node.args]
         defaults = [self.visit(z) for z in node.defaults]
         # Assign default values to the last args.
@@ -344,8 +350,21 @@ class CoffeeScriptFormatter(object):
             return '%s:%s' % (lower, upper)
 
     def do_Str(self, node):
-        '''This represents a string constant.'''
-        return repr(node.s)
+        '''A string constant, including docstrings.'''
+        # A pretty spectacular hack.
+        # We assume docstrings are the first expr following a class or def.
+        docstring = False
+        if self.first_statement:
+            callers = ''.join([z for z in g.callers(2).split(',') if z != 'visit'])
+            docstring = callers.endswith('do_Expr')
+        if docstring:
+            s = repr(node.s).replace('\\n','\n')
+            if s.startswith('"'):
+                return '""%s""' % s
+            else:
+                return "''%s''" % s
+        else:
+            return repr(node.s)
 
     # Subscript(expr value, slice slice, expr_context ctx)
 
@@ -359,6 +378,54 @@ class CoffeeScriptFormatter(object):
         return '(%s)' % ', '.join(elts)
 
     # Operators...
+
+    def op_name (self,node,strict=True):
+        '''Return the print name of an operator node.'''
+        d = {
+            # Binary operators. 
+            'Add':       '+',
+            'BitAnd':    '&',
+            'BitOr':     '|',
+            'BitXor':    '^',
+            'Div':       '/',
+            'FloorDiv':  '//',
+            'LShift':    '<<',
+            'Mod':       '%',
+            'Mult':      '*',
+            'Pow':       '**',
+            'RShift':    '>>',
+            'Sub':       '-',
+            # Boolean operators.
+            'And':   ' and ',
+            'Or':    ' or ',
+            # Comparison operators
+            'Eq':    '==',
+            'Gt':    '>',
+            'GtE':   '>=',
+            'In':    ' in ',
+            'Is':    ' is ',
+            'IsNot': ' is not ',
+            'Lt':    '<',
+            'LtE':   '<=',
+            'NotEq': '!=',
+            'NotIn': ' not in ',
+            # Context operators.
+            'AugLoad':  '<AugLoad>',
+            'AugStore': '<AugStore>',
+            'Del':      '<Del>',
+            'Load':     '<Load>',
+            'Param':    '<Param>',
+            'Store':    '<Store>',
+            # Unary operators.
+            'Invert':   '~',
+            'Not':      ' not ',
+            'UAdd':     '+',
+            'USub':     '-',
+        }
+        kind = node.__class__.__name__
+        name = d.get(kind,'<%s>' % kind)
+        if strict: assert name, kind
+        return name
 
     def do_BinOp(self, node):
         return '%s%s%s' % (
@@ -384,16 +451,16 @@ class CoffeeScriptFormatter(object):
             print('can not happen: ops', repr(ops), 'comparators', repr(comps))
         return ''.join(result)
 
-    def do_UnaryOp(self, node):
-        return '%s%s' % (
-            self.op_name(node.op),
-            self.visit(node.operand))
-
     def do_IfExp(self, node):
         return '%s if %s else %s ' % (
             self.visit(node.body),
             self.visit(node.test),
             self.visit(node.orelse))
+
+    def do_UnaryOp(self, node):
+        return '%s%s' % (
+            self.op_name(node.op),
+            self.visit(node.operand))
 
     # Statements...
 
@@ -401,9 +468,9 @@ class CoffeeScriptFormatter(object):
         test = self.visit(node.test)
         if getattr(node, 'msg', None):
             message = self.visit(node.msg)
-            return self.indent('assert %s, %s' % (test, message))
+            return self.indent('assert %s, %s\n' % (test, message))
         else:
-            return self.indent('assert %s' % test)
+            return self.indent('assert %s\n' % test)
 
     def do_Assign(self, node):
         return self.indent('%s=%s\n' % (
@@ -509,14 +576,9 @@ class CoffeeScriptFormatter(object):
         '''Return a list of the the full file names in the import statement.'''
         result = []
         for ast2 in node.names:
-            # if self.kind(ast2) == 'alias':
-            if isinstance(ast2, ast.alias):
-                data = ast2.name, ast2.asname
-                result.append(data)
-            else:
-                print('unsupported kind in Import.names list: %s' % (
-                    ast2.__class__.__name))
-                    ### self.kind(ast2))
+            assert isinstance(ast2, ast.alias)
+            data = ast2.name, ast2.asname
+            result.append(data)
         return result
 
     def do_ImportFrom(self, node):
@@ -639,60 +701,6 @@ class CoffeeScriptFormatter(object):
                 self.visit(node.value)))
         else:
             return self.indent('yield\n')
-
-    # Utils...
-
-    def indent(self, s):
-        '''Return s, properly indented.'''
-        return '%s%s' % (' ' * 4 * self.level, s)
-
-    def op_name (self,node,strict=True):
-        '''Return the print name of an operator node.'''
-        d = {
-            # Binary operators. 
-            'Add':       '+',
-            'BitAnd':    '&',
-            'BitOr':     '|',
-            'BitXor':    '^',
-            'Div':       '/',
-            'FloorDiv':  '//',
-            'LShift':    '<<',
-            'Mod':       '%',
-            'Mult':      '*',
-            'Pow':       '**',
-            'RShift':    '>>',
-            'Sub':       '-',
-            # Boolean operators.
-            'And':   ' and ',
-            'Or':    ' or ',
-            # Comparison operators
-            'Eq':    '==',
-            'Gt':    '>',
-            'GtE':   '>=',
-            'In':    ' in ',
-            'Is':    ' is ',
-            'IsNot': ' is not ',
-            'Lt':    '<',
-            'LtE':   '<=',
-            'NotEq': '!=',
-            'NotIn': ' not in ',
-            # Context operators.
-            'AugLoad':  '<AugLoad>',
-            'AugStore': '<AugStore>',
-            'Del':      '<Del>',
-            'Load':     '<Load>',
-            'Param':    '<Param>',
-            'Store':    '<Store>',
-            # Unary operators.
-            'Invert':   '~',
-            'Not':      ' not ',
-            'UAdd':     '+',
-            'USub':     '-',
-        }
-        kind = node.__class__.__name__
-        name = d.get(kind,'<%s>' % kind)
-        if strict: assert name, kind
-        return name
 
 
 class LeoGlobals(object):
@@ -1093,7 +1101,6 @@ class TestClass(object):
             return aList
         else:
             return list(self.regex.finditer(s))
-
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
     main()

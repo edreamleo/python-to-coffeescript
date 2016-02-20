@@ -157,10 +157,9 @@
 <v t="ekr.20160220050433.2"><vh> &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050745.1"><vh> &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.14"><vh>class CoffeeScriptFormatter</vh>
-<v t="ekr.20160220050433.15"><vh> cf.Entries</vh>
-<v t="ekr.20160220050433.16"><vh>cf.format</vh></v>
-<v t="ekr.20160220050433.17"><vh>cf.visit</vh></v>
-</v>
+<v t="ekr.20160220050433.16"><vh> cf.format</vh></v>
+<v t="ekr.20160220050433.82"><vh> cf.indent</vh></v>
+<v t="ekr.20160220050433.17"><vh> cf.visit</vh></v>
 <v t="ekr.20160220050433.18"><vh>cf.Contexts</vh>
 <v t="ekr.20160220050433.19"><vh>cf.ClassDef</vh></v>
 <v t="ekr.20160220050433.20"><vh>cf.FunctionDef</vh></v>
@@ -198,11 +197,12 @@
 <v t="ekr.20160220050433.49"><vh>cf.Tuple</vh></v>
 </v>
 <v t="ekr.20160220050433.50"><vh>cf.Operators</vh>
+<v t="ekr.20160220050433.83"><vh> cf.op_name</vh></v>
 <v t="ekr.20160220050433.51"><vh>cf.BinOp</vh></v>
 <v t="ekr.20160220050433.52"><vh>cf.BoolOp</vh></v>
 <v t="ekr.20160220050433.53"><vh>cf.Compare</vh></v>
-<v t="ekr.20160220050433.54"><vh>cf.UnaryOp</vh></v>
 <v t="ekr.20160220050433.55"><vh>cf.ifExp (ternary operator)</vh></v>
+<v t="ekr.20160220050433.54"><vh>cf.UnaryOp</vh></v>
 </v>
 <v t="ekr.20160220050433.56"><vh>cf.Statements</vh>
 <v t="ekr.20160220050433.57"><vh>cf.Assert</vh></v>
@@ -229,10 +229,6 @@
 <v t="ekr.20160220050433.77"><vh>cf.While</vh></v>
 <v t="ekr.20160220050433.78"><vh>cf.With</vh></v>
 <v t="ekr.20160220050433.79"><vh>cf.Yield</vh></v>
-</v>
-<v t="ekr.20160220050433.80"><vh>cf.Utils</vh>
-<v t="ekr.20160220050433.82"><vh>cf.indent</vh></v>
-<v t="ekr.20160220050433.83"><vh>cf.op_name</vh></v>
 </v>
 </v>
 <v t="ekr.20160220050433.86"><vh>class LeoGlobals</vh>
@@ -268,7 +264,12 @@
 <v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
 </v>
 </v>
-<v t="ekr.20160220061440.1"><vh>To do</vh></v>
+<v t="ekr.20160220073633.1"><vh>recent</vh>
+<v t="ekr.20160220050433.25"></v>
+<v t="ekr.20160220050433.47"></v>
+<v t="ekr.20160220050433.19"></v>
+<v t="ekr.20160220050433.20"></v>
+</v>
 <v t="ekr.20160220050433.14"></v>
 </vnodes>
 <tnodes>
@@ -291,7 +292,6 @@ Written by Edward K. Ream.
 &lt;&lt; license &gt;&gt;
 &lt;&lt; imports &gt;&gt;
 @others
-
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
     main()
@@ -1206,6 +1206,7 @@ class CoffeeScriptFormatter(object):
     def __init__(self, controller):
         '''Ctor for CoffeeScriptFormatter class.'''
         self.controller = controller
+        self.first_statement = False
         self.trace_visitors = controller.trace_visitors
 
     @others
@@ -1334,9 +1335,6 @@ def do_List(self, node):
     elst = [z for z in elts if z] # Defensive.
     # g.trace('=====',elts)
     return 'List[%s]' % ', '.join(elts)
-</t>
-<t tx="ekr.20160220050433.15">
-# Entries...
 </t>
 <t tx="ekr.20160220050433.150">
 seen_names = []
@@ -1686,6 +1684,8 @@ def update(self, fn, new_root):
 <t tx="ekr.20160220050433.17">
 def visit(self, node):
     '''Return the formatted version of an Ast node, or list of Ast nodes.'''
+    if self.trace_visitors:
+        g.trace(node.__class__.__name__)
     if isinstance(node, (list, tuple)):
         return ', '.join([self.visit(z) for z in node])
     elif node is None:
@@ -2149,8 +2149,9 @@ def do_ClassDef(self, node):
         result.append(self.indent('class %s(%s):\n' % (name, ', '.join(bases))))
     else:
         result.append(self.indent('class %s:\n' % name))
-    for z in node.body:
+    for i, z in enumerate(node.body):
         self.level += 1
+        self.first_statement = i == 0
         result.append(self.visit(z))
         self.level -= 1
     return ''.join(result)
@@ -2204,8 +2205,9 @@ def do_FunctionDef(self, node):
     args = self.visit(node.args) if node.args else ''
     result.append('\n')
     result.append(self.indent('def %s(%s):\n' % (name, args)))
-    for z in node.body:
+    for i, z in enumerate(node.body):
         self.level += 1
+        self.first_statement = i == 0
         result.append(self.visit(z))
         self.level -= 1
     return ''.join(result)
@@ -2272,8 +2274,6 @@ def do_Store(self, node):
 def do_arguments(self, node):
     '''Format the arguments node.'''
     assert isinstance(node, ast.arguments)
-    ### kind = self.kind(node)
-    ### assert kind == 'arguments', kind
     args = [self.visit(z) for z in node.args]
     defaults = [self.visit(z) for z in node.defaults]
     # Assign default values to the last args.
@@ -2435,8 +2435,21 @@ def do_Slice(self, node):
 </t>
 <t tx="ekr.20160220050433.47">
 def do_Str(self, node):
-    '''This represents a string constant.'''
-    return repr(node.s)
+    '''A string constant, including docstrings.'''
+    # A pretty spectacular hack.
+    # We assume docstrings are the first expr following a class or def.
+    docstring = False
+    if self.first_statement:
+        callers = ''.join([z for z in g.callers(2).split(',') if z != 'visit'])
+        docstring = callers.endswith('do_Expr')
+    if docstring:
+        s = repr(node.s).replace('\\n','\n')
+        if s.startswith('"'):
+            return '""%s""' % s
+        else:
+            return "''%s''" % s
+    else:
+        return repr(node.s)
 </t>
 <t tx="ekr.20160220050433.48">
 # Subscript(expr value, slice slice, expr_context ctx)
@@ -2515,9 +2528,9 @@ def do_Assert(self, node):
     test = self.visit(node.test)
     if getattr(node, 'msg', None):
         message = self.visit(node.msg)
-        return self.indent('assert %s, %s' % (test, message))
+        return self.indent('assert %s, %s\n' % (test, message))
     else:
-        return self.indent('assert %s' % test)
+        return self.indent('assert %s\n' % test)
 </t>
 <t tx="ekr.20160220050433.58">
 def do_Assign(self, node):
@@ -2644,14 +2657,9 @@ def get_import_names(self, node):
     '''Return a list of the the full file names in the import statement.'''
     result = []
     for ast2 in node.names:
-        # if self.kind(ast2) == 'alias':
-        if isinstance(ast2, ast.alias):
-            data = ast2.name, ast2.asname
-            result.append(data)
-        else:
-            print('unsupported kind in Import.names list: %s' % (
-                ast2.__class__.__name))
-                ### self.kind(ast2))
+        assert isinstance(ast2, ast.alias)
+        data = ast2.name, ast2.asname
+        result.append(data)
     return result
 </t>
 <t tx="ekr.20160220050433.7">
@@ -2794,9 +2802,6 @@ def dump(title, s=None):
     else:
         print('===== %s...\n' % title)
 </t>
-<t tx="ekr.20160220050433.80">
-# Utils...
-</t>
 <t tx="ekr.20160220050433.81">
 def kind(self, node):
     '''Return the name of node's class.'''
@@ -2805,6 +2810,7 @@ def kind(self, node):
 <t tx="ekr.20160220050433.82">
 def indent(self, s):
     '''Return s, properly indented.'''
+    assert not s.startswith('\n'), g.callers()
     return '%s%s' % (' ' * 4 * self.level, s)
 </t>
 <t tx="ekr.20160220050433.83">
@@ -3272,10 +3278,6 @@ def output_time_stamp(self, f):
     f.write('# python_to_coffeescript: %s\n' %
         time.strftime("%a %d %b %Y at %H:%M:%S"))
 </t>
-<t tx="ekr.20160220061440.1">@language rest
-@wrap
-
-- Docstrings not handled properly.
-- Should add blanks lines before defs and classes.</t>
+<t tx="ekr.20160220073633.1"></t>
 </tnodes>
 </leo_file>
