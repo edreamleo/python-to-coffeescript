@@ -248,16 +248,14 @@ g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
     main()
 </t>
-<t tx="ekr.20160220050433.10">
-def dump_list(title, aList):
+<t tx="ekr.20160220050433.10">def dump_list(title, aList):
     '''Dump a list with a header.'''
     dump(title)
     for z in aList:
         print(z)
     print('')
 </t>
-<t tx="ekr.20160220050433.11">
-def main():
+<t tx="ekr.20160220050433.11">def main():
     '''
     The driver for the stand-alone version of make-stub-files.
     All options come from ~/stubs/make_stub_files.cfg.
@@ -269,14 +267,11 @@ def main():
     controller.run()
     print('done')
 </t>
-<t tx="ekr.20160220050433.118">
-
-class MakeCoffeeScriptController(object):
+<t tx="ekr.20160220050433.118">class MakeCoffeeScriptController(object):
     '''The controller class for python_to_coffeescript.py.'''
     @others
 </t>
-<t tx="ekr.20160220050433.119">
-def __init__ (self):
+<t tx="ekr.20160220050433.119">def __init__(self):
     '''Ctor for MakeCoffeeScriptController class.'''
     self.options = {}
     # Ivars set on the command line...
@@ -292,7 +287,7 @@ def __init__ (self):
     self.trace_visitors = False
     self.update_flag = False
     self.verbose = False # Trace config arguments.
-    ### 
+    ###
     # self.prefix_lines = []
     # self.trace_matches = False
     # self.trace_patterns = False
@@ -306,8 +301,7 @@ def __init__ (self):
     # self.patterns_dict = {}
     # self.regex_patterns = []
 </t>
-<t tx="ekr.20160220050433.12">
-def pdb(self):
+<t tx="ekr.20160220050433.12">def pdb(self):
     '''Invoke a debugger during unit testing.'''
     try:
         import leo.core.leoGlobals as leo_g
@@ -316,16 +310,14 @@ def pdb(self):
         import pdb
         pdb.set_trace()
 </t>
-<t tx="ekr.20160220050433.120">
-def finalize(self, fn):
+<t tx="ekr.20160220050433.120">def finalize(self, fn):
     '''Finalize and regularize a filename.'''
     fn = os.path.expanduser(fn)
     fn = os.path.abspath(fn)
     fn = os.path.normpath(fn)
     return fn
 </t>
-<t tx="ekr.20160220050433.121">
-def make_coffeescript_file(self, fn):
+<t tx="ekr.20160220050433.121">def make_coffeescript_file(self, fn):
     '''
     Make a stub file in the output directory for all source files mentioned
     in the [Source Files] section of the configuration file.
@@ -339,7 +331,7 @@ def make_coffeescript_file(self, fn):
     base_fn = os.path.basename(fn)
     out_fn = os.path.join(self.output_directory, base_fn)
     out_fn = os.path.normpath(out_fn)
-    out_fn = out_fn[:-3] + '.coffee'
+    out_fn = out_fn[: -3] + '.coffee'
     dir_ = os.path.dirname(out_fn)
     if os.path.exists(out_fn) and not self.overwrite:
         print('file exists: %s' % out_fn)
@@ -355,9 +347,9 @@ def make_coffeescript_file(self, fn):
         f.close()
         print('wrote: %s' % out_fn)
     else:
-        print('output directory not not found: %s' % dir_)</t>
-<t tx="ekr.20160220050433.122">
-def run(self):
+        print('output directory not not found: %s' % dir_)
+</t>
+<t tx="ekr.20160220050433.122">def run(self):
     '''
     Make stub files for all files.
     Do nothing if the output directory does not exist.
@@ -377,8 +369,7 @@ def run(self):
     elif not self.enable_unit_tests:
         print('no input files')
 </t>
-<t tx="ekr.20160220050433.123">
-def run_all_unit_tests(self):
+<t tx="ekr.20160220050433.123">def run_all_unit_tests(self):
     '''Run all unit tests in the python-to-coffeescript/test directory.'''
     import unittest
     loader = unittest.TestLoader()
@@ -387,8 +378,7 @@ def run_all_unit_tests(self):
                             top_level_dir=None)
     unittest.TextTestRunner(verbosity=1).run(suite)
 </t>
-<t tx="ekr.20160220050433.124">
-def scan_command_line(self):
+<t tx="ekr.20160220050433.124">def scan_command_line(self):
     '''Set ivars from command-line arguments.'''
     # This automatically implements the --help option.
     usage = "usage: python_to_coffeescript.py [options] file1, file2, ..."
@@ -419,7 +409,7 @@ def scan_command_line(self):
     # Parse the options
     options, args = parser.parse_args()
     # Handle the options...
-    self.enable_unit_tests=options.test
+    self.enable_unit_tests = options.test
     self.overwrite = options.overwrite
     self.trace_visitors = options.trace_visitors
     ###
@@ -446,8 +436,7 @@ def scan_command_line(self):
         if args:
             self.files = args
 </t>
-<t tx="ekr.20160220050433.125">
-def scan_options(self):
+<t tx="ekr.20160220050433.125">def scan_options(self):
     '''Set all configuration-related ivars.'''
     trace = False
     if not self.config_fn:
@@ -497,17 +486,14 @@ def scan_options(self):
     # self.general_patterns = self.scan_patterns('General Patterns')
     # self.make_patterns_dict()
 </t>
-<t tx="ekr.20160220050433.127">
-def create_parser(self):
+<t tx="ekr.20160220050433.127">def create_parser(self):
     '''Create a RawConfigParser and return it.'''
     parser = configparser.RawConfigParser(dict_type=OrderedDict)
         # Requires Python 2.7
     parser.optionxform = str
     return parser
 </t>
-<t tx="ekr.20160220050433.129">
-def get_config_string(self):
-    
+<t tx="ekr.20160220050433.129">def get_config_string(self):
     fn = self.finalize(self.config_fn)
     if os.path.exists(fn):
         if self.verbose:
@@ -519,14 +505,12 @@ def get_config_string(self):
     else:
         print('\nconfiguration file not found: %s' % fn)
         return ''
-    </t>
-<t tx="ekr.20160220050433.13">
-def truncate(s, n):
-    '''Return s truncated to n characters.'''
-    return s if len(s) &lt;= n else s[:n-3] + '...'
 </t>
-<t tx="ekr.20160220050433.130">
-def init_parser(self, s):
+<t tx="ekr.20160220050433.13">def truncate(s, n):
+    '''Return s truncated to n characters.'''
+    return s if len(s) &lt;= n else s[: n - 3] + '...'
+</t>
+<t tx="ekr.20160220050433.130">def init_parser(self, s):
     '''Add double back-slashes to all patterns starting with '['.'''
     trace = False
     if not s: return
@@ -535,23 +519,23 @@ def init_parser(self, s):
         if self.is_section_name(s):
             aList.append(s)
         elif s.strip().startswith('['):
-            aList.append(r'\\'+s[1:])
-            if trace: g.trace('*** escaping:',s)
+            aList.append(r'\\' + s[1:])
+            if trace: g.trace('*** escaping:', s)
         else:
             aList.append(s)
-    s = '\n'.join(aList)+'\n'
+    s = '\n'.join(aList) + '\n'
     if trace: g.trace(s)
     file_object = io.StringIO(s)
-    self.parser.readfp(file_object)</t>
-<t tx="ekr.20160220050433.131">
-def is_section_name(self, s):
-    
+    self.parser.readfp(file_object)
+</t>
+<t tx="ekr.20160220050433.131">def is_section_name(self, s):
+
     def munge(s):
-        return s.strip().lower().replace(' ','')
-    
+        return s.strip().lower().replace(' ', '')
+
     s = s.strip()
     if s.startswith('[') and s.endswith(']'):
-        s = munge(s[1:-1])
+        s = munge(s[1: -1])
         for s2 in self.section_names:
             if s == munge(s2):
                 return True
@@ -599,9 +583,7 @@ def visit(self, node):
 <t tx="ekr.20160220050433.18">
 # Contexts...
 </t>
-<t tx="ekr.20160220050433.188">
-
-class TestClass(object):
+<t tx="ekr.20160220050433.188">class TestClass(object):
     '''
     A class containing constructs that have caused difficulties.
     This is in the make_stub_files directory, not the test directory.
@@ -610,9 +592,9 @@ class TestClass(object):
     # pylint: disable=undefined-variable
     # pylint: disable=no-self-argument
     # pylint: disable=no-method-argument
-    @others</t>
-<t tx="ekr.20160220050433.189">
-def parse_group(group):
+    @others    pass
+</t>
+<t tx="ekr.20160220050433.189">def parse_group(group):
     if len(group) &gt;= 3 and group[-2] == 'as':
         del group[-2:]
     ndots = 0
@@ -620,10 +602,10 @@ def parse_group(group):
     while len(group) &gt; i and group[i].startswith('.'):
         ndots += len(group[i])
         i += 1
-    assert ''.join(group[:i]) == '.'*ndots, group
-    del group[:i]
-    assert all(g == '.' for g in group[1::2]), group
-    return ndots, os.sep.join(group[::2])
+    assert ''.join(group[: i]) == '.' * ndots, group
+    del group[: i]
+    assert all(g == '.' for g in group[1:: 2]), group
+    return ndots, os.sep.join(group[:: 2])
 </t>
 <t tx="ekr.20160220050433.19">
 # ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
@@ -644,18 +626,17 @@ def do_ClassDef(self, node):
         self.level -= 1
     return ''.join(result)
 </t>
-<t tx="ekr.20160220050433.190">
-def return_all(self):
+<t tx="ekr.20160220050433.190">def return_all(self):
     return all([is_known_type(z) for z in s3.split(',')])
-    # return all(['abc'])</t>
-<t tx="ekr.20160220050433.191">
-def return_array():
-    return f(s[1:-1])</t>
-<t tx="ekr.20160220050433.192">
-def return_list(self, a):
-    return [a]</t>
-<t tx="ekr.20160220050433.193">
-def return_two_lists(s):
+    # return all(['abc'])
+</t>
+<t tx="ekr.20160220050433.191">def return_array():
+    return f(s[1: -1])
+</t>
+<t tx="ekr.20160220050433.192">def return_list(self, a):
+    return [a]
+</t>
+<t tx="ekr.20160220050433.193">def return_two_lists(s):
     if 1:
         return aList
     else:
@@ -1131,8 +1112,8 @@ def get_import_names(self, node):
         result.append(data)
     return result
 </t>
-<t tx="ekr.20160220050433.7">
-# Top-level functions</t>
+<t tx="ekr.20160220050433.7"># Top-level functions
+</t>
 <t tx="ekr.20160220050433.70">
 def do_ImportFrom(self, node):
     names = []
@@ -1265,8 +1246,7 @@ def do_Yield(self, node):
     else:
         return self.indent('yield\n')
 </t>
-<t tx="ekr.20160220050433.8">
-def dump(title, s=None):
+<t tx="ekr.20160220050433.8">def dump(title, s=None):
     if s:
         print('===== %s...\n%s\n' % (title, s.rstrip()))
     else:
@@ -1327,30 +1307,35 @@ def op_name (self,node,strict=True):
     if strict: assert name, kind
     return name
 </t>
-<t tx="ekr.20160220050433.86">
-
-class LeoGlobals(object):
+<t tx="ekr.20160220050433.86">class LeoGlobals(object):
     '''A class supporting g.pdb and g.trace for compatibility with Leo.'''
     @others
 </t>
-<t tx="ekr.20160220050433.87">
-class NullObject:
+<t tx="ekr.20160220050433.87">class NullObject:
     """
     An object that does nothing, and does it very well.
     From the Python cookbook, recipe 5.23
     """
+
     def __init__(self, *args, **keys): pass
+
     def __call__(self, *args, **keys): return self
+
     def __repr__(self): return "NullObject"
+
     def __str__(self): return "NullObject"
+
     def __bool__(self): return False
+
     def __nonzero__(self): return 0
+
     def __delattr__(self, attr): return self
+
     def __getattr__(self, attr): return self
+
     def __setattr__(self, attr, val): return self
 </t>
-<t tx="ekr.20160220050433.88">
-def _callerName(self, n=1, files=False):
+<t tx="ekr.20160220050433.88">def _callerName(self, n=1, files=False):
     # print('_callerName: %s %s' % (n,files))
     try: # get the function name from the call stack.
         f1 = sys._getframe(n) # The stack frame, n levels up.
@@ -1370,8 +1355,7 @@ def _callerName(self, n=1, files=False):
         # es_exception()
         return '' # "&lt;no caller name&gt;"
 </t>
-<t tx="ekr.20160220050433.89">
-def callers(self, n=4, count=0, excludeCaller=True, files=False):
+<t tx="ekr.20160220050433.89">def callers(self, n=4, count=0, excludeCaller=True, files=False):
     '''Return a list containing the callers of the function that called g.callerList.
 
     If the excludeCaller keyword is True (the default), g.callers is not on the list.
@@ -1395,21 +1379,19 @@ def callers(self, n=4, count=0, excludeCaller=True, files=False):
     sep = '\n' if files else ','
     return sep.join(result)
 </t>
-<t tx="ekr.20160220050433.9">
-def dump_dict(title, d):
+<t tx="ekr.20160220050433.9">def dump_dict(title, d):
     '''Dump a dictionary with a header.'''
     dump(title)
     for z in sorted(d):
         print('%30s %s' % (z, d.get(z)))
-    print('')</t>
-<t tx="ekr.20160220050433.90">
-def cls(self):
+    print('')
+</t>
+<t tx="ekr.20160220050433.90">def cls(self):
     '''Clear the screen.'''
     if sys.platform.lower().startswith('win'):
         os.system('cls')
 </t>
-<t tx="ekr.20160220050433.91">
-def pdb(self):
+<t tx="ekr.20160220050433.91">def pdb(self):
     try:
         import leo.core.leoGlobals as leo_g
         leo_g.pdb()
@@ -1417,20 +1399,17 @@ def pdb(self):
         import pdb
         pdb.set_trace()
 </t>
-<t tx="ekr.20160220050433.92">
-def shortFileName(self,fileName, n=None):
+<t tx="ekr.20160220050433.92">def shortFileName(self, fileName, n=None):
     if n is None or n &lt; 1:
         return os.path.basename(fileName)
     else:
         return '/'.join(fileName.replace('\\', '/').split('/')[-n:])
 </t>
-<t tx="ekr.20160220050433.93">
-def splitLines(self, s):
+<t tx="ekr.20160220050433.93">def splitLines(self, s):
     '''Split s into lines, preserving trailing newlines.'''
     return s.splitlines(True) if s else []
 </t>
-<t tx="ekr.20160220050433.94">
-def trace(self, *args, **keys):
+<t tx="ekr.20160220050433.94">def trace(self, *args, **keys):
     try:
         import leo.core.leoGlobals as leo_g
         leo_g.trace(caller_level=2, *args, **keys)
@@ -1650,8 +1629,7 @@ def get_body(self, p):
             # Add leading indentation needed by test_template.
     return s.rstrip()+'\n'
 </t>
-<t tx="ekr.20160220055816.3">
-def output_time_stamp(self, f):
+<t tx="ekr.20160220055816.3">def output_time_stamp(self, f):
     '''Put a time-stamp in the output file f.'''
     f.write('# python_to_coffeescript: %s\n' %
         time.strftime("%a %d %b %Y at %H:%M:%S"))
@@ -2499,8 +2477,7 @@ def isUnicode(self, s):
     else:
         return type(s) == types.UnicodeType
 </t>
-<t tx="ekr.20160220104316.1">
-def computeLeadingWhitespace(self, width, tab_width):
+<t tx="ekr.20160220104316.1">def computeLeadingWhitespace(self, width, tab_width):
     '''Returns optimized whitespace corresponding to width with the indicated tab_width.'''
     if width &lt;= 0:
         return ""
@@ -2571,7 +2548,6 @@ def computeLeadingWhitespaceWidth(self, s, tab_width):
     """A class whose next method provides a readline method for Python's tokenize module."""
 
     def __init__(self, s):
-
         self.lines = s.splitlines(True) if s else []
             # g.splitLines(s)
         self.i = 0

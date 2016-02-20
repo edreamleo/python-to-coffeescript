@@ -41,7 +41,6 @@ try:
 except ImportError:
     import io # Python 3
 isPython3 = sys.version_info >= (3, 0, 0)
-
 def main():
     '''
     The driver for the stand-alone version of make-stub-files.
@@ -53,29 +52,24 @@ def main():
     controller.scan_options()
     controller.run()
     print('done')
-
 # Top-level functions
-
 def dump(title, s=None):
     if s:
         print('===== %s...\n%s\n' % (title, s.rstrip()))
     else:
         print('===== %s...\n' % title)
-
 def dump_dict(title, d):
     '''Dump a dictionary with a header.'''
     dump(title)
     for z in sorted(d):
         print('%30s %s' % (z, d.get(z)))
     print('')
-
 def dump_list(title, aList):
     '''Dump a list with a header.'''
     dump(title)
     for z in aList:
         print(z)
     print('')
-
 def pdb(self):
     '''Invoke a debugger during unit testing.'''
     try:
@@ -84,10 +78,9 @@ def pdb(self):
     except ImportError:
         import pdb
         pdb.set_trace()
-
 def truncate(s, n):
     '''Return s truncated to n characters.'''
-    return s if len(s) <= n else s[:n-3] + '...'
+    return s if len(s) <= n else s[: n - 3] + '...'
 class CoffeeScriptTokenizer:
     '''A token-based Python beautifier.'''
     class OutputToken:
@@ -533,30 +526,35 @@ class CoffeeScriptTokenizer:
         '''Append a state to the state stack.'''
         state = self.ParseState(kind, value)
         self.state_stack.append(state)
-
-
 class LeoGlobals(object):
     '''A class supporting g.pdb and g.trace for compatibility with Leo.'''
-
     class NullObject:
         """
         An object that does nothing, and does it very well.
         From the Python cookbook, recipe 5.23
         """
+
         def __init__(self, *args, **keys): pass
+
         def __call__(self, *args, **keys): return self
+
         def __repr__(self): return "NullObject"
+
         def __str__(self): return "NullObject"
+
         def __bool__(self): return False
+
         def __nonzero__(self): return 0
+
         def __delattr__(self, attr): return self
+
         def __getattr__(self, attr): return self
+
         def __setattr__(self, attr, val): return self
     class ReadLinesClass:
         """A class whose next method provides a readline method for Python's tokenize module."""
 
         def __init__(self, s):
-
             self.lines = s.splitlines(True) if s else []
                 # g.splitLines(s)
             self.i = 0
@@ -571,7 +569,6 @@ class LeoGlobals(object):
             return line
 
         __next__ = next
-
     def _callerName(self, n=1, files=False):
         # print('_callerName: %s %s' % (n,files))
         try: # get the function name from the call stack.
@@ -591,7 +588,6 @@ class LeoGlobals(object):
         except Exception:
             # es_exception()
             return '' # "<no caller name>"
-
     def callers(self, n=4, count=0, excludeCaller=True, files=False):
         '''Return a list containing the callers of the function that called g.callerList.
 
@@ -615,12 +611,10 @@ class LeoGlobals(object):
         if count > 0: result = result[: count]
         sep = '\n' if files else ','
         return sep.join(result)
-
     def cls(self):
         '''Clear the screen.'''
         if sys.platform.lower().startswith('win'):
             os.system('cls')
-
     def computeLeadingWhitespace(self, width, tab_width):
         '''Returns optimized whitespace corresponding to width with the indicated tab_width.'''
         if width <= 0:
@@ -656,7 +650,6 @@ class LeoGlobals(object):
             return type(s) == type('a')
         else:
             return type(s) == types.UnicodeType
-
     def pdb(self):
         try:
             import leo.core.leoGlobals as leo_g
@@ -664,13 +657,11 @@ class LeoGlobals(object):
         except ImportError:
             import pdb
             pdb.set_trace()
-
-    def shortFileName(self,fileName, n=None):
+    def shortFileName(self, fileName, n=None):
         if n is None or n < 1:
             return os.path.basename(fileName)
         else:
             return '/'.join(fileName.replace('\\', '/').split('/')[-n:])
-
     def splitLines(self, s):
         '''Split s into lines, preserving trailing newlines.'''
         return s.splitlines(True) if s else []
@@ -700,7 +691,6 @@ class LeoGlobals(object):
         if trace and encoding == 'cp1252':
             print('toUnicode: returns %s' % s)
         return s
-
     def trace(self, *args, **keys):
         try:
             import leo.core.leoGlobals as leo_g
@@ -722,12 +712,9 @@ class LeoGlobals(object):
 
         def ue(self, s, encoding):
             return unicode(s, encoding)
-
-
 class MakeCoffeeScriptController(object):
     '''The controller class for python_to_coffeescript.py.'''
-
-    def __init__ (self):
+    def __init__(self):
         '''Ctor for MakeCoffeeScriptController class.'''
         self.options = {}
         # Ivars set on the command line...
@@ -743,7 +730,7 @@ class MakeCoffeeScriptController(object):
         self.trace_visitors = False
         self.update_flag = False
         self.verbose = False # Trace config arguments.
-        ### 
+        ###
         # self.prefix_lines = []
         # self.trace_matches = False
         # self.trace_patterns = False
@@ -756,14 +743,12 @@ class MakeCoffeeScriptController(object):
         # self.op_name_dict = self.make_op_name_dict()
         # self.patterns_dict = {}
         # self.regex_patterns = []
-
     def finalize(self, fn):
         '''Finalize and regularize a filename.'''
         fn = os.path.expanduser(fn)
         fn = os.path.abspath(fn)
         fn = os.path.normpath(fn)
         return fn
-
     def make_coffeescript_file(self, fn):
         '''
         Make a stub file in the output directory for all source files mentioned
@@ -778,7 +763,7 @@ class MakeCoffeeScriptController(object):
         base_fn = os.path.basename(fn)
         out_fn = os.path.join(self.output_directory, base_fn)
         out_fn = os.path.normpath(out_fn)
-        out_fn = out_fn[:-3] + '.coffee'
+        out_fn = out_fn[: -3] + '.coffee'
         dir_ = os.path.dirname(out_fn)
         if os.path.exists(out_fn) and not self.overwrite:
             print('file exists: %s' % out_fn)
@@ -795,12 +780,10 @@ class MakeCoffeeScriptController(object):
             print('wrote: %s' % out_fn)
         else:
             print('output directory not not found: %s' % dir_)
-
     def output_time_stamp(self, f):
         '''Put a time-stamp in the output file f.'''
         f.write('# python_to_coffeescript: %s\n' %
             time.strftime("%a %d %b %Y at %H:%M:%S"))
-
     def run(self):
         '''
         Make stub files for all files.
@@ -820,7 +803,6 @@ class MakeCoffeeScriptController(object):
                 print('no output directory')
         elif not self.enable_unit_tests:
             print('no input files')
-
     def run_all_unit_tests(self):
         '''Run all unit tests in the python-to-coffeescript/test directory.'''
         import unittest
@@ -829,7 +811,6 @@ class MakeCoffeeScriptController(object):
                                 pattern='test*.py',
                                 top_level_dir=None)
         unittest.TextTestRunner(verbosity=1).run(suite)
-
     def scan_command_line(self):
         '''Set ivars from command-line arguments.'''
         # This automatically implements the --help option.
@@ -861,7 +842,7 @@ class MakeCoffeeScriptController(object):
         # Parse the options
         options, args = parser.parse_args()
         # Handle the options...
-        self.enable_unit_tests=options.test
+        self.enable_unit_tests = options.test
         self.overwrite = options.overwrite
         self.trace_visitors = options.trace_visitors
         ###
@@ -887,7 +868,6 @@ class MakeCoffeeScriptController(object):
             args = [self.finalize(z) for z in args]
             if args:
                 self.files = args
-
     def scan_options(self):
         '''Set all configuration-related ivars.'''
         trace = False
@@ -937,16 +917,13 @@ class MakeCoffeeScriptController(object):
         # self.def_patterns = self.scan_patterns('Def Name Patterns')
         # self.general_patterns = self.scan_patterns('General Patterns')
         # self.make_patterns_dict()
-
     def create_parser(self):
         '''Create a RawConfigParser and return it.'''
         parser = configparser.RawConfigParser(dict_type=OrderedDict)
             # Requires Python 2.7
         parser.optionxform = str
         return parser
-
     def get_config_string(self):
-        
         fn = self.finalize(self.config_fn)
         if os.path.exists(fn):
             if self.verbose:
@@ -958,8 +935,6 @@ class MakeCoffeeScriptController(object):
         else:
             print('\nconfiguration file not found: %s' % fn)
             return ''
-        
-
     def init_parser(self, s):
         '''Add double back-slashes to all patterns starting with '['.'''
         trace = False
@@ -969,29 +944,26 @@ class MakeCoffeeScriptController(object):
             if self.is_section_name(s):
                 aList.append(s)
             elif s.strip().startswith('['):
-                aList.append(r'\\'+s[1:])
-                if trace: g.trace('*** escaping:',s)
+                aList.append(r'\\' + s[1:])
+                if trace: g.trace('*** escaping:', s)
             else:
                 aList.append(s)
-        s = '\n'.join(aList)+'\n'
+        s = '\n'.join(aList) + '\n'
         if trace: g.trace(s)
         file_object = io.StringIO(s)
         self.parser.readfp(file_object)
-
     def is_section_name(self, s):
-        
+
         def munge(s):
-            return s.strip().lower().replace(' ','')
-        
+            return s.strip().lower().replace(' ', '')
+
         s = s.strip()
         if s.startswith('[') and s.endswith(']'):
-            s = munge(s[1:-1])
+            s = munge(s[1: -1])
             for s2 in self.section_names:
                 if s == munge(s2):
                     return True
         return False
-
-
 class TestClass(object):
     '''
     A class containing constructs that have caused difficulties.
@@ -1001,7 +973,6 @@ class TestClass(object):
     # pylint: disable=undefined-variable
     # pylint: disable=no-self-argument
     # pylint: disable=no-method-argument
-
     def parse_group(group):
         if len(group) >= 3 and group[-2] == 'as':
             del group[-2:]
@@ -1010,21 +981,17 @@ class TestClass(object):
         while len(group) > i and group[i].startswith('.'):
             ndots += len(group[i])
             i += 1
-        assert ''.join(group[:i]) == '.'*ndots, group
-        del group[:i]
-        assert all(g == '.' for g in group[1::2]), group
-        return ndots, os.sep.join(group[::2])
-
+        assert ''.join(group[: i]) == '.' * ndots, group
+        del group[: i]
+        assert all(g == '.' for g in group[1:: 2]), group
+        return ndots, os.sep.join(group[:: 2])
     def return_all(self):
         return all([is_known_type(z) for z in s3.split(',')])
         # return all(['abc'])
-
     def return_array():
-        return f(s[1:-1])
-
+        return f(s[1: -1])
     def return_list(self, a):
         return [a]
-
     def return_two_lists(s):
         if 1:
             return aList

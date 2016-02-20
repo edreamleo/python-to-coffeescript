@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sat 20 Feb 2016 at 11:07:26
+# python_to_coffeescript: Sat 20 Feb 2016 at 11:13:24
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -54,7 +54,6 @@ def main():
     controller.scan_options()
     controller.run()
     print('done')
-
 # Top-level functions
 
 def dump(title, s=None):
@@ -598,7 +597,6 @@ class LeoGlobals(object):
         """A class whose next method provides a readline method for Python's tokenize module."""
 
         def __init__(self, s):
-
             self.lines = s.splitlines(True) if s else []
                 # g.splitLines(s)
             self.i = 0
@@ -829,7 +827,6 @@ class MakeCoffeeScriptController(object):
         elif not dir_ or os.path.exists(dir_):
             t1 = time.clock()
             s = open(fn).read()
-            # node = ast.parse(s,filename=fn,mode='exec')
             readlines = g.ReadLinesClass(s).next
             tokens = list(tokenize.generate_tokens(readlines))
             s = CoffeeScriptTokenizer(controller=self).format(tokens)
@@ -991,7 +988,6 @@ class MakeCoffeeScriptController(object):
         return parser
 
     def get_config_string(self):
-
         fn = self.finalize(self.config_fn)
         if os.path.exists(fn):
             if self.verbose:
