@@ -221,6 +221,7 @@
 <v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
 </v>
 </v>
+<v t="ekr.20160220103223.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -1575,8 +1576,8 @@ def write_file(self,fn):
             if (not p.h.strip().startswith('&lt;&lt;') and
                 p.b.strip() and not p.b.startswith('\n')
             ):
-                print(repr(p.b[:3]), p.h)
-print('done')
+                g.es_print(repr(p.b[:3]), p.h)
+g.es_print('done')
 </t>
 <t tx="ekr.20160220051417.2">&lt;&lt; docstring &gt;&gt;
 # **Note**: this is a Leo script.
