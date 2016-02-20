@@ -156,7 +156,7 @@
 <v t="ekr.20160220103223.14"><vh>cst.do_newline</vh></v>
 <v t="ekr.20160220103223.15"><vh>cst.do_nl</vh></v>
 <v t="ekr.20160220103223.16"><vh>cst.do_number</vh></v>
-<v t="ekr.20160220103223.17"><vh>cst.do_op</vh></v>
+<v t="ekr.20160220103223.17"><vh>cst.do_op (To do: handle end of arg list)</vh></v>
 <v t="ekr.20160220103223.18"><vh>cst.do_string</vh></v>
 </v>
 <v t="ekr.20160220103223.19"><vh>cst.Output token generators</vh>
@@ -222,6 +222,13 @@
 </v>
 </v>
 <v t="ekr.20160220103223.1"></v>
+<v t="ekr.20160220103223.8"></v>
+<v t="ekr.20160220103223.19"></v>
+<v t="ekr.20160220103223.4"></v>
+<v t="ekr.20160220103223.13"></v>
+<v t="ekr.20160220103223.17"></v>
+<v t="ekr.20160220103223.35"></v>
+<v t="ekr.20160220103223.12"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -2054,7 +2061,6 @@ class CoffeeScriptTokenizer:
 def do_endmarker(self):
     '''Handle an endmarker token.'''
     pass
-
 </t>
 <t tx="ekr.20160220103223.11">
 def do_errortoken(self):
@@ -2062,7 +2068,6 @@ def do_errortoken(self):
     # This code is executed for versions of Python earlier than 2.4
     if self.val == '@':
         self.op(self.val)
-
 </t>
 <t tx="ekr.20160220103223.12">
 def do_dedent(self):
@@ -2077,15 +2082,12 @@ def do_dedent(self):
         if state.kind in ('class', 'def'):
             self.state_stack.pop()
             self.blank_lines(1)
-                # Most Leo nodes aren't at the top level of the file.
-                # self.blank_lines(2 if self.level == 0 else 1)
 
 def do_indent(self):
     '''Handle indent token.'''
     self.level += 1
     self.lws = self.val
     self.line_start()
-
 </t>
 <t tx="ekr.20160220103223.13">
 def do_name(self):
@@ -2104,30 +2106,35 @@ def do_name(self):
         self.push_state(name)
         self.push_state('indent', self.level)
             # For trailing lines after inner classes/defs.
+        if name == 'def':
+            self.in_def_line = True
+            self.def_name_seen = False
+        else:
+            self.in_class_line = True
+            self.word(name)
+    elif self.in_def_line and not self.def_name_seen:
         self.word(name)
+        self.op('=')
+        self.def_name_seen = True
     elif name in ('and', 'in', 'not', 'not in', 'or'):
         self.word_op(name)
     else:
         self.word(name)
-
 </t>
 <t tx="ekr.20160220103223.14">
 def do_newline(self):
     '''Handle a regular newline.'''
     self.line_end()
-
 </t>
 <t tx="ekr.20160220103223.15">
 def do_nl(self):
     '''Handle a continuation line.'''
     self.line_end()
-
 </t>
 <t tx="ekr.20160220103223.16">
 def do_number(self):
     '''Handle a number token.'''
     self.add_token('number', self.val)
-
 </t>
 <t tx="ekr.20160220103223.17">
 def do_op(self):
@@ -2144,14 +2151,23 @@ def do_op(self):
     elif val in ',;:':
         # Pep 8: Avoid extraneous whitespace immediately before
         # comma, semicolon, or colon.
-        self.op_blank(val)
+        if self.in_def_line and val == ':':
+            self.in_def_line = False
+        elif self.in_class_line and val == ':':
+            self.in_class_line = False
+        else:
+            self.op_blank(val)
     elif val in '([{':
         # Pep 8: Avoid extraneous whitespace immediately inside
         # parentheses, brackets or braces.
         self.lt(val)
     elif val in ')]}':
-        # Ditto.
-        self.rt(val)
+        if self.in_def_line and val == ')':
+            self.rt(val)
+            self.op('-&gt;')
+        else:
+            # Ditto.
+            self.rt(val)
     elif val == '=':
         # Pep 8: Don't use spaces around the = sign when used to indicate
         # a keyword argument or a default parameter value.
@@ -2172,7 +2188,6 @@ def do_op(self):
         # Pep 8: If operators with different priorities are used,
         # consider adding whitespace around the operators with the lowest priority(ies).
         self.op(val)
-
 </t>
 <t tx="ekr.20160220103223.18">
 def do_string(self):
@@ -2182,7 +2197,6 @@ def do_string(self):
         self.backslash_seen = False
         # This *does* retain the string's spelling.
     self.blank()
-
 </t>
 <t tx="ekr.20160220103223.19"></t>
 <t tx="ekr.20160220103223.2">
@@ -2206,8 +2220,6 @@ class OutputToken:
     def to_string(self):
         '''Convert an output token to a string.'''
         return self.value if g.isString(self.value) else ''
-
-
 </t>
 <t tx="ekr.20160220103223.20">
 def add_token(self, kind, value=''):
@@ -2216,7 +2228,6 @@ def add_token(self, kind, value=''):
         # g.trace(kind,repr(value),g.callers())
     tok = self.OutputToken(kind, value)
     self.code_list.append(tok)
-
 </t>
 <t tx="ekr.20160220103223.21">
 # def arg_end(self):
@@ -2234,7 +2245,6 @@ def backslash(self):
     self.add_token('line-end', '\n')
     self.line_indent()
     self.backslash_seen = False
-
 </t>
 <t tx="ekr.20160220103223.23">
 def blank(self):
@@ -2247,7 +2257,6 @@ def blank(self):
         'lt', 'op-no-blanks', 'unary-op',
     ):
         self.add_token('blank', ' ')
-
 </t>
 <t tx="ekr.20160220103223.24">
 def blank_lines(self, n):
@@ -2265,7 +2274,6 @@ def blank_lines(self, n):
         # Retain the token (intention) for debugging.
         self.add_token('blank-lines', n)
         self.line_indent()
-
 </t>
 <t tx="ekr.20160220103223.25">
 def clean(self, kind):
@@ -2273,7 +2281,6 @@ def clean(self, kind):
     prev = self.code_list[-1]
     if prev.kind == kind:
         self.code_list.pop()
-
 </t>
 <t tx="ekr.20160220103223.26">
 def clean_blank_lines(self):
@@ -2281,7 +2288,6 @@ def clean_blank_lines(self):
     table = ('blank-lines', 'line-end', 'line-indent')
     while self.code_list[-1].kind in table:
         self.code_list.pop()
-
 </t>
 <t tx="ekr.20160220103223.27">
 def file_end(self):
@@ -2298,7 +2304,6 @@ def file_start(self):
     '''Add a file-start token to the code list and the state stack.'''
     self.add_token('file-start')
     self.push_state('file-start')
-
 </t>
 <t tx="ekr.20160220103223.28">
 def line_indent(self, ws=None):
@@ -2307,7 +2312,6 @@ def line_indent(self, ws=None):
     ws = ws or self.lws
     if ws:
         self.add_token('line-indent', ws)
-
 </t>
 <t tx="ekr.20160220103223.29">
 def line_end(self):
@@ -2344,7 +2348,6 @@ class ParseState:
         return 'State: %10s %s' % (self.kind, repr(self.value))
 
     __str__ = __repr__
-
 </t>
 <t tx="ekr.20160220103223.30">
 def lt(self, s):
@@ -2379,7 +2382,6 @@ def rt(self, s):
     else:
         self.clean('blank')
     self.add_token('rt', s)
-
 </t>
 <t tx="ekr.20160220103223.31">
 def op(self, s):
@@ -2400,7 +2402,6 @@ def op_no_blanks(self, s):
     '''Add an operator *not* surrounded by blanks.'''
     self.clean('blank')
     self.add_token('op-no-blanks', s)
-
 </t>
 <t tx="ekr.20160220103223.32">
 def possible_unary_op(self, s):
@@ -2419,7 +2420,6 @@ def unary_op(self, s):
     assert s and g.isString(s), repr(s)
     self.blank()
     self.add_token('unary-op', s)
-
 </t>
 <t tx="ekr.20160220103223.33">
 def star_op(self):
@@ -2439,7 +2439,6 @@ def star_op(self):
             self.op(val)
     else:
         self.op(val)
-
 </t>
 <t tx="ekr.20160220103223.34">
 def star_star_op(self):
@@ -2457,7 +2456,6 @@ def star_star_op(self):
             self.op(val)
     else:
         self.op(val)
-
 </t>
 <t tx="ekr.20160220103223.35">
 def word(self, s):
@@ -2473,7 +2471,6 @@ def word_op(self, s):
     self.blank()
     self.add_token('word-op', s)
     self.blank()
-
 </t>
 <t tx="ekr.20160220103223.36"></t>
 <t tx="ekr.20160220103223.39">
@@ -2488,7 +2485,6 @@ def print_stats(self):
     print('format         %4.2f sec.' % self.beautify_time)
     print('check          %4.2f sec.' % self.check_time)
     print('total          %4.2f sec.' % self.total_time)
-
 </t>
 <t tx="ekr.20160220103223.4">
 def __init__(self, controller):
@@ -2504,6 +2500,9 @@ def __init__(self, controller):
     # State vars...
     self.backslash_seen = False
     self.decorator_seen = False
+    self.in_class_line = False
+    self.in_def_line = False
+    self.def_name_seen = False
     self.level = 0 # indentation level.
     self.lws = '' # Leading whitespace.
         # Typically ' '*self.tab_width*self.level,
@@ -2526,15 +2525,12 @@ def __init__(self, controller):
      # Undo vars
     self.changed = False
     self.dirtyVnodeList = []
-
 </t>
 <t tx="ekr.20160220103223.40">
 def push_state(self, kind, value=None):
     '''Append a state to the state stack.'''
     state = self.ParseState(kind, value)
     self.state_stack.append(state)
-
-
 </t>
 <t tx="ekr.20160220103223.7">
 def format(self, tokens):
@@ -2577,7 +2573,6 @@ def format(self, tokens):
         func()
     self.file_end()
     return ''.join([z.to_string() for z in self.code_list])
-
 </t>
 <t tx="ekr.20160220103223.8"></t>
 <t tx="ekr.20160220103223.9">
@@ -2594,7 +2589,6 @@ def do_comment(self):
     else:
         self.blank()
         self.add_token('comment', val)
-
 </t>
 <t tx="ekr.20160220104209.1">
 def isString(self, s):

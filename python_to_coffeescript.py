@@ -123,8 +123,6 @@ class CoffeeScriptTokenizer:
             return self.value if g.isString(self.value) else ''
 
 
-
-
     class ParseState:
         '''A class representing items parse state stack.'''
 
@@ -136,7 +134,6 @@ class CoffeeScriptTokenizer:
             return 'State: %10s %s' % (self.kind, repr(self.value))
 
         __str__ = __repr__
-
 
     def __init__(self, controller):
         '''Ctor for PythonPrettyPrinter class.'''
@@ -151,6 +148,9 @@ class CoffeeScriptTokenizer:
         # State vars...
         self.backslash_seen = False
         self.decorator_seen = False
+        self.in_class_line = False
+        self.in_def_line = False
+        self.def_name_seen = False
         self.level = 0 # indentation level.
         self.lws = '' # Leading whitespace.
             # Typically ' '*self.tab_width*self.level,
@@ -173,7 +173,6 @@ class CoffeeScriptTokenizer:
          # Undo vars
         self.changed = False
         self.dirtyVnodeList = []
-
 
     def format(self, tokens):
         '''
@@ -216,7 +215,6 @@ class CoffeeScriptTokenizer:
         self.file_end()
         return ''.join([z.to_string() for z in self.code_list])
 
-
     def do_comment(self):
         '''Handle a comment token.'''
         raw_val = self.raw_val.rstrip()
@@ -231,18 +229,15 @@ class CoffeeScriptTokenizer:
             self.blank()
             self.add_token('comment', val)
 
-
     def do_endmarker(self):
         '''Handle an endmarker token.'''
         pass
-
 
     def do_errortoken(self):
         '''Handle an errortoken token.'''
         # This code is executed for versions of Python earlier than 2.4
         if self.val == '@':
             self.op(self.val)
-
 
     def do_dedent(self):
         '''Handle dedent token.'''
@@ -256,15 +251,12 @@ class CoffeeScriptTokenizer:
             if state.kind in ('class', 'def'):
                 self.state_stack.pop()
                 self.blank_lines(1)
-                    # Most Leo nodes aren't at the top level of the file.
-                    # self.blank_lines(2 if self.level == 0 else 1)
 
     def do_indent(self):
         '''Handle indent token.'''
         self.level += 1
         self.lws = self.val
         self.line_start()
-
 
     def do_name(self):
         '''Handle a name token.'''
@@ -282,27 +274,32 @@ class CoffeeScriptTokenizer:
             self.push_state(name)
             self.push_state('indent', self.level)
                 # For trailing lines after inner classes/defs.
+            if name == 'def':
+                self.in_def_line = True
+                self.def_name_seen = False
+            else:
+                self.in_class_line = True
+                self.word(name)
+        elif self.in_def_line and not self.def_name_seen:
             self.word(name)
+            self.op('=')
+            self.def_name_seen = True
         elif name in ('and', 'in', 'not', 'not in', 'or'):
             self.word_op(name)
         else:
             self.word(name)
 
-
     def do_newline(self):
         '''Handle a regular newline.'''
         self.line_end()
-
 
     def do_nl(self):
         '''Handle a continuation line.'''
         self.line_end()
 
-
     def do_number(self):
         '''Handle a number token.'''
         self.add_token('number', self.val)
-
 
     def do_op(self):
         '''Handle an op token.'''
@@ -318,14 +315,23 @@ class CoffeeScriptTokenizer:
         elif val in ',;:':
             # Pep 8: Avoid extraneous whitespace immediately before
             # comma, semicolon, or colon.
-            self.op_blank(val)
+            if self.in_def_line and val == ':':
+                self.in_def_line = False
+            elif self.in_class_line and val == ':':
+                self.in_class_line = False
+            else:
+                self.op_blank(val)
         elif val in '([{':
             # Pep 8: Avoid extraneous whitespace immediately inside
             # parentheses, brackets or braces.
             self.lt(val)
         elif val in ')]}':
-            # Ditto.
-            self.rt(val)
+            if self.in_def_line and val == ')':
+                self.rt(val)
+                self.op('->')
+            else:
+                # Ditto.
+                self.rt(val)
         elif val == '=':
             # Pep 8: Don't use spaces around the = sign when used to indicate
             # a keyword argument or a default parameter value.
@@ -347,7 +353,6 @@ class CoffeeScriptTokenizer:
             # consider adding whitespace around the operators with the lowest priority(ies).
             self.op(val)
 
-
     def do_string(self):
         '''Handle a 'string' token.'''
         self.add_token('string', self.val)
@@ -356,14 +361,12 @@ class CoffeeScriptTokenizer:
             # This *does* retain the string's spelling.
         self.blank()
 
-
     def add_token(self, kind, value=''):
         '''Add a token to the code list.'''
         # if kind in ('line-indent','line-start','line-end'):
             # g.trace(kind,repr(value),g.callers())
         tok = self.OutputToken(kind, value)
         self.code_list.append(tok)
-
 
     # def arg_end(self):
         # '''Add a token indicating the end of an argument list.'''
@@ -380,7 +383,6 @@ class CoffeeScriptTokenizer:
         self.line_indent()
         self.backslash_seen = False
 
-
     def blank(self):
         '''Add a blank request on the code list.'''
         prev = self.code_list[-1]
@@ -391,7 +393,6 @@ class CoffeeScriptTokenizer:
             'lt', 'op-no-blanks', 'unary-op',
         ):
             self.add_token('blank', ' ')
-
 
     def blank_lines(self, n):
         '''
@@ -409,20 +410,17 @@ class CoffeeScriptTokenizer:
             self.add_token('blank-lines', n)
             self.line_indent()
 
-
     def clean(self, kind):
         '''Remove the last item of token list if it has the given kind.'''
         prev = self.code_list[-1]
         if prev.kind == kind:
             self.code_list.pop()
 
-
     def clean_blank_lines(self):
         '''Remove all vestiges of previous lines.'''
         table = ('blank-lines', 'line-end', 'line-indent')
         while self.code_list[-1].kind in table:
             self.code_list.pop()
-
 
     def file_end(self):
         '''
@@ -439,14 +437,12 @@ class CoffeeScriptTokenizer:
         self.add_token('file-start')
         self.push_state('file-start')
 
-
     def line_indent(self, ws=None):
         '''Add a line-indent token if indentation is non-empty.'''
         self.clean('line-indent')
         ws = ws or self.lws
         if ws:
             self.add_token('line-indent', ws)
-
 
     def line_end(self):
         '''Add a line-end request to the code list.'''
@@ -502,7 +498,6 @@ class CoffeeScriptTokenizer:
             self.clean('blank')
         self.add_token('rt', s)
 
-
     def op(self, s):
         '''Add op token to code list.'''
         assert s and g.isString(s), repr(s)
@@ -522,7 +517,6 @@ class CoffeeScriptTokenizer:
         self.clean('blank')
         self.add_token('op-no-blanks', s)
 
-
     def possible_unary_op(self, s):
         '''Add a unary or binary op to the token list.'''
         self.clean('blank')
@@ -539,7 +533,6 @@ class CoffeeScriptTokenizer:
         assert s and g.isString(s), repr(s)
         self.blank()
         self.add_token('unary-op', s)
-
 
     def star_op(self):
         '''Put a '*' op, with special cases for *args.'''
@@ -559,7 +552,6 @@ class CoffeeScriptTokenizer:
         else:
             self.op(val)
 
-
     def star_star_op(self):
         '''Put a ** operator, with a special case for **kwargs.'''
         val = '**'
@@ -576,7 +568,6 @@ class CoffeeScriptTokenizer:
         else:
             self.op(val)
 
-
     def word(self, s):
         '''Add a word request to the code list.'''
         assert s and g.isString(s), repr(s)
@@ -591,7 +582,6 @@ class CoffeeScriptTokenizer:
         self.add_token('word-op', s)
         self.blank()
 
-
     def print_stats(self):
         print('==================== stats')
         print('changed nodes  %s' % self.n_changed_nodes)
@@ -604,13 +594,10 @@ class CoffeeScriptTokenizer:
         print('check          %4.2f sec.' % self.check_time)
         print('total          %4.2f sec.' % self.total_time)
 
-
     def push_state(self, kind, value=None):
         '''Append a state to the state stack.'''
         state = self.ParseState(kind, value)
         self.state_stack.append(state)
-
-
 
 
 class LeoGlobals(object):

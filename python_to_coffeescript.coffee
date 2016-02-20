@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sat 20 Feb 2016 at 11:26:29
+# python_to_coffeescript: Sat 20 Feb 2016 at 12:05:51
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -43,7 +43,7 @@ except ImportError:
     import io # Python 3
 isPython3 = sys.version_info >= (3, 0, 0)
 
-def main():
+main = () ->
     '''
     The driver for the stand-alone version of make-stub-files.
     All options come from ~/stubs/make_stub_files.cfg.
@@ -55,29 +55,27 @@ def main():
     controller.run()
     print('done')
 
-# Top-level functions
-
-def dump(title, s=None):
+dump = (title, s=None) ->
     if s:
         print('===== %s...\n%s\n' % (title, s.rstrip()))
     else:
         print('===== %s...\n' % title)
 
-def dump_dict(title, d):
+dump_dict = (title, d) ->
     '''Dump a dictionary with a header.'''
     dump(title)
     for z in sorted(d):
         print('%30s %s' % (z, d.get(z)))
     print('')
 
-def dump_list(title, aList):
+dump_list = (title, aList) ->
     '''Dump a list with a header.'''
     dump(title)
     for z in aList:
         print(z)
     print('')
 
-def pdb(self):
+pdb = (self) ->
     '''Invoke a debugger during unit testing.'''
     try:
         import leo.core.leoGlobals as leo_g
@@ -86,21 +84,21 @@ def pdb(self):
         import pdb
         pdb.set_trace()
 
-def truncate(s, n):
+truncate = (s, n) ->
     '''Return s truncated to n characters.'''
     return s if len(s) <= n else s[: n - 3] + '...'
 
-class CoffeeScriptTokenizer:
+class CoffeeScriptTokenizer
     '''A token-based Python beautifier.'''
 
-    class OutputToken:
+    class OutputToken
         '''A class representing Output Tokens'''
 
-        def __init__(self, kind, value):
+        __init__ = (self, kind, value) ->
             self.kind = kind
             self.value = value
 
-        def __repr__(self):
+        __repr__ = (self) ->
             if self.kind == 'line-indent':
                 assert not self.value.strip(' ')
                 return '%15s %s' % (self.kind, len(self.value))
@@ -109,23 +107,23 @@ class CoffeeScriptTokenizer:
 
         __str__ = __repr__
 
-        def to_string(self):
+        to_string = (self) ->
             '''Convert an output token to a string.'''
             return self.value if g.isString(self.value) else ''
 
-    class ParseState:
+    class ParseState
         '''A class representing items parse state stack.'''
 
-        def __init__(self, kind, value):
+        __init__ = (self, kind, value) ->
             self.kind = kind
             self.value = value
 
-        def __repr__(self):
+        __repr__ = (self) ->
             return 'State: %10s %s' % (self.kind, repr(self.value))
 
         __str__ = __repr__
 
-    def __init__(self, controller):
+    __init__ = (self, controller) ->
         '''Ctor for PythonPrettyPrinter class.'''
         self.controller = controller
         # Globals...
@@ -138,6 +136,9 @@ class CoffeeScriptTokenizer:
         # State vars...
         self.backslash_seen = False
         self.decorator_seen = False
+        self.in_class_line = False
+        self.in_def_line = False
+        self.def_name_seen = False
         self.level = 0 # indentation level.
         self.lws = '' # Leading whitespace.
             # Typically ' '*self.tab_width*self.level,
@@ -161,13 +162,13 @@ class CoffeeScriptTokenizer:
         self.changed = False
         self.dirtyVnodeList = []
 
-    def format(self, tokens):
+    format = (self, tokens) ->
         '''
         The main line of PythonTokenBeautifier class.
         Called by prettPrintNode & test_beautifier.
         '''
 
-        def oops():
+        oops = () ->
             g.trace('unknown kind', self.kind)
 
         self.code_list = []
@@ -202,7 +203,7 @@ class CoffeeScriptTokenizer:
         self.file_end()
         return ''.join([z.to_string() for z in self.code_list])
 
-    def do_comment(self):
+    do_comment = (self) ->
         '''Handle a comment token.'''
         raw_val = self.raw_val.rstrip()
         val = self.val.rstrip()
@@ -216,17 +217,17 @@ class CoffeeScriptTokenizer:
             self.blank()
             self.add_token('comment', val)
 
-    def do_endmarker(self):
+    do_endmarker = (self) ->
         '''Handle an endmarker token.'''
         pass
 
-    def do_errortoken(self):
+    do_errortoken = (self) ->
         '''Handle an errortoken token.'''
         # This code is executed for versions of Python earlier than 2.4
         if self.val == '@':
             self.op(self.val)
 
-    def do_dedent(self):
+    do_dedent = (self) ->
         '''Handle dedent token.'''
         self.level -= 1
         self.lws = self.level * self.tab_width * ' '
@@ -238,16 +239,14 @@ class CoffeeScriptTokenizer:
             if state.kind in ('class', 'def'):
                 self.state_stack.pop()
                 self.blank_lines(1)
-                    # Most Leo nodes aren't at the top level of the file.
-                    # self.blank_lines(2 if self.level == 0 else 1)
 
-    def do_indent(self):
+    do_indent = (self) ->
         '''Handle indent token.'''
         self.level += 1
         self.lws = self.val
         self.line_start()
 
-    def do_name(self):
+    do_name = (self) ->
         '''Handle a name token.'''
         name = self.val
         if name in ('class', 'def'):
@@ -263,25 +262,34 @@ class CoffeeScriptTokenizer:
             self.push_state(name)
             self.push_state('indent', self.level)
                 # For trailing lines after inner classes/defs.
+            if name == 'def':
+                self.in_def_line = True
+                self.def_name_seen = False
+            else:
+                self.in_class_line = True
+                self.word(name)
+        elif self.in_def_line and not self.def_name_seen:
             self.word(name)
+            self.op('=')
+            self.def_name_seen = True
         elif name in ('and', 'in', 'not', 'not in', 'or'):
             self.word_op(name)
         else:
             self.word(name)
 
-    def do_newline(self):
+    do_newline = (self) ->
         '''Handle a regular newline.'''
         self.line_end()
 
-    def do_nl(self):
+    do_nl = (self) ->
         '''Handle a continuation line.'''
         self.line_end()
 
-    def do_number(self):
+    do_number = (self) ->
         '''Handle a number token.'''
         self.add_token('number', self.val)
 
-    def do_op(self):
+    do_op = (self) ->
         '''Handle an op token.'''
         val = self.val
         if val == '.':
@@ -295,14 +303,23 @@ class CoffeeScriptTokenizer:
         elif val in ',;:':
             # Pep 8: Avoid extraneous whitespace immediately before
             # comma, semicolon, or colon.
-            self.op_blank(val)
+            if self.in_def_line and val == ':':
+                self.in_def_line = False
+            elif self.in_class_line and val == ':':
+                self.in_class_line = False
+            else:
+                self.op_blank(val)
         elif val in '([{':
             # Pep 8: Avoid extraneous whitespace immediately inside
             # parentheses, brackets or braces.
             self.lt(val)
         elif val in ')]}':
-            # Ditto.
-            self.rt(val)
+            if self.in_def_line and val == ')':
+                self.rt(val)
+                self.op('->')
+            else:
+                # Ditto.
+                self.rt(val)
         elif val == '=':
             # Pep 8: Don't use spaces around the = sign when used to indicate
             # a keyword argument or a default parameter value.
@@ -324,7 +341,7 @@ class CoffeeScriptTokenizer:
             # consider adding whitespace around the operators with the lowest priority(ies).
             self.op(val)
 
-    def do_string(self):
+    do_string = (self) ->
         '''Handle a 'string' token.'''
         self.add_token('string', self.val)
         if self.val.find('\\\n'):
@@ -332,7 +349,7 @@ class CoffeeScriptTokenizer:
             # This *does* retain the string's spelling.
         self.blank()
 
-    def add_token(self, kind, value=''):
+    add_token = (self, kind, value='') ->
         '''Add a token to the code list.'''
         # if kind in ('line-indent','line-start','line-end'):
             # g.trace(kind,repr(value),g.callers())
@@ -347,14 +364,14 @@ class CoffeeScriptTokenizer:
         # '''Add a token indicating the start of an argument list.'''
         # self.add_token('arg-start')
 
-    def backslash(self):
+    backslash = (self) ->
         '''Add a backslash token and clear .backslash_seen'''
         self.add_token('backslash', '\\')
         self.add_token('line-end', '\n')
         self.line_indent()
         self.backslash_seen = False
 
-    def blank(self):
+    blank = (self) ->
         '''Add a blank request on the code list.'''
         prev = self.code_list[-1]
         if not prev.kind in (
@@ -365,7 +382,7 @@ class CoffeeScriptTokenizer:
         ):
             self.add_token('blank', ' ')
 
-    def blank_lines(self, n):
+    blank_lines = (self, n) ->
         '''
         Add a request for n blank lines to the code list.
         Multiple blank-lines request yield at least the maximum of all requests.
@@ -381,19 +398,19 @@ class CoffeeScriptTokenizer:
             self.add_token('blank-lines', n)
             self.line_indent()
 
-    def clean(self, kind):
+    clean = (self, kind) ->
         '''Remove the last item of token list if it has the given kind.'''
         prev = self.code_list[-1]
         if prev.kind == kind:
             self.code_list.pop()
 
-    def clean_blank_lines(self):
+    clean_blank_lines = (self) ->
         '''Remove all vestiges of previous lines.'''
         table = ('blank-lines', 'line-end', 'line-indent')
         while self.code_list[-1].kind in table:
             self.code_list.pop()
 
-    def file_end(self):
+    file_end = (self) ->
         '''
         Add a file-end token to the code list.
         Retain exactly one line-end token.
@@ -403,19 +420,19 @@ class CoffeeScriptTokenizer:
         self.add_token('line-end', '\n')
         self.add_token('file-end')
 
-    def file_start(self):
+    file_start = (self) ->
         '''Add a file-start token to the code list and the state stack.'''
         self.add_token('file-start')
         self.push_state('file-start')
 
-    def line_indent(self, ws=None):
+    line_indent = (self, ws=None) ->
         '''Add a line-indent token if indentation is non-empty.'''
         self.clean('line-indent')
         ws = ws or self.lws
         if ws:
             self.add_token('line-indent', ws)
 
-    def line_end(self):
+    line_end = (self) ->
         '''Add a line-end request to the code list.'''
         prev = self.code_list[-1]
         if prev.kind == 'file-start':
@@ -431,11 +448,11 @@ class CoffeeScriptTokenizer:
             # Add the indentation for all lines
             # until the next indent or unindent token.
 
-    def line_start(self):
+    line_start = (self) ->
         '''Add a line-start request to the code list.'''
         self.line_indent()
 
-    def lt(self, s):
+    lt = (self, s) ->
         '''Add a left paren request to the code list.'''
         assert s in '([{', repr(s)
         self.paren_level += 1
@@ -454,7 +471,7 @@ class CoffeeScriptTokenizer:
         else:
             self.op_no_blanks(s)
 
-    def rt(self, s):
+    rt = (self, s) ->
         '''Add a right paren request to the code list.'''
         assert s in ')]}', repr(s)
         self.paren_level -= 1
@@ -468,26 +485,26 @@ class CoffeeScriptTokenizer:
             self.clean('blank')
         self.add_token('rt', s)
 
-    def op(self, s):
+    op = (self, s) ->
         '''Add op token to code list.'''
         assert s and g.isString(s), repr(s)
         self.blank()
         self.add_token('op', s)
         self.blank()
 
-    def op_blank(self, s):
+    op_blank = (self, s) ->
         '''Remove a preceding blank token, then add op and blank tokens.'''
         assert s and g.isString(s), repr(s)
         self.clean('blank')
         self.add_token('op', s)
         self.blank()
 
-    def op_no_blanks(self, s):
+    op_no_blanks = (self, s) ->
         '''Add an operator *not* surrounded by blanks.'''
         self.clean('blank')
         self.add_token('op-no-blanks', s)
 
-    def possible_unary_op(self, s):
+    possible_unary_op = (self, s) ->
         '''Add a unary or binary op to the token list.'''
         self.clean('blank')
         prev = self.code_list[-1]
@@ -498,13 +515,13 @@ class CoffeeScriptTokenizer:
         else:
             self.op(s)
 
-    def unary_op(self, s):
+    unary_op = (self, s) ->
         '''Add an operator request to the code list.'''
         assert s and g.isString(s), repr(s)
         self.blank()
         self.add_token('unary-op', s)
 
-    def star_op(self):
+    star_op = (self) ->
         '''Put a '*' op, with special cases for *args.'''
         val = '*'
         if self.paren_level:
@@ -522,7 +539,7 @@ class CoffeeScriptTokenizer:
         else:
             self.op(val)
 
-    def star_star_op(self):
+    star_star_op = (self) ->
         '''Put a ** operator, with a special case for **kwargs.'''
         val = '**'
         if self.paren_level:
@@ -538,21 +555,21 @@ class CoffeeScriptTokenizer:
         else:
             self.op(val)
 
-    def word(self, s):
+    word = (self, s) ->
         '''Add a word request to the code list.'''
         assert s and g.isString(s), repr(s)
         self.blank()
         self.add_token('word', s)
         self.blank()
 
-    def word_op(self, s):
+    word_op = (self, s) ->
         '''Add a word-op request to the code list.'''
         assert s and g.isString(s), repr(s)
         self.blank()
         self.add_token('word-op', s)
         self.blank()
 
-    def print_stats(self):
+    print_stats = (self) ->
         print('==================== stats')
         print('changed nodes  %s' % self.n_changed_nodes)
         print('tokens         %s' % self.n_input_tokens)
@@ -564,47 +581,47 @@ class CoffeeScriptTokenizer:
         print('check          %4.2f sec.' % self.check_time)
         print('total          %4.2f sec.' % self.total_time)
 
-    def push_state(self, kind, value=None):
+    push_state = (self, kind, value=None) ->
         '''Append a state to the state stack.'''
         state = self.ParseState(kind, value)
         self.state_stack.append(state)
 
-class LeoGlobals(object):
+class LeoGlobals(object)
     '''A class supporting g.pdb and g.trace for compatibility with Leo.'''
 
-    class NullObject:
+    class NullObject
         """
         An object that does nothing, and does it very well.
         From the Python cookbook, recipe 5.23
         """
 
-        def __init__(self, *args, **keys): pass
+        __init__ = (self, *args, **keys) -> pass
 
-        def __call__(self, *args, **keys): return self
+        __call__ = (self, *args, **keys) -> return self
 
-        def __repr__(self): return "NullObject"
+        __repr__ = (self) -> return "NullObject"
 
-        def __str__(self): return "NullObject"
+        __str__ = (self) -> return "NullObject"
 
-        def __bool__(self): return False
+        __bool__ = (self) -> return False
 
-        def __nonzero__(self): return 0
+        __nonzero__ = (self) -> return 0
 
-        def __delattr__(self, attr): return self
+        __delattr__ = (self, attr) -> return self
 
-        def __getattr__(self, attr): return self
+        __getattr__ = (self, attr) -> return self
 
-        def __setattr__(self, attr, val): return self
+        __setattr__ = (self, attr, val) -> return self
 
-    class ReadLinesClass:
+    class ReadLinesClass
         """A class whose next method provides a readline method for Python's tokenize module."""
 
-        def __init__(self, s):
+        __init__ = (self, s) ->
             self.lines = s.splitlines(True) if s else []
                 # g.splitLines(s)
             self.i = 0
 
-        def next(self):
+        next = (self) ->
             if self.i < len(self.lines):
                 line = self.lines[self.i]
                 self.i += 1
@@ -615,7 +632,7 @@ class LeoGlobals(object):
 
         __next__ = next
 
-    def _callerName(self, n=1, files=False):
+    _callerName = (self, n=1, files=False) ->
         # print('_callerName: %s %s' % (n,files))
         try: # get the function name from the call stack.
             f1 = sys._getframe(n) # The stack frame, n levels up.
@@ -635,7 +652,7 @@ class LeoGlobals(object):
             # es_exception()
             return '' # "<no caller name>"
 
-    def callers(self, n=4, count=0, excludeCaller=True, files=False):
+    callers = (self, n=4, count=0, excludeCaller=True, files=False) ->
         '''Return a list containing the callers of the function that called g.callerList.
 
         If the excludeCaller keyword is True (the default), g.callers is not on the list.
@@ -659,12 +676,12 @@ class LeoGlobals(object):
         sep = '\n' if files else ','
         return sep.join(result)
 
-    def cls(self):
+    cls = (self) ->
         '''Clear the screen.'''
         if sys.platform.lower().startswith('win'):
             os.system('cls')
 
-    def computeLeadingWhitespace(self, width, tab_width):
+    computeLeadingWhitespace = (self, width, tab_width) ->
         '''Returns optimized whitespace corresponding to width with the indicated tab_width.'''
         if width <= 0:
             return ""
@@ -675,9 +692,8 @@ class LeoGlobals(object):
         else: # Negative tab width always gets converted to blanks.
             return (' ' * width)
 
-    # Returns optimized whitespace corresponding to width with the indicated tab_width.
-
-    def computeLeadingWhitespaceWidth(self, s, tab_width):
+    computeLeadingWhitespaceWidth = (self, s, tab_width) ->
+        '''Returns optimized whitespace corresponding to width with the indicated tab_width.'''
         w = 0
         for ch in s:
             if ch == ' ':
@@ -688,21 +704,21 @@ class LeoGlobals(object):
                 break
         return w
 
-    def isString(self, s):
+    isString = (self, s) ->
         '''Return True if s is any string, but not bytes.'''
         if isPython3:
             return type(s) == type('a')
         else:
             return type(s) in types.StringTypes
 
-    def isUnicode(self, s):
+    isUnicode = (self, s) ->
         '''Return True if s is a unicode string.'''
         if isPython3:
             return type(s) == type('a')
         else:
             return type(s) == types.UnicodeType
 
-    def pdb(self):
+    pdb = (self) ->
         try:
             import leo.core.leoGlobals as leo_g
             leo_g.pdb()
@@ -710,17 +726,17 @@ class LeoGlobals(object):
             import pdb
             pdb.set_trace()
 
-    def shortFileName(self, fileName, n=None):
+    shortFileName = (self, fileName, n=None) ->
         if n is None or n < 1:
             return os.path.basename(fileName)
         else:
             return '/'.join(fileName.replace('\\', '/').split('/')[-n:])
 
-    def splitLines(self, s):
+    splitLines = (self, s) ->
         '''Split s into lines, preserving trailing newlines.'''
         return s.splitlines(True) if s else []
 
-    def toUnicode(self, s, encoding='utf-8', reportErrors=False):
+    toUnicode = (self, s, encoding='utf-8', reportErrors=False) ->
         '''Connvert a non-unicode string with the given encoding to unicode.'''
         trace = False
         if g.isUnicode(s):
@@ -747,33 +763,33 @@ class LeoGlobals(object):
             print('toUnicode: returns %s' % s)
         return s
 
-    def trace(self, *args, **keys):
+    trace = (self, *args, **keys) ->
         try:
             import leo.core.leoGlobals as leo_g
             leo_g.trace(caller_level=2, *args, **keys)
         except ImportError:
             print(args, keys)
 
-    if isPython3: # g.not defined yet.
+    if isPython3:
 
-        def u(self, s):
+        u = (self, s) ->
             return s
 
-        def ue(self, s, encoding):
+        ue = (self, s, encoding) ->
             return s if g.isUnicode(s) else str(s, encoding)
 
     else:
 
-        def u(self, s):
+        u = (self, s) ->
             return unicode(s)
 
-        def ue(self, s, encoding):
+        ue = (self, s, encoding) ->
             return unicode(s, encoding)
 
-class MakeCoffeeScriptController(object):
+class MakeCoffeeScriptController(object)
     '''The controller class for python_to_coffeescript.py.'''
 
-    def __init__(self):
+    __init__ = (self) ->
         '''Ctor for MakeCoffeeScriptController class.'''
         self.options = {}
         # Ivars set on the command line...
@@ -788,14 +804,14 @@ class MakeCoffeeScriptController(object):
         self.update_flag = False
         self.verbose = False # Trace config arguments.
 
-    def finalize(self, fn):
+    finalize = (self, fn) ->
         '''Finalize and regularize a filename.'''
         fn = os.path.expanduser(fn)
         fn = os.path.abspath(fn)
         fn = os.path.normpath(fn)
         return fn
 
-    def make_coffeescript_file(self, fn):
+    make_coffeescript_file = (self, fn) ->
         '''
         Make a stub file in the output directory for all source files mentioned
         in the [Source Files] section of the configuration file.
@@ -827,12 +843,12 @@ class MakeCoffeeScriptController(object):
         else:
             print('output directory not not found: %s' % dir_)
 
-    def output_time_stamp(self, f):
+    output_time_stamp = (self, f) ->
         '''Put a time-stamp in the output file f.'''
         f.write('# python_to_coffeescript: %s\n' %
             time.strftime("%a %d %b %Y at %H:%M:%S"))
 
-    def run(self):
+    run = (self) ->
         '''
         Make stub files for all files.
         Do nothing if the output directory does not exist.
@@ -852,7 +868,7 @@ class MakeCoffeeScriptController(object):
         elif not self.enable_unit_tests:
             print('no input files')
 
-    def run_all_unit_tests(self):
+    run_all_unit_tests = (self) ->
         '''Run all unit tests in the python-to-coffeescript/test directory.'''
         import unittest
         loader = unittest.TestLoader()
@@ -861,7 +877,7 @@ class MakeCoffeeScriptController(object):
                                 top_level_dir=None)
         unittest.TextTestRunner(verbosity=1).run(suite)
 
-    def scan_command_line(self):
+    scan_command_line = (self) ->
         '''Set ivars from command-line arguments.'''
         # This automatically implements the --help option.
         usage = "usage: python_to_coffeescript.py [options] file1, file2, ..."
@@ -919,7 +935,7 @@ class MakeCoffeeScriptController(object):
             if args:
                 self.files = args
 
-    def scan_options(self):
+    scan_options = (self) ->
         '''Set all configuration-related ivars.'''
         trace = False
         if not self.config_fn:
@@ -969,14 +985,14 @@ class MakeCoffeeScriptController(object):
         # self.general_patterns = self.scan_patterns('General Patterns')
         # self.make_patterns_dict()
 
-    def create_parser(self):
+    create_parser = (self) ->
         '''Create a RawConfigParser and return it.'''
         parser = configparser.RawConfigParser(dict_type=OrderedDict)
             # Requires Python 2.7
         parser.optionxform = str
         return parser
 
-    def get_config_string(self):
+    get_config_string = (self) ->
         fn = self.finalize(self.config_fn)
         if os.path.exists(fn):
             if self.verbose:
@@ -989,7 +1005,7 @@ class MakeCoffeeScriptController(object):
             print('\nconfiguration file not found: %s' % fn)
             return ''
 
-    def init_parser(self, s):
+    init_parser = (self, s) ->
         '''Add double back-slashes to all patterns starting with '['.'''
         trace = False
         if not s: return
@@ -1007,9 +1023,9 @@ class MakeCoffeeScriptController(object):
         file_object = io.StringIO(s)
         self.parser.readfp(file_object)
 
-    def is_section_name(self, s):
+    is_section_name = (self, s) ->
 
-        def munge(s):
+        munge = (s) ->
             return s.strip().lower().replace(' ', '')
 
         s = s.strip()
@@ -1020,7 +1036,7 @@ class MakeCoffeeScriptController(object):
                     return True
         return False
 
-class TestClass(object):
+class TestClass(object)
     '''
     A class containing constructs that have caused difficulties.
     This is in the make_stub_files directory, not the test directory.
@@ -1030,7 +1046,7 @@ class TestClass(object):
     # pylint: disable=no-self-argument
     # pylint: disable=no-method-argument
 
-    def parse_group(group):
+    parse_group = (group) ->
         if len(group) >= 3 and group[-2] == 'as':
             del group[-2:]
         ndots = 0
@@ -1043,17 +1059,17 @@ class TestClass(object):
         assert all(g == '.' for g in group[1:: 2]), group
         return ndots, os.sep.join(group[:: 2])
 
-    def return_all(self):
+    return_all = (self) ->
         return all([is_known_type(z) for z in s3.split(',')])
         # return all(['abc'])
 
-    def return_array():
+    return_array = () ->
         return f(s[1: -1])
 
-    def return_list(self, a):
+    return_list = (self, a) ->
         return [a]
 
-    def return_two_lists(s):
+    return_two_lists = (s) ->
         if 1:
             return aList
         else:
