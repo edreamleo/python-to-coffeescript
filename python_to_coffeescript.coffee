@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sat 20 Feb 2016 at 06:15:52
+# python_to_coffeescript: Sat 20 Feb 2016 at 06:59:55
 '\nThis script makes a coffeescript file for every python source file listed\non the command line (wildcard file names are supported).\n\nFor full details, see README.md.\n\nReleased under the MIT Licence.\n\nWritten by Edward K. Ream.\n'
 import ast
 from collections import OrderedDict
@@ -15,6 +15,7 @@ try:
     import StringIO as io
 except ImportError:
     import io
+
 def main():
     '\n    The driver for the stand-alone version of make-stub-files.\n    All options come from ~/stubs/make_stub_files.cfg.\n    '
     controller=MakeCoffeeScriptController()
@@ -22,23 +23,27 @@ def main():
     controller.scan_options()
     controller.run()
     print('done',nl=True)
+
 def dump(title,s=None):
     if s:
         print('===== %s...\n%s\n'%(title, s.rstrip()),nl=True)
     else:
         print('===== %s...\n'%title,nl=True)
+
 def dump_dict(title,d):
     'Dump a dictionary with a header.'
     dump(title)
     for z in sorted(d):
         print('%30s %s'%(z, d.get(z)),nl=True)
     print('',nl=True)
+
 def dump_list(title,aList):
     'Dump a list with a header.'
     dump(title)
     for z in aList:
         print(z,nl=True)
     print('',nl=True)
+
 def pdb(self):
     'Invoke a debugger during unit testing.'
     try:
@@ -47,20 +52,30 @@ def pdb(self):
     except ImportError:
         import pdb
         pdb.set_trace()
+
 def truncate(s,n):
     'Return s truncated to n characters.'
     return s if len(s)<=n else s[:n-3]+'...'
+
+
 class CoffeeScriptFormatter(object):
     'A class to convert python sources to coffeescript sources.'
+
+    def __init__(self,controller):
+        'Ctor for CoffeeScriptFormatter class.'
+        self.controller=controller
+        self.trace_visitors=controller.trace_visitors
+
     def format(self,node):
         'Format the node (or list of nodes) and its descendants.'
         self.level=0
         val=self.visit(node)
-        return val and val.strip() or ''
+        return val or ''
+
     def visit(self,node):
         'Return the formatted version of an Ast node, or list of Ast nodes.'
         if isinstance(node,(list, tuple)):
-            return ','.join(self.visit(z) for z in node)
+            return ', '.join(self.visit(z) for z in node)
         else:
             if node is None:
                 return 'None'
@@ -69,12 +84,14 @@ class CoffeeScriptFormatter(object):
                 method=getattr(self,method_name)
                 s=method(node)
                 assert type(s)==type('abc'), (node, type(s))                return s
+
     def do_ClassDef(self,node):
         result=[]
         name=node.name
         bases=self.visit(z) for z in node.bases if node.bases else [] 
+        result.append('\n\n')
         if bases:
-            result.append(self.indent('class %s(%s):\n'%(name, ','.join(bases))))
+            result.append(self.indent('class %s(%s):\n'%(name, ', '.join(bases))))
         else:
             result.append(self.indent('class %s:\n'%name))
         for z in node.body:
@@ -82,53 +99,65 @@ class CoffeeScriptFormatter(object):
             result.append(self.visit(z))
             self.level-=1
         return ''.join(result)
+
     def do_FunctionDef(self,node):
         'Format a FunctionDef node.'
         result=[]
         if node.decorator_list:
             for z in node.decorator_list:
-                result.append('@%s\n'%self.visit(z))
+                result.append(self.indent('@%s\n'%self.visit(z)))
         name=node.name
         args=self.visit(node.args) if node.args else '' 
+        result.append('\n')
         result.append(self.indent('def %s(%s):\n'%(name, args)))
         for z in node.body:
             self.level+=1
             result.append(self.visit(z))
             self.level-=1
         return ''.join(result)
+
     def do_Interactive(self,node):
         for z in node.body:
             self.visit(z)
+
     def do_Module(self,node):
-        assert 'body' in node._fields        result=''.join(self.visit(z) for z in node.body)
-        return result
+        return ''.join(self.visit(z) for z in node.body)
+
     def do_Lambda(self,node):
         return self.indent('lambda %s: %s'%(self.visit(node.args), self.visit(node.body)))
+
     def do_Expr(self,node):
         'An outer expression: must be indented.'
         return self.indent('%s\n'%self.visit(node.value))
+
     def do_Expression(self,node):
         'An inner expression: do not indent.'
         return '%s\n'%self.visit(node.body)
+
     def do_GeneratorExp(self,node):
         elt=self.visit(node.elt) or ''
         gens=self.visit(z) for z in node.generators
         gens=z if z else '<**None**>'  for z in gens
         return '<gen %s for %s>'%(elt, ','.join(gens))
+
     def do_AugLoad(self,node):
         return 'AugLoad'
+
     def do_Del(self,node):
         return 'Del'
+
     def do_Load(self,node):
         return 'Load'
+
     def do_Param(self,node):
         return 'Param'
+
     def do_Store(self,node):
         return 'Store'
+
     def do_arguments(self,node):
         'Format the arguments node.'
-        kind=self.kind(node)
-        assert kind=='arguments', kind        args=self.visit(z) for z in node.args
+        assert isinstance(node,ast.arguments)        args=self.visit(z) for z in node.args
         defaults=self.visit(z) for z in node.defaults
         args2=[]
         n_plain=len(args)-len(defaults)
@@ -144,12 +173,16 @@ class CoffeeScriptFormatter(object):
         if name:
             args2.append('**'+name)
         return ','.join(args2)
+
     def do_arg(self,node):
         return node.arg
+
     def do_Attribute(self,node):
         return '%s.%s'%(self.visit(node.value), node.attr)
+
     def do_Bytes(self,node):
         return str(node.s)
+
     def do_Call(self,node):
         func=self.visit(node.func)
         args=self.visit(z) for z in node.args
@@ -161,9 +194,11 @@ class CoffeeScriptFormatter(object):
             args.append('**%s'%self.visit(node.kwargs))
         args=z for z in args if z
         return '%s(%s)'%(func, ','.join(args))
+
     def do_keyword(self,node):
         value=self.visit(node.value)
         return '%s=%s'%(node.arg, value)
+
     def do_comprehension(self,node):
         result=[]
         name=self.visit(node.target)
@@ -173,6 +208,7 @@ class CoffeeScriptFormatter(object):
         if ifs:
             result.append(' if %s'%''.join(ifs))
         return ''.join(result)
+
     def do_Dict(self,node):
         result=[]
         keys=self.visit(z) for z in node.keys
@@ -187,30 +223,40 @@ class CoffeeScriptFormatter(object):
         else:
             print('Error: f.Dict: len(keys) != len(values)\nkeys: %s\nvals: %s'%(repr(keys), repr(values)),nl=True)
         return ''.join(result)
+
     def do_Ellipsis(self,node):
         return '...'
+
     def do_ExtSlice(self,node):
         return ':'.join(self.visit(z) for z in node.dims)
+
     def do_Index(self,node):
         return self.visit(node.value)
+
     def do_List(self,node):
         elts=self.visit(z) for z in node.elts
         elst=z for z in elts if z
         return '[%s]'%','.join(elts)
+
     def do_ListComp(self,node):
         elt=self.visit(node.elt)
         gens=self.visit(z) for z in node.generators
         gens=z if z else '<**None**>'  for z in gens
         return '%s for %s'%(elt, ''.join(gens))
+
     def do_Name(self,node):
         return node.id
+
     def do_NameConstant(self,node):
         s=repr(node.value)
         return 'bool' if s in ('True', 'False') else s
+
     def do_Num(self,node):
         return repr(node.n)
+
     def do_Repr(self,node):
         return 'repr(%s)'%self.visit(node.value)
+
     def do_Slice(self,node):
         (lower, upper, step)=('', '', '')
         if getattr(node,'lower',None) is not None:
@@ -223,22 +269,28 @@ class CoffeeScriptFormatter(object):
             return '%s:%s:%s'%(lower, upper, step)
         else:
             return '%s:%s'%(lower, upper)
+
     def do_Str(self,node):
         'This represents a string constant.'
         return repr(node.s)
+
     def do_Subscript(self,node):
         value=self.visit(node.value)
         the_slice=self.visit(node.slice)
         return '%s[%s]'%(value, the_slice)
+
     def do_Tuple(self,node):
         elts=self.visit(z) for z in node.elts
         return '(%s)'%', '.join(elts)
+
     def do_BinOp(self,node):
         return '%s%s%s'%(self.visit(node.left), self.op_name(node.op), self.visit(node.right))
+
     def do_BoolOp(self,node):
         op_name=self.op_name(node.op)
         values=self.visit(z) for z in node.values
         return op_name.join(values)
+
     def do_Compare(self,node):
         result=[]
         lt=self.visit(node.left)
@@ -251,10 +303,13 @@ class CoffeeScriptFormatter(object):
         else:
             print(('can not happen: ops', repr(ops), 'comparators', repr(comps)),nl=True)
         return ''.join(result)
+
     def do_UnaryOp(self,node):
         return '%s%s'%(self.op_name(node.op), self.visit(node.operand))
+
     def do_IfExp(self,node):
         return '%s if %s else %s '%(self.visit(node.body), self.visit(node.test), self.visit(node.orelse))
+
     def do_Assert(self,node):
         test=self.visit(node.test)
         if getattr(node,'msg',None):
@@ -262,17 +317,23 @@ class CoffeeScriptFormatter(object):
             return self.indent('assert %s, %s'%(test, message))
         else:
             return self.indent('assert %s'%test)
+
     def do_Assign(self,node):
         return self.indent('%s=%s\n'%('='.join(self.visit(z) for z in node.targets), self.visit(node.value)))
+
     def do_AugAssign(self,node):
         return self.indent('%s%s=%s\n'%(self.visit(node.target), self.op_name(node.op), self.visit(node.value)))
+
     def do_Break(self,node):
         return self.indent('break\n')
+
     def do_Continue(self,node):
         return self.indent('continue\n')
+
     def do_Delete(self,node):
         targets=self.visit(z) for z in node.targets
         return self.indent('del %s\n'%','.join(targets))
+
     def do_ExceptHandler(self,node):
         result=[]
         result.append(self.indent('except'))
@@ -289,6 +350,7 @@ class CoffeeScriptFormatter(object):
             result.append(self.visit(z))
             self.level-=1
         return ''.join(result)
+
     def do_Exec(self,node):
         body=self.visit(node.body)
         args=[]
@@ -300,6 +362,7 @@ class CoffeeScriptFormatter(object):
             return self.indent('exec %s in %s\n'%(body, ','.join(args)))
         else:
             return self.indent('exec %s\n'%body)
+
     def do_For(self,node):
         result=[]
         result.append(self.indent('for %s in %s:\n'%(self.visit(node.target), self.visit(node.iter))))
@@ -314,8 +377,10 @@ class CoffeeScriptFormatter(object):
                 result.append(self.visit(z))
                 self.level-=1
         return ''.join(result)
+
     def do_Global(self,node):
         return self.indent('global %s\n'%','.join(node.names))
+
     def do_If(self,node):
         result=[]
         result.append(self.indent('if %s:\n'%self.visit(node.test)))
@@ -330,6 +395,7 @@ class CoffeeScriptFormatter(object):
                 result.append(self.visit(z))
                 self.level-=1
         return ''.join(result)
+
     def do_Import(self,node):
         names=[]
         for (fn, asname) in self.get_import_names(node):
@@ -338,16 +404,18 @@ class CoffeeScriptFormatter(object):
             else:
                 names.append(fn)
         return self.indent('import %s\n'%','.join(names))
+
     def get_import_names(self,node):
         'Return a list of the the full file names in the import statement.'
         result=[]
         for ast2 in node.names:
-            if self.kind(ast2)=='alias':
+            if isinstance(ast2,ast.alias):
                 data=(ast2.name, ast2.asname)
                 result.append(data)
             else:
-                print(('unsupported kind in Import.names list', self.kind(ast2)),nl=True)
+                print('unsupported kind in Import.names list: %s'%ast2.__class__.__name,nl=True)
         return result
+
     def do_ImportFrom(self,node):
         names=[]
         for (fn, asname) in self.get_import_names(node):
@@ -356,8 +424,10 @@ class CoffeeScriptFormatter(object):
             else:
                 names.append(fn)
         return self.indent('from %s import %s\n'%(node.module, ','.join(names)))
+
     def do_Pass(self,node):
         return self.indent('pass\n')
+
     def do_Print(self,node):
         vals=[]
         for z in node.values:
@@ -367,6 +437,7 @@ class CoffeeScriptFormatter(object):
         if getattr(node,'nl',None):
             vals.append('nl=%s'%node.nl)
         return self.indent('print(%s)\n'%','.join(vals))
+
     def do_Raise(self,node):
         args=[]
         for attr in ('type', 'inst', 'tback'):
@@ -376,11 +447,13 @@ class CoffeeScriptFormatter(object):
             return self.indent('raise %s\n'%','.join(args))
         else:
             return self.indent('raise\n')
+
     def do_Return(self,node):
         if node.value:
             return self.indent('return %s\n'%self.visit(node.value).strip())
         else:
             return self.indent('return\n')
+
     def do_TryExcept(self,node):
         result=[]
         result.append(self.indent('try:\n'))
@@ -398,6 +471,7 @@ class CoffeeScriptFormatter(object):
                 result.append(self.visit(z))
                 self.level-=1
         return ''.join(result)
+
     def do_TryFinally(self,node):
         result=[]
         result.append(self.indent('try:\n'))
@@ -411,6 +485,7 @@ class CoffeeScriptFormatter(object):
             result.append(self.visit(z))
             self.level-=1
         return ''.join(result)
+
     def do_While(self,node):
         result=[]
         result.append(self.indent('while %s:\n'%self.visit(node.test)))
@@ -425,6 +500,7 @@ class CoffeeScriptFormatter(object):
                 result.append(self.visit(z))
                 self.level-=1
         return ''.join(result)
+
     def do_With(self,node):
         result=[]
         result.append(self.indent('with '))
@@ -445,44 +521,60 @@ class CoffeeScriptFormatter(object):
             self.level-=1
         result.append('\n')
         return ''.join(result)
+
     def do_Yield(self,node):
         if getattr(node,'value',None):
             return self.indent('yield %s\n'%self.visit(node.value))
         else:
             return self.indent('yield\n')
-    def kind(self,node):
-        "Return the name of node's class."
-        return node.__class__.__name__
+
     def indent(self,s):
+        'Return s, properly indented.'
         return '%s%s'%(' '*4*self.level, s)
+
     def op_name(self,node,strict=True):
         'Return the print name of an operator node.'
         d={'Add':'+', 'BitAnd':'&', 'BitOr':'|', 'BitXor':'^', 'Div':'/', 'FloorDiv':'//', 'LShift':'<<', 'Mod':'%', 'Mult':'*', 'Pow':'**', 'RShift':'>>', 'Sub':'-', 'And':' and ', 'Or':' or ', 'Eq':'==', 'Gt':'>', 'GtE':'>=', 'In':' in ', 'Is':' is ', 'IsNot':' is not ', 'Lt':'<', 'LtE':'<=', 'NotEq':'!=', 'NotIn':' not in ', 'AugLoad':'<AugLoad>', 'AugStore':'<AugStore>', 'Del':'<Del>', 'Load':'<Load>', 'Param':'<Param>', 'Store':'<Store>', 'Invert':'~', 'Not':' not ', 'UAdd':'+', 'USub':'-'}
-        name=d.get(self.kind(node),'<%s>'%node.__class__.__name__)
+        kind=node.__class__.__name__
+        name=d.get(kind,'<%s>'%kind)
         if strict:
-            assert name, self.kind(node)        return name
+            assert name, kind        return name
+
+
 class LeoGlobals(object):
     'A class supporting g.pdb and g.trace for compatibility with Leo.'
+
+
     class NullObject:
         '\n        An object that does nothing, and does it very well.\n        From the Python cookbook, recipe 5.23\n        '
+
         def __init__(self,*args,**keys):
             pass
+
         def __call__(self,*args,**keys):
             return self
+
         def __repr__(self):
             return 'NullObject'
+
         def __str__(self):
             return 'NullObject'
+
         def __bool__(self):
             return False
+
         def __nonzero__(self):
             return 0
+
         def __delattr__(self,attr):
             return self
+
         def __getattr__(self,attr):
             return self
+
         def __setattr__(self,attr,val):
             return self
+
     def _callerName(self,n=1,files=False):
         try:
             f1=sys._getframe(n)
@@ -498,6 +590,7 @@ class LeoGlobals(object):
             return ''
         except Exception:
             return ''
+
     def callers(self,n=4,count=0,excludeCaller=True,files=False):
         'Return a list containing the callers of the function that called g.callerList.\n\n        If the excludeCaller keyword is True (the default), g.callers is not on the list.\n\n        If the files keyword argument is True, filenames are included in the list.\n        '
         result=[]
@@ -514,10 +607,12 @@ class LeoGlobals(object):
             result=result[:count]
         sep='\n' if files else ',' 
         return sep.join(result)
+
     def cls(self):
         'Clear the screen.'
         if sys.platform.lower().startswith('win'):
             os.system('cls')
+
     def pdb(self):
         try:
             import leo.core.leoGlobals as leo_g
@@ -525,22 +620,28 @@ class LeoGlobals(object):
         except ImportError:
             import pdb
             pdb.set_trace()
+
     def shortFileName(self,fileName,n=None):
         if n is None or n<1:
             return os.path.basename(fileName)
         else:
             return '/'.join(fileName.replace('\\','/').split('/')[-n:])
+
     def splitLines(self,s):
         'Split s into lines, preserving trailing newlines.'
         return s.splitlines(True) if s else []
+
     def trace(self,*args,**keys):
         try:
             import leo.core.leoGlobals as leo_g
             leo_g.trace(caller_level=2,*args,**keys)
         except ImportError:
             print((args, keys),nl=True)
+
+
 class MakeCoffeeScriptController(object):
     'The controller class for python_to_coffeescript.py.'
+
     def __init__(self):
         'Ctor for MakeCoffeeScriptController class.'
         self.options={}
@@ -553,12 +654,14 @@ class MakeCoffeeScriptController(object):
         self.trace_visitors=False
         self.update_flag=False
         self.verbose=False
+
     def finalize(self,fn):
         'Finalize and regularize a filename.'
         fn=os.path.expanduser(fn)
         fn=os.path.abspath(fn)
         fn=os.path.normpath(fn)
         return fn
+
     def make_coffeescript_file(self,fn):
         '\n        Make a stub file in the output directory for all source files mentioned\n        in the [Source Files] section of the configuration file.\n        '
         if  not fn.endswith('.py'):
@@ -579,16 +682,19 @@ class MakeCoffeeScriptController(object):
                 t1=time.clock()
                 s=open(fn).read()
                 node=ast.parse(s,filename=fn,mode='exec')
-                s=CoffeeScriptFormatter().format(node)
+                s=CoffeeScriptFormatter(controller=self).format(node)
                 f=open(out_fn,'w')
                 self.output_time_stamp(f)
                 f.write(s)
                 f.close()
+                print('wrote: %s'%out_fn,nl=True)
             else:
                 print('output directory not not found: %s'%dir_,nl=True)
+
     def output_time_stamp(self,f):
         'Put a time-stamp in the output file f.'
         f.write('# python_to_coffeescript: %s\n'%time.strftime('%a %d %b %Y at %H:%M:%S'))
+
     def run(self):
         '\n        Make stub files for all files.\n        Do nothing if the output directory does not exist.\n        '
         if self.enable_unit_tests:
@@ -606,12 +712,14 @@ class MakeCoffeeScriptController(object):
         else:
             if  not self.enable_unit_tests:
                 print('no input files',nl=True)
+
     def run_all_unit_tests(self):
         'Run all unit tests in the python-to-coffeescript/test directory.'
         import unittest
         loader=unittest.TestLoader()
         suite=loader.discover(os.path.abspath('.'),pattern='test*.py',top_level_dir=None)
         unittest.TextTestRunner(verbosity=1).run(suite)
+
     def scan_command_line(self):
         'Set ivars from command-line arguments.'
         usage='usage: python_to_coffeescript.py [options] file1, file2, ...'
@@ -642,6 +750,7 @@ class MakeCoffeeScriptController(object):
             args=self.finalize(z) for z in args
             if args:
                 self.files=args
+
     def scan_options(self):
         'Set all configuration-related ivars.'
         trace=False
@@ -687,11 +796,13 @@ class MakeCoffeeScriptController(object):
                 for z in self.prefix_lines:
                     print(z,nl=True)
                 print('',nl=True)
+
     def create_parser(self):
         'Create a RawConfigParser and return it.'
         parser=configparser.RawConfigParser(dict_type=OrderedDict)
         parser.optionxform=str
         return parser
+
     def get_config_string(self):
         fn=self.finalize(self.config_fn)
         if os.path.exists(fn):
@@ -704,6 +815,7 @@ class MakeCoffeeScriptController(object):
         else:
             print('\nconfiguration file not found: %s'%fn,nl=True)
             return ''
+
     def init_parser(self,s):
         "Add double back-slashes to all patterns starting with '['."
         trace=False
@@ -725,7 +837,9 @@ class MakeCoffeeScriptController(object):
             g.trace(s)
         file_object=io.StringIO(s)
         self.parser.readfp(file_object)
+
     def is_section_name(self,s):
+
         def munge(s):
             return s.strip().lower().replace(' ','')
         s=s.strip()
@@ -735,8 +849,11 @@ class MakeCoffeeScriptController(object):
                 if s==munge(s2):
                     return True
         return False
+
+
 class TestClass(object):
     '\n    A class containing constructs that have caused difficulties.\n    This is in the make_stub_files directory, not the test directory.\n    '
+
     def parse_group(group):
         if len(group)>=3 and group[-2]=='as':
             del group[-2:]
@@ -747,12 +864,16 @@ class TestClass(object):
             i+=1
         assert ''.join(group[:i])=='.'*ndots, group        del group[:i]
         assert all(<gen g=='.' for g in group[1::2]>), group        return (ndots, os.sep.join(group[::2]))
+
     def return_all(self):
         return all(is_known_type(z) for z in s3.split(','))
+
     def return_array():
         return f(s[1:-1])
+
     def return_list(self,a):
         return [a]
+
     def return_two_lists(s):
         if 1:
             return aList

@@ -88,6 +88,12 @@ def truncate(s, n):
 class CoffeeScriptFormatter(object):
     '''A class to convert python sources to coffeescript sources.'''
     # pylint: disable=consider-using-enumerate
+    
+    def __init__(self, controller):
+        '''Ctor for CoffeeScriptFormatter class.'''
+        self.controller = controller
+        self.trace_visitors = controller.trace_visitors
+
 
     # Entries...
 
@@ -95,12 +101,12 @@ class CoffeeScriptFormatter(object):
         '''Format the node (or list of nodes) and its descendants.'''
         self.level = 0
         val = self.visit(node)
-        return val and val.strip() or ''
+        return val or ''
 
     def visit(self, node):
         '''Return the formatted version of an Ast node, or list of Ast nodes.'''
         if isinstance(node, (list, tuple)):
-            return ','.join([self.visit(z) for z in node])
+            return ', '.join([self.visit(z) for z in node])
         elif node is None:
             return 'None'
         else:
@@ -120,8 +126,9 @@ class CoffeeScriptFormatter(object):
         result = []
         name = node.name # Only a plain string is valid.
         bases = [self.visit(z) for z in node.bases] if node.bases else []
+        result.append('\n\n')
         if bases:
-            result.append(self.indent('class %s(%s):\n' % (name, ','.join(bases))))
+            result.append(self.indent('class %s(%s):\n' % (name, ', '.join(bases))))
         else:
             result.append(self.indent('class %s:\n' % name))
         for z in node.body:
@@ -137,9 +144,10 @@ class CoffeeScriptFormatter(object):
         result = []
         if node.decorator_list:
             for z in node.decorator_list:
-                result.append('@%s\n' % self.visit(z))
+                result.append(self.indent('@%s\n' % self.visit(z)))
         name = node.name # Only a plain string is valid.
         args = self.visit(node.args) if node.args else ''
+        result.append('\n')
         result.append(self.indent('def %s(%s):\n' % (name, args)))
         for z in node.body:
             self.level += 1
@@ -152,9 +160,8 @@ class CoffeeScriptFormatter(object):
             self.visit(z)
 
     def do_Module(self, node):
-        assert 'body' in node._fields
-        result = ''.join([self.visit(z) for z in node.body])
-        return result # 'module:\n%s' % (result)
+
+        return''.join([self.visit(z) for z in node.body])
 
     def do_Lambda(self, node):
         return self.indent('lambda %s: %s' % (
@@ -198,8 +205,9 @@ class CoffeeScriptFormatter(object):
 
     def do_arguments(self, node):
         '''Format the arguments node.'''
-        kind = self.kind(node)
-        assert kind == 'arguments', kind
+        assert isinstance(node, ast.arguments)
+        ### kind = self.kind(node)
+        ### assert kind == 'arguments', kind
         args = [self.visit(z) for z in node.args]
         defaults = [self.visit(z) for z in node.defaults]
         # Assign default values to the last args.
@@ -501,11 +509,14 @@ class CoffeeScriptFormatter(object):
         '''Return a list of the the full file names in the import statement.'''
         result = []
         for ast2 in node.names:
-            if self.kind(ast2) == 'alias':
+            # if self.kind(ast2) == 'alias':
+            if isinstance(ast2, ast.alias):
                 data = ast2.name, ast2.asname
                 result.append(data)
             else:
-                print('unsupported kind in Import.names list', self.kind(ast2))
+                print('unsupported kind in Import.names list: %s' % (
+                    ast2.__class__.__name))
+                    ### self.kind(ast2))
         return result
 
     def do_ImportFrom(self, node):
@@ -631,11 +642,8 @@ class CoffeeScriptFormatter(object):
 
     # Utils...
 
-    def kind(self, node):
-        '''Return the name of node's class.'''
-        return node.__class__.__name__
-
     def indent(self, s):
+        '''Return s, properly indented.'''
         return '%s%s' % (' ' * 4 * self.level, s)
 
     def op_name (self,node,strict=True):
@@ -681,8 +689,9 @@ class CoffeeScriptFormatter(object):
             'UAdd':     '+',
             'USub':     '-',
         }
-        name = d.get(self.kind(node),'<%s>' % node.__class__.__name__)
-        if strict: assert name,self.kind(node)
+        kind = node.__class__.__name__
+        name = d.get(kind,'<%s>' % kind)
+        if strict: assert name, kind
         return name
 
 
@@ -841,11 +850,12 @@ class MakeCoffeeScriptController(object):
             t1 = time.clock()
             s = open(fn).read()
             node = ast.parse(s,filename=fn,mode='exec')
-            s = CoffeeScriptFormatter().format(node)
+            s = CoffeeScriptFormatter(controller=self).format(node)
             f = open(out_fn, 'w')
             self.output_time_stamp(f)
             f.write(s)
             f.close()
+            print('wrote: %s' % out_fn)
         else:
             print('output directory not not found: %s' % dir_)
 
@@ -1083,6 +1093,7 @@ class TestClass(object):
             return aList
         else:
             return list(self.regex.finditer(s))
+
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
     main()

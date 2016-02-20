@@ -141,6 +141,7 @@
 <v t="ekr.20160220050433.132"><vh>msf.make_patterns_dict</vh></v>
 <v t="ekr.20160220050433.133"><vh>msf.scan_patterns</vh></v>
 </v>
+<v t="ekr.20160220050433.81"><vh>cf.kind</vh></v>
 </v>
 </v>
 <v t="ekr.20160220050053.2"><vh>@clean README.md</vh></v>
@@ -156,83 +157,82 @@
 <v t="ekr.20160220050433.2"><vh> &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050745.1"><vh> &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.14"><vh>class CoffeeScriptFormatter</vh>
-<v t="ekr.20160220050433.15"><vh> f.Entries</vh>
-<v t="ekr.20160220050433.16"><vh>f.format</vh></v>
-<v t="ekr.20160220050433.17"><vh>f.visit</vh></v>
+<v t="ekr.20160220050433.15"><vh> cf.Entries</vh>
+<v t="ekr.20160220050433.16"><vh>cf.format</vh></v>
+<v t="ekr.20160220050433.17"><vh>cf.visit</vh></v>
 </v>
-<v t="ekr.20160220050433.18"><vh>f.Contexts</vh>
-<v t="ekr.20160220050433.19"><vh>f.ClassDef</vh></v>
-<v t="ekr.20160220050433.20"><vh>f.FunctionDef</vh></v>
-<v t="ekr.20160220050433.21"><vh>f.Interactive</vh></v>
-<v t="ekr.20160220050433.22"><vh>f.Module</vh></v>
-<v t="ekr.20160220050433.23"><vh>f.Lambda</vh></v>
+<v t="ekr.20160220050433.18"><vh>cf.Contexts</vh>
+<v t="ekr.20160220050433.19"><vh>cf.ClassDef</vh></v>
+<v t="ekr.20160220050433.20"><vh>cf.FunctionDef</vh></v>
+<v t="ekr.20160220050433.21"><vh>cf.Interactive</vh></v>
+<v t="ekr.20160220050433.22"><vh>cf.Module</vh></v>
+<v t="ekr.20160220050433.23"><vh>cf.Lambda</vh></v>
 </v>
-<v t="ekr.20160220050433.24"><vh>f.Expressions</vh>
-<v t="ekr.20160220050433.25"><vh>f.Expr</vh></v>
-<v t="ekr.20160220050433.26"><vh>f.Expression</vh></v>
-<v t="ekr.20160220050433.27"><vh>f.GeneratorExp</vh></v>
-<v t="ekr.20160220050433.28"><vh>f.ctx nodes</vh></v>
+<v t="ekr.20160220050433.24"><vh>cf.Expressions</vh>
+<v t="ekr.20160220050433.25"><vh>cf.Expr</vh></v>
+<v t="ekr.20160220050433.26"><vh>cf.Expression</vh></v>
+<v t="ekr.20160220050433.27"><vh>cf.GeneratorExp</vh></v>
+<v t="ekr.20160220050433.28"><vh>cf.ctx nodes</vh></v>
 </v>
-<v t="ekr.20160220050433.29"><vh>f.Operands</vh>
-<v t="ekr.20160220050433.30"><vh>f.arguments</vh></v>
-<v t="ekr.20160220050433.31"><vh>f.arg (Python3 only)</vh></v>
-<v t="ekr.20160220050433.32"><vh>f.Attribute</vh></v>
-<v t="ekr.20160220050433.33"><vh>f.Bytes</vh></v>
-<v t="ekr.20160220050433.34"><vh>f.Call &amp; f.keyword</vh>
-<v t="ekr.20160220050433.35"><vh>f.keyword</vh></v>
+<v t="ekr.20160220050433.29"><vh>cf.Operands</vh>
+<v t="ekr.20160220050433.30"><vh>cf.arguments</vh></v>
+<v t="ekr.20160220050433.31"><vh>cf.arg (Python3 only)</vh></v>
+<v t="ekr.20160220050433.32"><vh>cf.Attribute</vh></v>
+<v t="ekr.20160220050433.33"><vh>cf.Bytes</vh></v>
+<v t="ekr.20160220050433.34"><vh>cf.Call &amp; cf.keyword</vh>
+<v t="ekr.20160220050433.35"><vh>cf.keyword</vh></v>
 </v>
-<v t="ekr.20160220050433.36"><vh>f.comprehension</vh></v>
-<v t="ekr.20160220050433.37"><vh>f.Dict</vh></v>
-<v t="ekr.20160220050433.38"><vh>f.Ellipsis</vh></v>
-<v t="ekr.20160220050433.39"><vh>f.ExtSlice</vh></v>
-<v t="ekr.20160220050433.40"><vh>f.Index</vh></v>
-<v t="ekr.20160220050433.41"><vh>f.List</vh></v>
-<v t="ekr.20160220050433.42"><vh>f.ListComp</vh></v>
-<v t="ekr.20160220050433.43"><vh>f.Name &amp; f.NameConstant</vh></v>
-<v t="ekr.20160220050433.44"><vh>f.Num</vh></v>
-<v t="ekr.20160220050433.45"><vh>f.Repr</vh></v>
-<v t="ekr.20160220050433.46"><vh>f.Slice</vh></v>
-<v t="ekr.20160220050433.47"><vh>f.Str</vh></v>
-<v t="ekr.20160220050433.48"><vh>f.Subscript</vh></v>
-<v t="ekr.20160220050433.49"><vh>f.Tuple</vh></v>
+<v t="ekr.20160220050433.36"><vh>cf.comprehension</vh></v>
+<v t="ekr.20160220050433.37"><vh>cf.Dict</vh></v>
+<v t="ekr.20160220050433.38"><vh>cf.Ellipsis</vh></v>
+<v t="ekr.20160220050433.39"><vh>cf.ExtSlice</vh></v>
+<v t="ekr.20160220050433.40"><vh>cf.Index</vh></v>
+<v t="ekr.20160220050433.41"><vh>cf.List</vh></v>
+<v t="ekr.20160220050433.42"><vh>cf.ListComp</vh></v>
+<v t="ekr.20160220050433.43"><vh>cf.Name &amp; cf.NameConstant</vh></v>
+<v t="ekr.20160220050433.44"><vh>cf.Num</vh></v>
+<v t="ekr.20160220050433.45"><vh>cf.Repr</vh></v>
+<v t="ekr.20160220050433.46"><vh>cf.Slice</vh></v>
+<v t="ekr.20160220050433.47"><vh>cf.Str</vh></v>
+<v t="ekr.20160220050433.48"><vh>cf.Subscript</vh></v>
+<v t="ekr.20160220050433.49"><vh>cf.Tuple</vh></v>
 </v>
-<v t="ekr.20160220050433.50"><vh>f.Operators</vh>
-<v t="ekr.20160220050433.51"><vh>f.BinOp</vh></v>
-<v t="ekr.20160220050433.52"><vh>f.BoolOp</vh></v>
-<v t="ekr.20160220050433.53"><vh>f.Compare</vh></v>
-<v t="ekr.20160220050433.54"><vh>f.UnaryOp</vh></v>
-<v t="ekr.20160220050433.55"><vh>f.ifExp (ternary operator)</vh></v>
+<v t="ekr.20160220050433.50"><vh>cf.Operators</vh>
+<v t="ekr.20160220050433.51"><vh>cf.BinOp</vh></v>
+<v t="ekr.20160220050433.52"><vh>cf.BoolOp</vh></v>
+<v t="ekr.20160220050433.53"><vh>cf.Compare</vh></v>
+<v t="ekr.20160220050433.54"><vh>cf.UnaryOp</vh></v>
+<v t="ekr.20160220050433.55"><vh>cf.ifExp (ternary operator)</vh></v>
 </v>
-<v t="ekr.20160220050433.56"><vh>f.Statements</vh>
-<v t="ekr.20160220050433.57"><vh>f.Assert</vh></v>
-<v t="ekr.20160220050433.58"><vh>f.Assign</vh></v>
-<v t="ekr.20160220050433.59"><vh>f.AugAssign</vh></v>
-<v t="ekr.20160220050433.60"><vh>f.Break</vh></v>
-<v t="ekr.20160220050433.61"><vh>f.Continue</vh></v>
-<v t="ekr.20160220050433.62"><vh>f.Delete</vh></v>
-<v t="ekr.20160220050433.63"><vh>f.ExceptHandler</vh></v>
-<v t="ekr.20160220050433.64"><vh>f.Exec</vh></v>
-<v t="ekr.20160220050433.65"><vh>f.For</vh></v>
-<v t="ekr.20160220050433.66"><vh>f.Global</vh></v>
-<v t="ekr.20160220050433.67"><vh>f.If</vh></v>
-<v t="ekr.20160220050433.68"><vh>f.Import &amp; helper</vh>
-<v t="ekr.20160220050433.69"><vh>f.get_import_names</vh></v>
+<v t="ekr.20160220050433.56"><vh>cf.Statements</vh>
+<v t="ekr.20160220050433.57"><vh>cf.Assert</vh></v>
+<v t="ekr.20160220050433.58"><vh>cf.Assign</vh></v>
+<v t="ekr.20160220050433.59"><vh>cf.AugAssign</vh></v>
+<v t="ekr.20160220050433.60"><vh>cf.Break</vh></v>
+<v t="ekr.20160220050433.61"><vh>cf.Continue</vh></v>
+<v t="ekr.20160220050433.62"><vh>cf.Delete</vh></v>
+<v t="ekr.20160220050433.63"><vh>cf.ExceptHandler</vh></v>
+<v t="ekr.20160220050433.64"><vh>cf.Exec</vh></v>
+<v t="ekr.20160220050433.65"><vh>cf.For</vh></v>
+<v t="ekr.20160220050433.66"><vh>cf.Global</vh></v>
+<v t="ekr.20160220050433.67"><vh>cf.If</vh></v>
+<v t="ekr.20160220050433.68"><vh>cf.Import &amp; helper</vh>
+<v t="ekr.20160220050433.69"><vh>cf.get_import_names</vh></v>
 </v>
-<v t="ekr.20160220050433.70"><vh>f.ImportFrom</vh></v>
-<v t="ekr.20160220050433.71"><vh>f.Pass</vh></v>
-<v t="ekr.20160220050433.72"><vh>f.Print</vh></v>
-<v t="ekr.20160220050433.73"><vh>f.Raise</vh></v>
-<v t="ekr.20160220050433.74"><vh>f.Return</vh></v>
-<v t="ekr.20160220050433.75"><vh>f.TryExcept</vh></v>
-<v t="ekr.20160220050433.76"><vh>f.TryFinally</vh></v>
-<v t="ekr.20160220050433.77"><vh>f.While</vh></v>
-<v t="ekr.20160220050433.78"><vh>f.With</vh></v>
-<v t="ekr.20160220050433.79"><vh>f.Yield</vh></v>
+<v t="ekr.20160220050433.70"><vh>cf.ImportFrom</vh></v>
+<v t="ekr.20160220050433.71"><vh>cf.Pass</vh></v>
+<v t="ekr.20160220050433.72"><vh>cf.Print</vh></v>
+<v t="ekr.20160220050433.73"><vh>cf.Raise</vh></v>
+<v t="ekr.20160220050433.74"><vh>cf.Return</vh></v>
+<v t="ekr.20160220050433.75"><vh>cf.TryExcept</vh></v>
+<v t="ekr.20160220050433.76"><vh>cf.TryFinally</vh></v>
+<v t="ekr.20160220050433.77"><vh>cf.While</vh></v>
+<v t="ekr.20160220050433.78"><vh>cf.With</vh></v>
+<v t="ekr.20160220050433.79"><vh>cf.Yield</vh></v>
 </v>
-<v t="ekr.20160220050433.80"><vh>f.Utils</vh>
-<v t="ekr.20160220050433.81"><vh>f.kind</vh></v>
-<v t="ekr.20160220050433.82"><vh>f.indent</vh></v>
-<v t="ekr.20160220050433.83"><vh>f.op_name</vh></v>
+<v t="ekr.20160220050433.80"><vh>cf.Utils</vh>
+<v t="ekr.20160220050433.82"><vh>cf.indent</vh></v>
+<v t="ekr.20160220050433.83"><vh>cf.op_name</vh></v>
 </v>
 </v>
 <v t="ekr.20160220050433.86"><vh>class LeoGlobals</vh>
@@ -268,9 +268,8 @@
 <v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
 </v>
 </v>
-<v t="ekr.20160220050433.118"></v>
-<v t="ekr.20160220050433.121"></v>
 <v t="ekr.20160220061440.1"><vh>To do</vh></v>
+<v t="ekr.20160220050433.14"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -292,6 +291,7 @@ Written by Edward K. Ream.
 &lt;&lt; license &gt;&gt;
 &lt;&lt; imports &gt;&gt;
 @others
+
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
     main()
@@ -790,11 +790,12 @@ def make_coffeescript_file(self, fn):
         t1 = time.clock()
         s = open(fn).read()
         node = ast.parse(s,filename=fn,mode='exec')
-        s = CoffeeScriptFormatter().format(node)
+        s = CoffeeScriptFormatter(controller=self).format(node)
         f = open(out_fn, 'w')
         self.output_time_stamp(f)
         f.write(s)
         f.close()
+        print('wrote: %s' % out_fn)
     else:
         print('output directory not not found: %s' % dir_)</t>
 <t tx="ekr.20160220050433.122">
@@ -1201,6 +1202,12 @@ def parents(self):
 class CoffeeScriptFormatter(object):
     '''A class to convert python sources to coffeescript sources.'''
     # pylint: disable=consider-using-enumerate
+    
+    def __init__(self, controller):
+        '''Ctor for CoffeeScriptFormatter class.'''
+        self.controller = controller
+        self.trace_visitors = controller.trace_visitors
+
     @others
 </t>
 <t tx="ekr.20160220050433.140">
@@ -1488,7 +1495,7 @@ def format(self, node):
     '''Format the node (or list of nodes) and its descendants.'''
     self.level = 0
     val = self.visit(node)
-    return val and val.strip() or ''
+    return val or ''
 </t>
 <t tx="ekr.20160220050433.160">
 # UnaryOp(unaryop op, expr operand)
@@ -1680,7 +1687,7 @@ def update(self, fn, new_root):
 def visit(self, node):
     '''Return the formatted version of an Ast node, or list of Ast nodes.'''
     if isinstance(node, (list, tuple)):
-        return ','.join([self.visit(z) for z in node])
+        return ', '.join([self.visit(z) for z in node])
     elif node is None:
         return 'None'
     else:
@@ -2137,8 +2144,9 @@ def do_ClassDef(self, node):
     result = []
     name = node.name # Only a plain string is valid.
     bases = [self.visit(z) for z in node.bases] if node.bases else []
+    result.append('\n\n')
     if bases:
-        result.append(self.indent('class %s(%s):\n' % (name, ','.join(bases))))
+        result.append(self.indent('class %s(%s):\n' % (name, ', '.join(bases))))
     else:
         result.append(self.indent('class %s:\n' % name))
     for z in node.body:
@@ -2191,9 +2199,10 @@ def do_FunctionDef(self, node):
     result = []
     if node.decorator_list:
         for z in node.decorator_list:
-            result.append('@%s\n' % self.visit(z))
+            result.append(self.indent('@%s\n' % self.visit(z)))
     name = node.name # Only a plain string is valid.
     args = self.visit(node.args) if node.args else ''
+    result.append('\n')
     result.append(self.indent('def %s(%s):\n' % (name, args)))
     for z in node.body:
         self.level += 1
@@ -2208,9 +2217,8 @@ def do_Interactive(self, node):
 </t>
 <t tx="ekr.20160220050433.22">
 def do_Module(self, node):
-    assert 'body' in node._fields
-    result = ''.join([self.visit(z) for z in node.body])
-    return result # 'module:\n%s' % (result)
+
+    return''.join([self.visit(z) for z in node.body])
 </t>
 <t tx="ekr.20160220050433.23">
 def do_Lambda(self, node):
@@ -2263,8 +2271,9 @@ def do_Store(self, node):
 
 def do_arguments(self, node):
     '''Format the arguments node.'''
-    kind = self.kind(node)
-    assert kind == 'arguments', kind
+    assert isinstance(node, ast.arguments)
+    ### kind = self.kind(node)
+    ### assert kind == 'arguments', kind
     args = [self.visit(z) for z in node.args]
     defaults = [self.visit(z) for z in node.defaults]
     # Assign default values to the last args.
@@ -2635,11 +2644,14 @@ def get_import_names(self, node):
     '''Return a list of the the full file names in the import statement.'''
     result = []
     for ast2 in node.names:
-        if self.kind(ast2) == 'alias':
+        # if self.kind(ast2) == 'alias':
+        if isinstance(ast2, ast.alias):
             data = ast2.name, ast2.asname
             result.append(data)
         else:
-            print('unsupported kind in Import.names list', self.kind(ast2))
+            print('unsupported kind in Import.names list: %s' % (
+                ast2.__class__.__name))
+                ### self.kind(ast2))
     return result
 </t>
 <t tx="ekr.20160220050433.7">
@@ -2792,6 +2804,7 @@ def kind(self, node):
 </t>
 <t tx="ekr.20160220050433.82">
 def indent(self, s):
+    '''Return s, properly indented.'''
     return '%s%s' % (' ' * 4 * self.level, s)
 </t>
 <t tx="ekr.20160220050433.83">
@@ -2838,8 +2851,9 @@ def op_name (self,node,strict=True):
         'UAdd':     '+',
         'USub':     '-',
     }
-    name = d.get(self.kind(node),'&lt;%s&gt;' % node.__class__.__name__)
-    if strict: assert name,self.kind(node)
+    kind = node.__class__.__name__
+    name = d.get(kind,'&lt;%s&gt;' % kind)
+    if strict: assert name, kind
     return name
 </t>
 <t tx="ekr.20160220050433.84">
