@@ -55,8 +55,6 @@ def main():
     controller.run()
     print('done')
 
-# Top-level functions
-
 
 def dump(title, s=None):
     if s:
@@ -366,6 +364,7 @@ class CoffeeScriptTokenizer:
         tok = self.OutputToken(kind, value)
         self.code_list.append(tok)
 
+
     # def arg_end(self):
         # '''Add a token indicating the end of an argument list.'''
         # self.add_token('arg-end')
@@ -373,7 +372,6 @@ class CoffeeScriptTokenizer:
     # def arg_start(self):
         # '''Add a token indicating the start of an argument list.'''
         # self.add_token('arg-start')
-
 
     def backslash(self):
         '''Add a backslash token and clear .backslash_seen'''
@@ -816,7 +814,8 @@ class LeoGlobals(object):
         except ImportError:
             print(args, keys)
 
-    if isPython3: # g.not defined yet.
+
+    if isPython3:
 
         def u(self, s):
             return s

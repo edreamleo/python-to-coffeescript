@@ -1145,9 +1145,7 @@ def get_import_names(self, node):
         result.append(data)
     return result
 </t>
-<t tx="ekr.20160220050433.7"># Top-level functions
-
-</t>
+<t tx="ekr.20160220050433.7"></t>
 <t tx="ekr.20160220050433.70">
 def do_ImportFrom(self, node):
     names = []
@@ -2219,14 +2217,14 @@ def add_token(self, kind, value=''):
     self.code_list.append(tok)
 
 </t>
-<t tx="ekr.20160220103223.21"># def arg_end(self):
+<t tx="ekr.20160220103223.21">
+# def arg_end(self):
     # '''Add a token indicating the end of an argument list.'''
     # self.add_token('arg-end')
 
 # def arg_start(self):
     # '''Add a token indicating the start of an argument list.'''
     # self.add_token('arg-start')
-
 </t>
 <t tx="ekr.20160220103223.22">
 def backslash(self):
@@ -2655,7 +2653,8 @@ def toUnicode(self, s, encoding='utf-8', reportErrors=False):
     return s
 
 </t>
-<t tx="ekr.20160220104732.1">if isPython3: # g.not defined yet.
+<t tx="ekr.20160220104732.1">
+if isPython3:
 
     def u(self, s):
         return s
