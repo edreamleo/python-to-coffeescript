@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sat 20 Feb 2016 at 11:15:36
+# python_to_coffeescript: Sat 20 Feb 2016 at 11:26:29
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -54,6 +54,7 @@ def main():
     controller.scan_options()
     controller.run()
     print('done')
+
 # Top-level functions
 
 def dump(title, s=None):
@@ -337,9 +338,11 @@ class CoffeeScriptTokenizer:
             # g.trace(kind,repr(value),g.callers())
         tok = self.OutputToken(kind, value)
         self.code_list.append(tok)
+
     # def arg_end(self):
         # '''Add a token indicating the end of an argument list.'''
         # self.add_token('arg-end')
+
     # def arg_start(self):
         # '''Add a token indicating the start of an argument list.'''
         # self.add_token('arg-start')
@@ -671,6 +674,7 @@ class LeoGlobals(object):
             return ('\t' * tabs) + (' ' * blanks)
         else: # Negative tab width always gets converted to blanks.
             return (' ' * width)
+
     # Returns optimized whitespace corresponding to width with the indicated tab_width.
 
     def computeLeadingWhitespaceWidth(self, s, tab_width):
@@ -777,27 +781,12 @@ class MakeCoffeeScriptController(object):
         self.enable_unit_tests = False
         self.files = [] # May also be set in the config file.
         self.section_names = ('Global',)
-            # 'Def Name Patterns', 'General Patterns')
         # Ivars set in the config file...
-        ### self.output_fn = None
         self.output_directory = self.finalize('.')
         self.overwrite = False
         self.trace_visitors = False
         self.update_flag = False
         self.verbose = False # Trace config arguments.
-        ###
-        # self.prefix_lines = []
-        # self.trace_matches = False
-        # self.trace_patterns = False
-        # self.trace_reduce = False
-        # self.warn = False
-        # Pattern lists, set by config sections...
-        # self.def_patterns = [] # [Def Name Patterns]
-        # self.general_patterns = [] # [General Patterns]
-        # self.names_dict = {}
-        # self.op_name_dict = self.make_op_name_dict()
-        # self.patterns_dict = {}
-        # self.regex_patterns = []
 
     def finalize(self, fn):
         '''Finalize and regularize a filename.'''
