@@ -132,8 +132,8 @@
 </v>
 <v t="ekr.20160220050053.2"><vh>@clean README.md</vh></v>
 <v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
-<v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
+<v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.11"><vh>  main</vh></v>
 <v t="ekr.20160220050433.7"><vh>  utility functions</vh>
 <v t="ekr.20160220050433.8"><vh>dump</vh></v>
@@ -243,6 +243,7 @@ Written by Edward K. Ream.
 &lt;&lt; license &gt;&gt;
 &lt;&lt; imports &gt;&gt;
 isPython3 = sys.version_info &gt;= (3, 0, 0)
+
 @others
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
@@ -255,6 +256,7 @@ def dump_list(title, aList):
     for z in aList:
         print(z)
     print('')
+
 </t>
 <t tx="ekr.20160220050433.11">
 def main():
@@ -268,11 +270,13 @@ def main():
     controller.scan_options()
     controller.run()
     print('done')
+
 </t>
 <t tx="ekr.20160220050433.118">
 
 class MakeCoffeeScriptController(object):
     '''The controller class for python_to_coffeescript.py.'''
+
     @others
 </t>
 <t tx="ekr.20160220050433.119">
@@ -290,6 +294,7 @@ def __init__(self):
     self.trace_visitors = False
     self.update_flag = False
     self.verbose = False # Trace config arguments.
+
 </t>
 <t tx="ekr.20160220050433.12">
 def pdb(self):
@@ -300,6 +305,7 @@ def pdb(self):
     except ImportError:
         import pdb
         pdb.set_trace()
+
 </t>
 <t tx="ekr.20160220050433.120">
 def finalize(self, fn):
@@ -308,6 +314,7 @@ def finalize(self, fn):
     fn = os.path.abspath(fn)
     fn = os.path.normpath(fn)
     return fn
+
 </t>
 <t tx="ekr.20160220050433.121">
 def make_coffeescript_file(self, fn):
@@ -341,6 +348,7 @@ def make_coffeescript_file(self, fn):
         print('wrote: %s' % out_fn)
     else:
         print('output directory not not found: %s' % dir_)
+
 </t>
 <t tx="ekr.20160220050433.122">
 def run(self):
@@ -362,6 +370,7 @@ def run(self):
             print('no output directory')
     elif not self.enable_unit_tests:
         print('no input files')
+
 </t>
 <t tx="ekr.20160220050433.123">
 def run_all_unit_tests(self):
@@ -372,6 +381,7 @@ def run_all_unit_tests(self):
                             pattern='test*.py',
                             top_level_dir=None)
     unittest.TextTestRunner(verbosity=1).run(suite)
+
 </t>
 <t tx="ekr.20160220050433.124">
 def scan_command_line(self):
@@ -431,6 +441,7 @@ def scan_command_line(self):
         args = [self.finalize(z) for z in args]
         if args:
             self.files = args
+
 </t>
 <t tx="ekr.20160220050433.125">
 def scan_options(self):
@@ -482,6 +493,7 @@ def scan_options(self):
     # self.def_patterns = self.scan_patterns('Def Name Patterns')
     # self.general_patterns = self.scan_patterns('General Patterns')
     # self.make_patterns_dict()
+
 </t>
 <t tx="ekr.20160220050433.127">
 def create_parser(self):
@@ -490,6 +502,7 @@ def create_parser(self):
         # Requires Python 2.7
     parser.optionxform = str
     return parser
+
 </t>
 <t tx="ekr.20160220050433.129">
 def get_config_string(self):
@@ -504,11 +517,14 @@ def get_config_string(self):
     else:
         print('\nconfiguration file not found: %s' % fn)
         return ''
+
 </t>
 <t tx="ekr.20160220050433.13">
 def truncate(s, n):
     '''Return s truncated to n characters.'''
     return s if len(s) &lt;= n else s[: n - 3] + '...'
+
+
 </t>
 <t tx="ekr.20160220050433.130">
 def init_parser(self, s):
@@ -528,6 +544,7 @@ def init_parser(self, s):
     if trace: g.trace(s)
     file_object = io.StringIO(s)
     self.parser.readfp(file_object)
+
 </t>
 <t tx="ekr.20160220050433.131">
 def is_section_name(self, s):
@@ -542,6 +559,8 @@ def is_section_name(self, s):
             if s == munge(s2):
                 return True
     return False
+
+
 </t>
 <t tx="ekr.20160220050433.14">
 
@@ -596,7 +615,8 @@ class TestClass(object):
     # pylint: disable=undefined-variable
     # pylint: disable=no-self-argument
     # pylint: disable=no-method-argument
-    @others    pass
+
+    @others
 </t>
 <t tx="ekr.20160220050433.189">
 def parse_group(group):
@@ -611,6 +631,7 @@ def parse_group(group):
     del group[: i]
     assert all(g == '.' for g in group[1:: 2]), group
     return ndots, os.sep.join(group[:: 2])
+
 </t>
 <t tx="ekr.20160220050433.19">
 # ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
@@ -635,14 +656,17 @@ def do_ClassDef(self, node):
 def return_all(self):
     return all([is_known_type(z) for z in s3.split(',')])
     # return all(['abc'])
+
 </t>
 <t tx="ekr.20160220050433.191">
 def return_array():
     return f(s[1: -1])
+
 </t>
 <t tx="ekr.20160220050433.192">
 def return_list(self, a):
     return [a]
+
 </t>
 <t tx="ekr.20160220050433.193">
 def return_two_lists(s):
@@ -1121,8 +1145,8 @@ def get_import_names(self, node):
         result.append(data)
     return result
 </t>
-<t tx="ekr.20160220050433.7">
-# Top-level functions
+<t tx="ekr.20160220050433.7"># Top-level functions
+
 </t>
 <t tx="ekr.20160220050433.70">
 def do_ImportFrom(self, node):
@@ -1262,6 +1286,7 @@ def dump(title, s=None):
         print('===== %s...\n%s\n' % (title, s.rstrip()))
     else:
         print('===== %s...\n' % title)
+
 </t>
 <t tx="ekr.20160220050433.82">
 def indent(self, s):
@@ -1322,6 +1347,8 @@ def op_name (self,node,strict=True):
 
 class LeoGlobals(object):
     '''A class supporting g.pdb and g.trace for compatibility with Leo.'''
+
+
     @others
 </t>
 <t tx="ekr.20160220050433.87">
@@ -1349,6 +1376,8 @@ class NullObject:
     def __getattr__(self, attr): return self
 
     def __setattr__(self, attr, val): return self
+
+
 </t>
 <t tx="ekr.20160220050433.88">
 def _callerName(self, n=1, files=False):
@@ -1370,6 +1399,7 @@ def _callerName(self, n=1, files=False):
     except Exception:
         # es_exception()
         return '' # "&lt;no caller name&gt;"
+
 </t>
 <t tx="ekr.20160220050433.89">
 def callers(self, n=4, count=0, excludeCaller=True, files=False):
@@ -1395,6 +1425,7 @@ def callers(self, n=4, count=0, excludeCaller=True, files=False):
     if count &gt; 0: result = result[: count]
     sep = '\n' if files else ','
     return sep.join(result)
+
 </t>
 <t tx="ekr.20160220050433.9">
 def dump_dict(title, d):
@@ -1403,12 +1434,14 @@ def dump_dict(title, d):
     for z in sorted(d):
         print('%30s %s' % (z, d.get(z)))
     print('')
+
 </t>
 <t tx="ekr.20160220050433.90">
 def cls(self):
     '''Clear the screen.'''
     if sys.platform.lower().startswith('win'):
         os.system('cls')
+
 </t>
 <t tx="ekr.20160220050433.91">
 def pdb(self):
@@ -1418,6 +1451,7 @@ def pdb(self):
     except ImportError:
         import pdb
         pdb.set_trace()
+
 </t>
 <t tx="ekr.20160220050433.92">
 def shortFileName(self, fileName, n=None):
@@ -1425,11 +1459,13 @@ def shortFileName(self, fileName, n=None):
         return os.path.basename(fileName)
     else:
         return '/'.join(fileName.replace('\\', '/').split('/')[-n:])
+
 </t>
 <t tx="ekr.20160220050433.93">
 def splitLines(self, s):
     '''Split s into lines, preserving trailing newlines.'''
     return s.splitlines(True) if s else []
+
 </t>
 <t tx="ekr.20160220050433.94">
 def trace(self, *args, **keys):
@@ -1438,6 +1474,7 @@ def trace(self, *args, **keys):
         leo_g.trace(caller_level=2, *args, **keys)
     except ImportError:
         print(args, keys)
+
 </t>
 <t tx="ekr.20160220050745.1">@nocolor-node
 @
@@ -1657,6 +1694,7 @@ def output_time_stamp(self, f):
     '''Put a time-stamp in the output file f.'''
     f.write('# python_to_coffeescript: %s\n' %
         time.strftime("%a %d %b %Y at %H:%M:%S"))
+
 </t>
 <t tx="ekr.20160220081725.1"># -*- coding: utf-8 -*-
 # https://bitbucket.org/plas/thonny/src/3b71fda7ac0b66d5c475f7a668ffbdc7ae48c2b5/thonny/ast_utils.py?at=master
@@ -2009,12 +2047,15 @@ def do_Try(self, node): # Python 3
 
 class CoffeeScriptTokenizer:
     '''A token-based Python beautifier.'''
+
+
     @others
 </t>
 <t tx="ekr.20160220103223.10">
 def do_endmarker(self):
     '''Handle an endmarker token.'''
     pass
+
 </t>
 <t tx="ekr.20160220103223.11">
 def do_errortoken(self):
@@ -2022,6 +2063,7 @@ def do_errortoken(self):
     # This code is executed for versions of Python earlier than 2.4
     if self.val == '@':
         self.op(self.val)
+
 </t>
 <t tx="ekr.20160220103223.12">
 def do_dedent(self):
@@ -2044,6 +2086,7 @@ def do_indent(self):
     self.level += 1
     self.lws = self.val
     self.line_start()
+
 </t>
 <t tx="ekr.20160220103223.13">
 def do_name(self):
@@ -2067,21 +2110,25 @@ def do_name(self):
         self.word_op(name)
     else:
         self.word(name)
+
 </t>
 <t tx="ekr.20160220103223.14">
 def do_newline(self):
     '''Handle a regular newline.'''
     self.line_end()
+
 </t>
 <t tx="ekr.20160220103223.15">
 def do_nl(self):
     '''Handle a continuation line.'''
     self.line_end()
+
 </t>
 <t tx="ekr.20160220103223.16">
 def do_number(self):
     '''Handle a number token.'''
     self.add_token('number', self.val)
+
 </t>
 <t tx="ekr.20160220103223.17">
 def do_op(self):
@@ -2126,6 +2173,7 @@ def do_op(self):
         # Pep 8: If operators with different priorities are used,
         # consider adding whitespace around the operators with the lowest priority(ies).
         self.op(val)
+
 </t>
 <t tx="ekr.20160220103223.18">
 def do_string(self):
@@ -2135,6 +2183,7 @@ def do_string(self):
         self.backslash_seen = False
         # This *does* retain the string's spelling.
     self.blank()
+
 </t>
 <t tx="ekr.20160220103223.19"></t>
 <t tx="ekr.20160220103223.2">
@@ -2158,6 +2207,8 @@ class OutputToken:
     def to_string(self):
         '''Convert an output token to a string.'''
         return self.value if g.isString(self.value) else ''
+
+
 </t>
 <t tx="ekr.20160220103223.20">
 def add_token(self, kind, value=''):
@@ -2166,15 +2217,16 @@ def add_token(self, kind, value=''):
         # g.trace(kind,repr(value),g.callers())
     tok = self.OutputToken(kind, value)
     self.code_list.append(tok)
+
 </t>
-<t tx="ekr.20160220103223.21">
-# def arg_end(self):
+<t tx="ekr.20160220103223.21"># def arg_end(self):
     # '''Add a token indicating the end of an argument list.'''
     # self.add_token('arg-end')
 
 # def arg_start(self):
     # '''Add a token indicating the start of an argument list.'''
     # self.add_token('arg-start')
+
 </t>
 <t tx="ekr.20160220103223.22">
 def backslash(self):
@@ -2183,6 +2235,7 @@ def backslash(self):
     self.add_token('line-end', '\n')
     self.line_indent()
     self.backslash_seen = False
+
 </t>
 <t tx="ekr.20160220103223.23">
 def blank(self):
@@ -2195,6 +2248,7 @@ def blank(self):
         'lt', 'op-no-blanks', 'unary-op',
     ):
         self.add_token('blank', ' ')
+
 </t>
 <t tx="ekr.20160220103223.24">
 def blank_lines(self, n):
@@ -2212,6 +2266,7 @@ def blank_lines(self, n):
         # Retain the token (intention) for debugging.
         self.add_token('blank-lines', n)
         self.line_indent()
+
 </t>
 <t tx="ekr.20160220103223.25">
 def clean(self, kind):
@@ -2219,6 +2274,7 @@ def clean(self, kind):
     prev = self.code_list[-1]
     if prev.kind == kind:
         self.code_list.pop()
+
 </t>
 <t tx="ekr.20160220103223.26">
 def clean_blank_lines(self):
@@ -2226,6 +2282,7 @@ def clean_blank_lines(self):
     table = ('blank-lines', 'line-end', 'line-indent')
     while self.code_list[-1].kind in table:
         self.code_list.pop()
+
 </t>
 <t tx="ekr.20160220103223.27">
 def file_end(self):
@@ -2242,6 +2299,7 @@ def file_start(self):
     '''Add a file-start token to the code list and the state stack.'''
     self.add_token('file-start')
     self.push_state('file-start')
+
 </t>
 <t tx="ekr.20160220103223.28">
 def line_indent(self, ws=None):
@@ -2250,6 +2308,7 @@ def line_indent(self, ws=None):
     ws = ws or self.lws
     if ws:
         self.add_token('line-indent', ws)
+
 </t>
 <t tx="ekr.20160220103223.29">
 def line_end(self):
@@ -2271,6 +2330,7 @@ def line_end(self):
 def line_start(self):
     '''Add a line-start request to the code list.'''
     self.line_indent()
+
 </t>
 <t tx="ekr.20160220103223.3">
 
@@ -2285,6 +2345,7 @@ class ParseState:
         return 'State: %10s %s' % (self.kind, repr(self.value))
 
     __str__ = __repr__
+
 </t>
 <t tx="ekr.20160220103223.30">
 def lt(self, s):
@@ -2319,6 +2380,7 @@ def rt(self, s):
     else:
         self.clean('blank')
     self.add_token('rt', s)
+
 </t>
 <t tx="ekr.20160220103223.31">
 def op(self, s):
@@ -2339,6 +2401,7 @@ def op_no_blanks(self, s):
     '''Add an operator *not* surrounded by blanks.'''
     self.clean('blank')
     self.add_token('op-no-blanks', s)
+
 </t>
 <t tx="ekr.20160220103223.32">
 def possible_unary_op(self, s):
@@ -2357,6 +2420,7 @@ def unary_op(self, s):
     assert s and g.isString(s), repr(s)
     self.blank()
     self.add_token('unary-op', s)
+
 </t>
 <t tx="ekr.20160220103223.33">
 def star_op(self):
@@ -2376,6 +2440,7 @@ def star_op(self):
             self.op(val)
     else:
         self.op(val)
+
 </t>
 <t tx="ekr.20160220103223.34">
 def star_star_op(self):
@@ -2393,6 +2458,7 @@ def star_star_op(self):
             self.op(val)
     else:
         self.op(val)
+
 </t>
 <t tx="ekr.20160220103223.35">
 def word(self, s):
@@ -2408,6 +2474,7 @@ def word_op(self, s):
     self.blank()
     self.add_token('word-op', s)
     self.blank()
+
 </t>
 <t tx="ekr.20160220103223.36"></t>
 <t tx="ekr.20160220103223.39">
@@ -2422,6 +2489,7 @@ def print_stats(self):
     print('format         %4.2f sec.' % self.beautify_time)
     print('check          %4.2f sec.' % self.check_time)
     print('total          %4.2f sec.' % self.total_time)
+
 </t>
 <t tx="ekr.20160220103223.4">
 def __init__(self, controller):
@@ -2459,12 +2527,15 @@ def __init__(self, controller):
      # Undo vars
     self.changed = False
     self.dirtyVnodeList = []
+
 </t>
 <t tx="ekr.20160220103223.40">
 def push_state(self, kind, value=None):
     '''Append a state to the state stack.'''
     state = self.ParseState(kind, value)
     self.state_stack.append(state)
+
+
 </t>
 <t tx="ekr.20160220103223.7">
 def format(self, tokens):
@@ -2507,6 +2578,7 @@ def format(self, tokens):
         func()
     self.file_end()
     return ''.join([z.to_string() for z in self.code_list])
+
 </t>
 <t tx="ekr.20160220103223.8"></t>
 <t tx="ekr.20160220103223.9">
@@ -2523,6 +2595,7 @@ def do_comment(self):
     else:
         self.blank()
         self.add_token('comment', val)
+
 </t>
 <t tx="ekr.20160220104209.1">
 def isString(self, s):
@@ -2538,6 +2611,7 @@ def isUnicode(self, s):
         return type(s) == type('a')
     else:
         return type(s) == types.UnicodeType
+
 </t>
 <t tx="ekr.20160220104316.1">
 def computeLeadingWhitespace(self, width, tab_width):
@@ -2550,6 +2624,7 @@ def computeLeadingWhitespace(self, width, tab_width):
         return ('\t' * tabs) + (' ' * blanks)
     else: # Negative tab width always gets converted to blanks.
         return (' ' * width)
+
 </t>
 <t tx="ekr.20160220104523.1">
 def toUnicode(self, s, encoding='utf-8', reportErrors=False):
@@ -2578,9 +2653,9 @@ def toUnicode(self, s, encoding='utf-8', reportErrors=False):
     if trace and encoding == 'cp1252':
         print('toUnicode: returns %s' % s)
     return s
+
 </t>
-<t tx="ekr.20160220104732.1">
-if isPython3: # g.not defined yet.
+<t tx="ekr.20160220104732.1">if isPython3: # g.not defined yet.
 
     def u(self, s):
         return s
@@ -2595,11 +2670,12 @@ else:
 
     def ue(self, s, encoding):
         return unicode(s, encoding)
+
+
 </t>
 <t tx="ekr.20160220105138.1">
-# Returns optimized whitespace corresponding to width with the indicated tab_width.
-
 def computeLeadingWhitespaceWidth(self, s, tab_width):
+    '''Returns optimized whitespace corresponding to width with the indicated tab_width.'''
     w = 0
     for ch in s:
         if ch == ' ':
@@ -2609,6 +2685,7 @@ def computeLeadingWhitespaceWidth(self, s, tab_width):
         else:
             break
     return w
+
 </t>
 <t tx="ekr.20160220110252.1">
 
@@ -2630,6 +2707,7 @@ class ReadLinesClass:
         return line
 
     __next__ = next
+
 </t>
 </tnodes>
 </leo_file>
