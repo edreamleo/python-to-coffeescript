@@ -166,10 +166,13 @@
 <v t="ekr.20160220082219.11"><vh>__str__</vh></v>
 </v>
 </v>
+<v t="ekr.20160220085158.1"><vh>class ReadLinesClass</vh></v>
 </v>
 </v>
 <v t="ekr.20160220050053.2"><vh>@clean README.md</vh></v>
 <v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
+<v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
+<v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.11"><vh>  main</vh></v>
 <v t="ekr.20160220050433.7"><vh>  utility functions</vh>
 <v t="ekr.20160220050433.8"><vh>dump</vh></v>
@@ -178,8 +181,6 @@
 <v t="ekr.20160220050433.12"><vh>pdb</vh></v>
 <v t="ekr.20160220050433.13"><vh>truncate</vh></v>
 </v>
-<v t="ekr.20160220050433.2"><vh> &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
-<v t="ekr.20160220050745.1"><vh> &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.14"><vh>class CoffeeScriptFormatter</vh>
 <v t="ekr.20160220050433.16"><vh> cf.format</vh></v>
 <v t="ekr.20160220050433.82"><vh> cf.indent</vh></v>
@@ -248,6 +249,7 @@
 <v t="ekr.20160220050433.72"><vh>cf.Print</vh></v>
 <v t="ekr.20160220050433.73"><vh>cf.Raise</vh></v>
 <v t="ekr.20160220050433.74"><vh>cf.Return</vh></v>
+<v t="ekr.20160220094909.1"><vh>cf.Try</vh></v>
 <v t="ekr.20160220050433.75"><vh>cf.TryExcept</vh></v>
 <v t="ekr.20160220050433.76"><vh>cf.TryFinally</vh></v>
 <v t="ekr.20160220050433.77"><vh>cf.While</vh></v>
@@ -288,6 +290,24 @@
 <v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
 </v>
 </v>
+<v t="ekr.20160220081725.1"><vh>@clean ast_utils.py</vh>
+<v t="ekr.20160220081959.1"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
+<v t="ekr.20160220093908.1"><vh>class Bunch (Python Cookbook)</vh></v>
+<v t="ekr.20160220081959.9"><vh>mark_text_ranges &amp; helpers</vh>
+<v t="ekr.20160220084232.1"><vh>&lt;&lt; mark_text_ranges helpers &gt;&gt;</vh>
+<v t="ekr.20160220084252.1"><vh>_extract_tokens</vh></v>
+<v t="ekr.20160220084252.2"><vh>_mark_text_ranges_rec</vh></v>
+<v t="ekr.20160220084252.3"><vh>_strip_trailing_junk_from_expressions</vh></v>
+<v t="ekr.20160220084252.4"><vh>_strip_trailing_extra_closers</vh></v>
+<v t="ekr.20160220084252.5"><vh>_strip_unclosed_brackets</vh></v>
+<v t="ekr.20160220084252.6"><vh>_mark_end_and_return_child_tokens</vh></v>
+</v>
+<v t="ekr.20160220081959.14"><vh>_get_ordered_child_nodes</vh></v>
+<v t="ekr.20160220081959.15"><vh>_tokens_text</vh></v>
+<v t="ekr.20160220081959.11"><vh>fix_ast_problems</vh></v>
+<v t="ekr.20160220081959.12"><vh>compare_node_positions</vh></v>
+</v>
+</v>
 <v t="ekr.20160220073633.1"><vh>recent</vh>
 <v t="ekr.20160220050433.25"></v>
 <v t="ekr.20160220050433.47"></v>
@@ -295,16 +315,8 @@
 <v t="ekr.20160220050433.20"></v>
 </v>
 <v t="ekr.20160220050433.14"></v>
-<v t="ekr.20160220081959.9"><vh>mark_text_ranges &amp; helpers</vh>
-<v t="ekr.20160220081959.14"><vh>_get_ordered_child_nodes</vh></v>
-<v t="ekr.20160220081959.15"><vh>_tokens_text</vh></v>
-<v t="ekr.20160220081959.11"><vh>fix_ast_problems</vh></v>
-<v t="ekr.20160220081959.12"><vh>compare_node_positions</vh></v>
-</v>
-<v t="ekr.20160220081725.1"><vh>@clean ast_utils.py</vh>
-<v t="ekr.20160220081959.1"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
 <v t="ekr.20160220081959.9"></v>
-</v>
+<v t="ekr.20160220050433.121"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -325,6 +337,7 @@ Written by Edward K. Ream.
 '''
 &lt;&lt; license &gt;&gt;
 &lt;&lt; imports &gt;&gt;
+isPython3 = sys.version_info &gt;= (3, 0, 0)
 @others
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
@@ -824,6 +837,8 @@ def make_coffeescript_file(self, fn):
         t1 = time.clock()
         s = open(fn).read()
         node = ast.parse(s,filename=fn,mode='exec')
+        ### Not yet. Lots of bugs. It may only work for Python 3.
+        # ast_utils.mark_text_ranges(node, s)
         s = CoffeeScriptFormatter(controller=self).format(node)
         f = open(out_fn, 'w')
         self.output_time_stamp(f)
@@ -2208,6 +2223,7 @@ def return_two_lists(s):
         return list(self.regex.finditer(s))
 </t>
 <t tx="ekr.20160220050433.2">import ast
+import ast_utils
 from collections import OrderedDict
     # Requires Python 2.7 or above. Without OrderedDict
     # the configparser will give random order for patterns.
@@ -2320,9 +2336,15 @@ def do_arguments(self, node):
             args2.append('%s=%s' % (args[i], defaults[i - n_plain]))
     # Now add the vararg and kwarg args.
     name = getattr(node, 'vararg', None)
-    if name: args2.append('*' + name)
+    if name:
+        if isPython3 and isinstance(name, ast.arg):
+            name = name.arg
+        args2.append('*' + name)
     name = getattr(node, 'kwarg', None)
-    if name: args2.append('**' + name)
+    if name:
+        if isPython3 and isinstance(name, ast.arg):
+            name = name.arg
+        args2.append('**' + name)
     return ','.join(args2)
 </t>
 <t tx="ekr.20160220050433.31">
@@ -2724,7 +2746,8 @@ def do_Print(self, node):
     if getattr(node, 'dest', None):
         vals.append('dest=%s' % self.visit(node.dest))
     if getattr(node, 'nl', None):
-        vals.append('nl=%s' % node.nl)
+        if node.nl == 'False':
+            vals.append('nl=%s' % node.nl)
     return self.indent('print(%s)\n' % (
         ','.join(vals)))
 </t>
@@ -3317,12 +3340,13 @@ def output_time_stamp(self, f):
 # https://bitbucket.org/plas/thonny/src/3b71fda7ac0b66d5c475f7a668ffbdc7ae48c2b5/thonny/ast_utils.py?at=master
 &lt;&lt; imports &gt;&gt;
 # pylint: disable=deprecated-lambda
+isPython3 = sys.version_info &gt;= (3, 0, 0)
 @others
 </t>
 <t tx="ekr.20160220081959.1">import ast
 import _ast
 import io
-# import sys
+import sys
 import token
 import tokenize
 # from thonny.common import TextRange
@@ -3342,14 +3366,17 @@ import traceback
         raise NotImplementedError("only None, bool and str supported at the moment, not " + str(type(value)))
 </t>
 <t tx="ekr.20160220081959.11">def fix_ast_problems(tree, source_lines, tokens):
+
     # Problem 1:
     # Python parser gives col_offset as offset to its internal UTF-8 byte array
     # I need offsets to chars
     utf8_byte_lines = list(map(lambda line: line.encode("UTF-8"), source_lines))
+
     # Problem 2:
     # triple-quoted strings have just plain wrong positions: http://bugs.python.org/issue18370
     # Fortunately lexer gives them correct positions
     string_tokens = list(filter(lambda tok: tok.type == token.STRING, tokens))
+
     # Problem 3:
     # Binary operations have wrong positions: http://bugs.python.org/issue18374
     # Problem 4:
@@ -3639,126 +3666,17 @@ import traceback
     Function adds recursively attributes end_lineno and end_col_offset to each node
     which has attributes lineno and col_offset.
     """
-
-    def _extract_tokens(tokens, lineno, col_offset, end_lineno, end_col_offset):
-        return list(filter((lambda tok: tok.start[0] &gt;= lineno
-                                   and (tok.start[1] &gt;= col_offset or tok.start[0] &gt; lineno)
-                                   and tok.end[0] &lt;= end_lineno
-                                   and (tok.end[1] &lt;= end_col_offset or tok.end[0] &lt; end_lineno)
-                                   and tok.string != ''),
-                           tokens))
-
-    def _mark_text_ranges_rec(node, tokens, prelim_end_lineno, prelim_end_col_offset):
-        """
-        Returns the earliest starting position found in given tree, 
-        this is convenient for internal handling of the siblings
-        """
-        # set end markers to this node
-        if "lineno" in node._attributes and "col_offset" in node._attributes:
-            tokens = _extract_tokens(tokens, node.lineno, node.col_offset, prelim_end_lineno, prelim_end_col_offset)
-            try:
-                tokens = _mark_end_and_return_child_tokens(node, tokens, prelim_end_lineno, prelim_end_col_offset)
-            except:
-                traceback.print_exc() # TODO: log it somewhere
-                # fallback to incorrect marking instead of exception
-                node.end_lineno = node.lineno
-                node.end_col_offset = node.col_offset + 1
-        # mark its children, starting from last one
-        # NB! need to sort children because eg. in dict literal all keys come first and then all values
-        children = list(_get_ordered_child_nodes(node))
-        for child in reversed(children):
-            (prelim_end_lineno, prelim_end_col_offset) = \
-            _mark_text_ranges_rec(child, tokens, prelim_end_lineno, prelim_end_col_offset)
-        if "lineno" in node._attributes and "col_offset" in node._attributes:
-            # new "front" is beginning of this node
-            prelim_end_lineno = node.lineno
-            prelim_end_col_offset = node.col_offset
-        return (prelim_end_lineno, prelim_end_col_offset)
-
-    def _strip_trailing_junk_from_expressions(tokens):
-        # pylint: disable=no-member
-        # the code below works if token.ELLIPSIS does not exist.
-        while(tokens[-1].type not in (token.RBRACE, token.RPAR, token.RSQB,
-                                      token.NAME, token.NUMBER, token.STRING)
-                    and not (hasattr(token, "ELLIPSIS") and tokens[-1].type == token.ELLIPSIS)
-                    and tokens[-1].string not in ")}]"
-                    or tokens[-1].string in ['and', 'as', 'assert', 'class', 'def', 'del',
-                                              'elif', 'else', 'except', 'exec', 'finally',
-                                              'for', 'from', 'global', 'if', 'import', 'in',
-                                              'is', 'lambda', 'not', 'or', 'try',
-                                              'while', 'with', 'yield']):
-            del tokens[-1]
-
-    def _strip_trailing_extra_closers(tokens, remove_naked_comma):
-        level = 0
-        for i in range(len(tokens)):
-            if tokens[i].string in "({[":
-                level += 1
-            elif tokens[i].string in ")}]":
-                level -= 1
-            if level == 0 and tokens[i].string == "," and remove_naked_comma:
-                tokens[:] = tokens[0: i]
-                return
-            if level &lt; 0:
-                tokens[:] = tokens[0: i]
-                return
-
-    def _strip_unclosed_brackets(tokens):
-        level = 0
-        for i in range(len(tokens) - 1, -1, -1):
-            if tokens[i].string in "({[":
-                level -= 1
-            elif tokens[i].string in ")}]":
-                level += 1
-            if level &lt; 0:
-                tokens[:] = tokens[0: i]
-                level = 0 # keep going, there may be more unclosed brackets
-
-    def _mark_end_and_return_child_tokens(node, tokens, prelim_end_lineno, prelim_end_col_offset):
-        """
-        # shortcut
-        node.end_lineno = prelim_end_lineno
-        node.end_col_offset = prelim_end_col_offset
-        return tokens
-        """
-        # prelim_end_lineno and prelim_end_col_offset are the start of
-        # next positioned node or end of source, ie. the suffix of given
-        # range may contain keywords, commas and other stuff not belonging to current node
-        # Function returns the list of tokens which cover all its children
-        if isinstance(node, _ast.stmt):
-            # remove empty trailing lines
-            while(tokens[-1].type in (tokenize.NL, tokenize.COMMENT, token.NEWLINE, token.INDENT)
-                   or tokens[-1].string in (":", "else", "elif", "finally", "except")):
-                del tokens[-1]
-        else:
-            _strip_trailing_extra_closers(tokens, not isinstance(node, ast.Tuple))
-            _strip_trailing_junk_from_expressions(tokens)
-            _strip_unclosed_brackets(tokens)
-        # set the end markers of this node
-        node.end_lineno = tokens[-1].end[0]
-        node.end_col_offset = tokens[-1].end[1]
-        # Peel off some trailing tokens which can't be part any
-        # positioned child node.
-        # TODO: maybe cleaning from parent side is better than
-        # _strip_trailing_junk_from_expressions
-        # Remove trailing empty parens from no-arg call
-        if (isinstance(node, ast.Call)
-            and _tokens_text(tokens[-2:]) == "()"):
-            del tokens[-2:]
-        # Remove trailing full slice
-        elif isinstance(node, ast.Subscript):
-            if _tokens_text(tokens[-3:]) == "[:]":
-                del tokens[-3:]
-            elif _tokens_text(tokens[-4:]) == "[::]":
-                del tokens[-4:]
-        # Attribute name would confuse the "value" of Attribute
-        elif isinstance(node, ast.Attribute):
-            assert tokens[-1].type == token.NAME
-            del tokens[-1]
-            _strip_trailing_junk_from_expressions(tokens)
-        return tokens
-
-    all_tokens = list(tokenize.tokenize(io.BytesIO(source.encode('utf-8')).readline))
+    &lt;&lt; mark_text_ranges helpers &gt;&gt;
+    ### all_tokens = list(tokenize.tokenize(io.BytesIO(source.encode('utf-8')).readline))
+    readline = io.BytesIO(source.encode('utf-8')).readline
+    if isPython3:
+        all_tokens = list(tokenize.tokenize(readline))
+    else:
+        all_tokens = []
+        def token_eater(t1, t2, t3, t4, t5):
+            all_tokens.append(
+                Bunch(type=t1, start=(t2, t3), end=(t3, t4), string=t5))
+        tokenize.tokenize(readline, token_eater)
     source_lines = source.splitlines(True)
     fix_ast_problems(node, source_lines, all_tokens)
     prelim_end_lineno = len(source_lines)
@@ -3810,5 +3728,231 @@ import traceback
     return str(self.lineno) + "." + str(self.col_offset)
 </t>
 <t tx="ekr.20160220082951.1"></t>
+<t tx="ekr.20160220084232.1">@others
+</t>
+<t tx="ekr.20160220084252.1">
+def _extract_tokens(tokens, lineno, col_offset, end_lineno, end_col_offset):
+    return list(filter((lambda tok: tok.start[0] &gt;= lineno
+                               and (tok.start[1] &gt;= col_offset or tok.start[0] &gt; lineno)
+                               and tok.end[0] &lt;= end_lineno
+                               and (tok.end[1] &lt;= end_col_offset or tok.end[0] &lt; end_lineno)
+                               and tok.string != ''),
+                       tokens))
+
+</t>
+<t tx="ekr.20160220084252.2">
+def _mark_text_ranges_rec(node, tokens, prelim_end_lineno, prelim_end_col_offset):
+    """
+    Returns the earliest starting position found in given tree, 
+    this is convenient for internal handling of the siblings
+    """
+    # set end markers to this node
+    if "lineno" in node._attributes and "col_offset" in node._attributes:
+        tokens = _extract_tokens(tokens, node.lineno, node.col_offset, prelim_end_lineno, prelim_end_col_offset)
+        try:
+            tokens = _mark_end_and_return_child_tokens(node, tokens, prelim_end_lineno, prelim_end_col_offset)
+        except:
+            traceback.print_exc() # TODO: log it somewhere
+            # fallback to incorrect marking instead of exception
+            node.end_lineno = node.lineno
+            node.end_col_offset = node.col_offset + 1
+    # mark its children, starting from last one
+    # NB! need to sort children because eg. in dict literal all keys come first and then all values
+    children = list(_get_ordered_child_nodes(node))
+    for child in reversed(children):
+        (prelim_end_lineno, prelim_end_col_offset) = \
+        _mark_text_ranges_rec(child, tokens, prelim_end_lineno, prelim_end_col_offset)
+    if "lineno" in node._attributes and "col_offset" in node._attributes:
+        # new "front" is beginning of this node
+        prelim_end_lineno = node.lineno
+        prelim_end_col_offset = node.col_offset
+    return (prelim_end_lineno, prelim_end_col_offset)
+</t>
+<t tx="ekr.20160220084252.3">
+def _strip_trailing_junk_from_expressions(tokens):
+    # pylint: disable=no-member
+    # the code below works if token.ELLIPSIS does not exist.
+    while(tokens[-1].type not in (token.RBRACE, token.RPAR, token.RSQB,
+                                  token.NAME, token.NUMBER, token.STRING)
+                and not (hasattr(token, "ELLIPSIS") and tokens[-1].type == token.ELLIPSIS)
+                and tokens[-1].string not in ")}]"
+                or tokens[-1].string in ['and', 'as', 'assert', 'class', 'def', 'del',
+                                          'elif', 'else', 'except', 'exec', 'finally',
+                                          'for', 'from', 'global', 'if', 'import', 'in',
+                                          'is', 'lambda', 'not', 'or', 'try',
+                                          'while', 'with', 'yield']):
+        del tokens[-1]
+</t>
+<t tx="ekr.20160220084252.4">def _strip_trailing_extra_closers(tokens, remove_naked_comma):
+    level = 0
+    for i in range(len(tokens)):
+        if tokens[i].string in "({[":
+            level += 1
+        elif tokens[i].string in ")}]":
+            level -= 1
+        if level == 0 and tokens[i].string == "," and remove_naked_comma:
+            tokens[:] = tokens[0: i]
+            return
+        if level &lt; 0:
+            tokens[:] = tokens[0: i]
+            return
+</t>
+<t tx="ekr.20160220084252.5">def _strip_unclosed_brackets(tokens):
+    level = 0
+    for i in range(len(tokens) - 1, -1, -1):
+        if tokens[i].string in "({[":
+            level -= 1
+        elif tokens[i].string in ")}]":
+            level += 1
+        if level &lt; 0:
+            tokens[:] = tokens[0: i]
+            level = 0 # keep going, there may be more unclosed brackets
+</t>
+<t tx="ekr.20160220084252.6">def _mark_end_and_return_child_tokens(node, tokens, prelim_end_lineno, prelim_end_col_offset):
+    """
+    # shortcut
+    node.end_lineno = prelim_end_lineno
+    node.end_col_offset = prelim_end_col_offset
+    return tokens
+    """
+    # prelim_end_lineno and prelim_end_col_offset are the start of
+    # next positioned node or end of source, ie. the suffix of given
+    # range may contain keywords, commas and other stuff not belonging to current node
+    # Function returns the list of tokens which cover all its children
+    if isinstance(node, _ast.stmt):
+        # remove empty trailing lines
+        while(tokens[-1].type in (tokenize.NL, tokenize.COMMENT, token.NEWLINE, token.INDENT)
+               or tokens[-1].string in (":", "else", "elif", "finally", "except")):
+            del tokens[-1]
+    else:
+        _strip_trailing_extra_closers(tokens, not isinstance(node, ast.Tuple))
+        _strip_trailing_junk_from_expressions(tokens)
+        _strip_unclosed_brackets(tokens)
+    # set the end markers of this node
+    node.end_lineno = tokens[-1].end[0]
+    node.end_col_offset = tokens[-1].end[1]
+    # Peel off some trailing tokens which can't be part any
+    # positioned child node.
+    # TODO: maybe cleaning from parent side is better than
+    # _strip_trailing_junk_from_expressions
+    # Remove trailing empty parens from no-arg call
+    if (isinstance(node, ast.Call)
+        and _tokens_text(tokens[-2:]) == "()"):
+        del tokens[-2:]
+    # Remove trailing full slice
+    elif isinstance(node, ast.Subscript):
+        if _tokens_text(tokens[-3:]) == "[:]":
+            del tokens[-3:]
+        elif _tokens_text(tokens[-4:]) == "[::]":
+            del tokens[-4:]
+    # Attribute name would confuse the "value" of Attribute
+    elif isinstance(node, ast.Attribute):
+        assert tokens[-1].type == token.NAME
+        del tokens[-1]
+        _strip_trailing_junk_from_expressions(tokens)
+    return tokens
+</t>
+<t tx="ekr.20160220085158.1">class ReadLinesClass:
+    """A class whose next method provides a readline method for Python's tokenize module."""
+
+    def __init__(self, s):
+
+        self.lines = s.splitlines(True) if s else []
+            # g.splitLines(s)
+        self.i = 0
+
+    def next(self):
+        if self.i &lt; len(self.lines):
+            line = self.lines[self.i]
+            self.i += 1
+        else:
+            line = ''
+        # g.trace(repr(line))
+        return line
+
+    __next__ = next
+</t>
+<t tx="ekr.20160220093908.1">@ From The Python Cookbook: Often we want to just collect a bunch of
+stuff together, naming each item of the bunch; a dictionary's OK for
+that, but a small do-nothing class is even handier, and prettier to
+use.
+
+Create a Bunch whenever you want to group a few variables:
+
+    point = Bunch(datum=y, squared=y*y, coord=x)
+
+You can read/write the named attributes you just created, add others,
+del some of them, etc:
+    if point.squared &gt; threshold:
+        point.isok = True
+@c
+
+class Bunch(object):
+    """A class that represents a colection of things.
+
+    Especially useful for representing a collection of related variables."""
+
+    def __init__(self, **keywords):
+        self.__dict__.update(keywords)
+
+    def __repr__(self):
+        return self.toString()
+
+    def ivars(self):
+        return sorted(self.__dict__)
+
+    def keys(self):
+        return sorted(self.__dict__)
+
+    def toString(self):
+        tag = self.__dict__.get('tag')
+        entries = ["%s: %s" % (key, str(self.__dict__.get(key)))
+            for key in self.ivars() if key != 'tag']
+        if tag:
+            return "Bunch(tag=%s)...\n%s\n" % (tag, '\n'.join(entries))
+        else:
+            return "Bunch...\n%s\n" % '\n'.join(entries)
+    # Used by new undo code.
+
+    def __setitem__(self, key, value):
+        '''Support aBunch[key] = val'''
+        return operator.setitem(self.__dict__, key, value)
+
+    def __getitem__(self, key):
+        '''Support aBunch[key]'''
+        return operator.getitem(self.__dict__, key)
+
+    def get(self, key, theDefault=None):
+        return self.__dict__.get(key, theDefault)
+
+bunch = Bunch
+</t>
+<t tx="ekr.20160220094909.1">
+# Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
+
+def do_Try(self, node): # Python 3
+    result = []
+    result.append(self.indent('try:\n'))
+    for z in node.body:
+        self.level += 1
+        result.append(self.visit(z))
+        self.level -= 1
+    if node.handlers:
+        for z in node.handlers:
+            result.append(self.visit(z))
+    if node.orelse:
+        result.append(self.indent('else:\n'))
+        for z in node.orelse:
+            self.level += 1
+            result.append(self.visit(z))
+            self.level -= 1
+    if node.finalbody:
+        result.append(self.indent('finally:\n'))
+        for z in node.finalbody:
+            self.level += 1
+            result.append(self.visit(z))
+            self.level -= 1
+    return ''.join(result)
+</t>
 </tnodes>
 </leo_file>

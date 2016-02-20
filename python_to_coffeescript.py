@@ -19,6 +19,7 @@ Written by Edward K. Ream.
 # 
 # **THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
 import ast
+import ast_utils
 from collections import OrderedDict
     # Requires Python 2.7 or above. Without OrderedDict
     # the configparser will give random order for patterns.
@@ -36,6 +37,7 @@ try:
     import StringIO as io # Python 2
 except ImportError:
     import io # Python 3
+isPython3 = sys.version_info >= (3, 0, 0)
 
 def main():
     '''
@@ -226,9 +228,15 @@ class CoffeeScriptFormatter(object):
                 args2.append('%s=%s' % (args[i], defaults[i - n_plain]))
         # Now add the vararg and kwarg args.
         name = getattr(node, 'vararg', None)
-        if name: args2.append('*' + name)
+        if name:
+            if isPython3 and isinstance(name, ast.arg):
+                name = name.arg
+            args2.append('*' + name)
         name = getattr(node, 'kwarg', None)
-        if name: args2.append('**' + name)
+        if name:
+            if isPython3 and isinstance(name, ast.arg):
+                name = name.arg
+            args2.append('**' + name)
         return ','.join(args2)
 
     # Python 3:
@@ -604,7 +612,8 @@ class CoffeeScriptFormatter(object):
         if getattr(node, 'dest', None):
             vals.append('dest=%s' % self.visit(node.dest))
         if getattr(node, 'nl', None):
-            vals.append('nl=%s' % node.nl)
+            if node.nl == 'False':
+                vals.append('nl=%s' % node.nl)
         return self.indent('print(%s)\n' % (
             ','.join(vals)))
 
@@ -625,6 +634,32 @@ class CoffeeScriptFormatter(object):
                 self.visit(node.value).strip()))
         else:
             return self.indent('return\n')
+
+    # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
+
+    def do_Try(self, node): # Python 3
+        result = []
+        result.append(self.indent('try:\n'))
+        for z in node.body:
+            self.level += 1
+            result.append(self.visit(z))
+            self.level -= 1
+        if node.handlers:
+            for z in node.handlers:
+                result.append(self.visit(z))
+        if node.orelse:
+            result.append(self.indent('else:\n'))
+            for z in node.orelse:
+                self.level += 1
+                result.append(self.visit(z))
+                self.level -= 1
+        if node.finalbody:
+            result.append(self.indent('finally:\n'))
+            for z in node.finalbody:
+                self.level += 1
+                result.append(self.visit(z))
+                self.level -= 1
+        return ''.join(result)
 
     def do_TryExcept(self, node):
         result = []
@@ -858,6 +893,8 @@ class MakeCoffeeScriptController(object):
             t1 = time.clock()
             s = open(fn).read()
             node = ast.parse(s,filename=fn,mode='exec')
+            ### Not yet. Lots of bugs. It may only work for Python 3.
+            # ast_utils.mark_text_ranges(node, s)
             s = CoffeeScriptFormatter(controller=self).format(node)
             f = open(out_fn, 'w')
             self.output_time_stamp(f)

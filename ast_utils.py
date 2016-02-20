@@ -3,12 +3,65 @@
 import ast
 import _ast
 import io
-# import sys
+import sys
 import token
 import tokenize
 # from thonny.common import TextRange
 import traceback
 # pylint: disable=deprecated-lambda
+isPython3 = sys.version_info >= (3, 0, 0)
+# stuff together, naming each item of the bunch; a dictionary's OK for
+# that, but a small do-nothing class is even handier, and prettier to
+# use.
+# 
+# Create a Bunch whenever you want to group a few variables:
+# 
+#     point = Bunch(datum=y, squared=y*y, coord=x)
+# 
+# You can read/write the named attributes you just created, add others,
+# del some of them, etc:
+#     if point.squared > threshold:
+#         point.isok = True
+
+class Bunch(object):
+    """A class that represents a colection of things.
+
+    Especially useful for representing a collection of related variables."""
+
+    def __init__(self, **keywords):
+        self.__dict__.update(keywords)
+
+    def __repr__(self):
+        return self.toString()
+
+    def ivars(self):
+        return sorted(self.__dict__)
+
+    def keys(self):
+        return sorted(self.__dict__)
+
+    def toString(self):
+        tag = self.__dict__.get('tag')
+        entries = ["%s: %s" % (key, str(self.__dict__.get(key)))
+            for key in self.ivars() if key != 'tag']
+        if tag:
+            return "Bunch(tag=%s)...\n%s\n" % (tag, '\n'.join(entries))
+        else:
+            return "Bunch...\n%s\n" % '\n'.join(entries)
+    # Used by new undo code.
+
+    def __setitem__(self, key, value):
+        '''Support aBunch[key] = val'''
+        return operator.setitem(self.__dict__, key, value)
+
+    def __getitem__(self, key):
+        '''Support aBunch[key]'''
+        return operator.getitem(self.__dict__, key)
+
+    def get(self, key, theDefault=None):
+        return self.__dict__.get(key, theDefault)
+
+bunch = Bunch
 def mark_text_ranges(node, source):
     """
     Node is an AST, source is corresponding source as string.
@@ -23,6 +76,7 @@ def mark_text_ranges(node, source):
                                    and (tok.end[1] <= end_col_offset or tok.end[0] < end_lineno)
                                    and tok.string != ''),
                            tokens))
+
 
     def _mark_text_ranges_rec(node, tokens, prelim_end_lineno, prelim_end_col_offset):
         """
@@ -64,7 +118,6 @@ def mark_text_ranges(node, source):
                                               'is', 'lambda', 'not', 'or', 'try',
                                               'while', 'with', 'yield']):
             del tokens[-1]
-
     def _strip_trailing_extra_closers(tokens, remove_naked_comma):
         level = 0
         for i in range(len(tokens)):
@@ -78,7 +131,6 @@ def mark_text_ranges(node, source):
             if level < 0:
                 tokens[:] = tokens[0: i]
                 return
-
     def _strip_unclosed_brackets(tokens):
         level = 0
         for i in range(len(tokens) - 1, -1, -1):
@@ -89,7 +141,6 @@ def mark_text_ranges(node, source):
             if level < 0:
                 tokens[:] = tokens[0: i]
                 level = 0 # keep going, there may be more unclosed brackets
-
     def _mark_end_and_return_child_tokens(node, tokens, prelim_end_lineno, prelim_end_col_offset):
         """
         # shortcut
@@ -133,8 +184,16 @@ def mark_text_ranges(node, source):
             del tokens[-1]
             _strip_trailing_junk_from_expressions(tokens)
         return tokens
-
-    all_tokens = list(tokenize.tokenize(io.BytesIO(source.encode('utf-8')).readline))
+    ### all_tokens = list(tokenize.tokenize(io.BytesIO(source.encode('utf-8')).readline))
+    readline = io.BytesIO(source.encode('utf-8')).readline
+    if isPython3:
+        all_tokens = list(tokenize.tokenize(readline))
+    else:
+        all_tokens = []
+        def token_eater(t1, t2, t3, t4, t5):
+            all_tokens.append(
+                Bunch(type=t1, start=(t2, t3), end=(t3, t4), string=t5))
+        tokenize.tokenize(readline, token_eater)
     source_lines = source.splitlines(True)
     fix_ast_problems(node, source_lines, all_tokens)
     prelim_end_lineno = len(source_lines)
@@ -163,14 +222,17 @@ def _get_ordered_child_nodes(node):
 def _tokens_text(tokens):
     return "".join([t.string for t in tokens])
 def fix_ast_problems(tree, source_lines, tokens):
+
     # Problem 1:
     # Python parser gives col_offset as offset to its internal UTF-8 byte array
     # I need offsets to chars
     utf8_byte_lines = list(map(lambda line: line.encode("UTF-8"), source_lines))
+
     # Problem 2:
     # triple-quoted strings have just plain wrong positions: http://bugs.python.org/issue18370
     # Fortunately lexer gives them correct positions
     string_tokens = list(filter(lambda tok: tok.type == token.STRING, tokens))
+
     # Problem 3:
     # Binary operations have wrong positions: http://bugs.python.org/issue18374
     # Problem 4:

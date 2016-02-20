@@ -1,6 +1,7 @@
-# python_to_coffeescript: Sat 20 Feb 2016 at 07:35:15
+# python_to_coffeescript: Sat 20 Feb 2016 at 10:02:07
 '\nThis script makes a coffeescript file for every python source file listed\non the command line (wildcard file names are supported).\n\nFor full details, see README.md.\n\nReleased under the MIT Licence.\n\nWritten by Edward K. Ream.\n'
 import ast
+import ast_utils
 from collections import OrderedDict
 try:
     import ConfigParser as configparser
@@ -15,6 +16,7 @@ try:
     import StringIO as io
 except ImportError:
     import io
+isPython3=sys.version_info>=(3, 0, 0)
 
 def main():
     '''
@@ -25,27 +27,27 @@ def main():
     controller.scan_command_line()
     controller.scan_options()
     controller.run()
-    print('done',nl=True)
+    print('done')
 
 def dump(title,s=None):
     if s:
-        print('===== %s...\n%s\n'%(title, s.rstrip()),nl=True)
+        print('===== %s...\n%s\n'%(title, s.rstrip()))
     else:
-        print('===== %s...\n'%title,nl=True)
+        print('===== %s...\n'%title)
 
 def dump_dict(title,d):
     '''Dump a dictionary with a header.'''
     dump(title)
     for z in sorted(d):
-        print('%30s %s'%(z, d.get(z)),nl=True)
-    print('',nl=True)
+        print('%30s %s'%(z, d.get(z)))
+    print('')
 
 def dump_list(title,aList):
     '''Dump a list with a header.'''
     dump(title)
     for z in aList:
-        print(z,nl=True)
-    print('',nl=True)
+        print(z)
+    print('')
 
 def pdb(self):
     '''Invoke a debugger during unit testing.'''
@@ -184,9 +186,13 @@ class CoffeeScriptFormatter(object):
                 args2.append('%s=%s'%(args[i], defaults[i-n_plain]))
         name=getattr(node,'vararg',None)
         if name:
+            if isPython3 and isinstance(name,ast.arg):
+                name=name.arg
             args2.append('*'+name)
         name=getattr(node,'kwarg',None)
         if name:
+            if isPython3 and isinstance(name,ast.arg):
+                name=name.arg
             args2.append('**'+name)
         return ','.join(args2)
 
@@ -237,7 +243,7 @@ class CoffeeScriptFormatter(object):
             result.append(', '.join(items))
             result.append('}')
         else:
-            print('Error: f.Dict: len(keys) != len(values)\nkeys: %s\nvals: %s'%(repr(keys), repr(values)),nl=True)
+            print('Error: f.Dict: len(keys) != len(values)\nkeys: %s\nvals: %s'%(repr(keys), repr(values)))
         return ''.join(result)
 
     def do_Ellipsis(self,node):
@@ -337,7 +343,7 @@ class CoffeeScriptFormatter(object):
             for i in range(len(ops)):
                 result.append('%s%s'%(ops[i], comps[i]))
         else:
-            print(('can not happen: ops', repr(ops), 'comparators', repr(comps)),nl=True)
+            print(('can not happen: ops', repr(ops), 'comparators', repr(comps)))
         return ''.join(result)
 
     def do_IfExp(self,node):
@@ -469,7 +475,8 @@ class CoffeeScriptFormatter(object):
         if getattr(node,'dest',None):
             vals.append('dest=%s'%self.visit(node.dest))
         if getattr(node,'nl',None):
-            vals.append('nl=%s'%node.nl)
+            if node.nl=='False':
+                vals.append('nl=%s'%node.nl)
         return self.indent('print(%s)\n'%','.join(vals))
 
     def do_Raise(self,node):
@@ -487,6 +494,30 @@ class CoffeeScriptFormatter(object):
             return self.indent('return %s\n'%self.visit(node.value).strip())
         else:
             return self.indent('return\n')
+
+    def do_Try(self,node):
+        result=[]
+        result.append(self.indent('try:\n'))
+        for z in node.body:
+            self.level+=1
+            result.append(self.visit(z))
+            self.level-=1
+        if node.handlers:
+            for z in node.handlers:
+                result.append(self.visit(z))
+        if node.orelse:
+            result.append(self.indent('else:\n'))
+            for z in node.orelse:
+                self.level+=1
+                result.append(self.visit(z))
+                self.level-=1
+        if node.finalbody:
+            result.append(self.indent('finally:\n'))
+            for z in node.finalbody:
+                self.level+=1
+                result.append(self.visit(z))
+                self.level-=1
+        return ''.join(result)
 
     def do_TryExcept(self,node):
         result=[]
@@ -666,7 +697,7 @@ class LeoGlobals(object):
             import leo.core.leoGlobals as leo_g
             leo_g.trace(caller_level=2,*args,**keys)
         except ImportError:
-            print((args, keys),nl=True)
+            print((args, keys))
 
 
 class MakeCoffeeScriptController(object):
@@ -698,10 +729,10 @@ class MakeCoffeeScriptController(object):
         in the [Source Files] section of the configuration file.
         '''
         if  not fn.endswith('.py'):
-            print(('not a python file', fn),nl=True)
+            print(('not a python file', fn))
             return
         if  not os.path.exists(fn):
-            print(('not found', fn),nl=True)
+            print(('not found', fn))
             return
         base_fn=os.path.basename(fn)
         out_fn=os.path.join(self.output_directory,base_fn)
@@ -709,7 +740,7 @@ class MakeCoffeeScriptController(object):
         out_fn=out_fn[:-3]+'.coffee'
         dir_=os.path.dirname(out_fn)
         if os.path.exists(out_fn) and  not self.overwrite:
-            print('file exists: %s'%out_fn,nl=True)
+            print('file exists: %s'%out_fn)
         else:
             if  not dir_ or os.path.exists(dir_):
                 t1=time.clock()
@@ -720,9 +751,9 @@ class MakeCoffeeScriptController(object):
                 self.output_time_stamp(f)
                 f.write(s)
                 f.close()
-                print('wrote: %s'%out_fn,nl=True)
+                print('wrote: %s'%out_fn)
             else:
-                print('output directory not not found: %s'%dir_,nl=True)
+                print('output directory not not found: %s'%dir_)
 
     def output_time_stamp(self,f):
         '''Put a time-stamp in the output file f.'''
@@ -742,12 +773,12 @@ class MakeCoffeeScriptController(object):
                     for fn in self.files:
                         self.make_coffeescript_file(fn)
                 else:
-                    print('output directory not found: %s'%dir_,nl=True)
+                    print('output directory not found: %s'%dir_)
             else:
-                print('no output directory',nl=True)
+                print('no output directory')
         else:
             if  not self.enable_unit_tests:
-                print('no input files',nl=True)
+                print('no input files')
 
     def run_all_unit_tests(self):
         '''Run all unit tests in the python-to-coffeescript/test directory.'''
@@ -779,8 +810,8 @@ class MakeCoffeeScriptController(object):
             if os.path.exists(dir_):
                 self.output_directory=dir_
             else:
-                print('--dir: directory does not exist: %s'%dir_,nl=True)
-                print('exiting',nl=True)
+                print('--dir: directory does not exist: %s'%dir_)
+                print('exiting')
                 sys.exit(1)
         if args:
             args=self.finalize(z) for z in args
@@ -810,28 +841,28 @@ class MakeCoffeeScriptController(object):
             files2.extend(glob.glob(self.finalize(z)))
         self.files=z for z in files2 if z and os.path.exists(z)
         if trace:
-            print('Files (from %s)...\n'%files_source,nl=True)
+            print('Files (from %s)...\n'%files_source)
             for z in self.files:
-                print(z,nl=True)
-            print('',nl=True)
+                print(z)
+            print('')
         if 'output_directory' in parser.options('Global'):
             s=parser.get('Global','output_directory')
             output_dir=self.finalize(s)
             if os.path.exists(output_dir):
                 self.output_directory=output_dir
                 if self.verbose:
-                    print('output directory: %s\n'%output_dir,nl=True)
+                    print('output directory: %s\n'%output_dir)
             else:
-                print('output directory not found: %s\n'%output_dir,nl=True)
+                print('output directory not found: %s\n'%output_dir)
                 self.output_directory=None
         if 'prefix_lines' in parser.options('Global'):
             prefix=parser.get('Global','prefix_lines')
             self.prefix_lines=prefix.split('\n')
             if trace:
-                print('Prefix lines...\n',nl=True)
+                print('Prefix lines...\n')
                 for z in self.prefix_lines:
-                    print(z,nl=True)
-                print('',nl=True)
+                    print(z)
+                print('')
 
     def create_parser(self):
         '''Create a RawConfigParser and return it.'''
@@ -843,13 +874,13 @@ class MakeCoffeeScriptController(object):
         fn=self.finalize(self.config_fn)
         if os.path.exists(fn):
             if self.verbose:
-                print('\nconfiguration file: %s\n'%fn,nl=True)
+                print('\nconfiguration file: %s\n'%fn)
             f=open(fn,'r')
             s=f.read()
             f.close()
             return s
         else:
-            print('\nconfiguration file not found: %s'%fn,nl=True)
+            print('\nconfiguration file not found: %s'%fn)
             return ''
 
     def init_parser(self,s):
