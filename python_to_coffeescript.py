@@ -18,8 +18,6 @@ Written by Edward K. Ream.
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 # 
 # **THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
-import ast
-# import ast_utils
 from collections import OrderedDict
     # Requires Python 2.7 or above. Without OrderedDict
     # the configparser will give random order for patterns.
@@ -55,13 +53,11 @@ def main():
     controller.run()
     print('done')
 
-
 def dump(title, s=None):
     if s:
         print('===== %s...\n%s\n' % (title, s.rstrip()))
     else:
         print('===== %s...\n' % title)
-
 
 def dump_dict(title, d):
     '''Dump a dictionary with a header.'''
@@ -70,14 +66,12 @@ def dump_dict(title, d):
         print('%30s %s' % (z, d.get(z)))
     print('')
 
-
 def dump_list(title, aList):
     '''Dump a list with a header.'''
     dump(title)
     for z in aList:
         print(z)
     print('')
-
 
 def pdb(self):
     '''Invoke a debugger during unit testing.'''
@@ -88,18 +82,14 @@ def pdb(self):
         import pdb
         pdb.set_trace()
 
-
 def truncate(s, n):
     '''Return s truncated to n characters.'''
     return s if len(s) <= n else s[: n - 3] + '...'
 
 
 
-
 class CoffeeScriptTokenizer:
     '''A token-based Python beautifier.'''
-
-
 
 
     class OutputToken:
@@ -136,7 +126,7 @@ class CoffeeScriptTokenizer:
         __str__ = __repr__
 
     def __init__(self, controller):
-        '''Ctor for PythonPrettyPrinter class.'''
+        '''Ctor for CoffeeScriptTokenizer class.'''
         self.controller = controller
         # Globals...
         self.code_list = [] # The list of output tokens.
@@ -146,16 +136,20 @@ class CoffeeScriptTokenizer:
         self.s = None # The string containing the line.
         self.val = None
         # State vars...
+        self.after_self = False
         self.backslash_seen = False
         self.decorator_seen = False
+        self.extends_flag = False
         self.in_class_line = False
         self.in_def_line = False
+        self.in_import = False
+        self.input_paren_level = 0
         self.def_name_seen = False
         self.level = 0 # indentation level.
         self.lws = '' # Leading whitespace.
             # Typically ' '*self.tab_width*self.level,
             # but may be changed for continued lines.
-        self.paren_level = 0 # Number of unmatched left parens.
+        self.output_paren_level = 0 # Number of unmatched left parens in output.
         self.state_stack = [] # Stack of ParseState objects.
         # Settings...
         self.delete_blank_lines = False
@@ -200,7 +194,7 @@ class CoffeeScriptTokenizer:
                 raw_val = self.raw_val.rstrip()
                 self.backslash_seen = raw_val.endswith('\\')
                 # g.trace('backslash_seen',self.backslash_seen)
-                if self.paren_level > 0:
+                if self.output_paren_level > 0:
                     s = self.raw_val.rstrip()
                     n = g.computeLeadingWhitespaceWidth(s, self.tab_width)
                     # This n will be one-too-many if formatting has
@@ -262,32 +256,56 @@ class CoffeeScriptTokenizer:
         '''Handle a name token.'''
         name = self.val
         if name in ('class', 'def'):
-            self.decorator_seen = False
-            state = self.state_stack[-1]
-            if state.kind == 'decorator':
-                self.clean_blank_lines()
-                self.line_end()
-                self.state_stack.pop()
-            else:
-                self.blank_lines(1)
-                # self.blank_lines(2 if self.level == 0 else 1)
-            self.push_state(name)
-            self.push_state('indent', self.level)
-                # For trailing lines after inner classes/defs.
-            if name == 'def':
-                self.in_def_line = True
-                self.def_name_seen = False
-            else:
-                self.in_class_line = True
-                self.word(name)
+            self.gen_class_or_def(name)
+        elif name in ('from', 'import'):
+            self.gen_import(name)
+        elif name == 'self':
+            self.gen_self()
         elif self.in_def_line and not self.def_name_seen:
+            if name == '__init__':
+                name = 'constructor'
             self.word(name)
-            self.op('=')
+            if self.in_state('class'):
+                self.op_blank(':')
+            else:
+                self.op('=')
             self.def_name_seen = True
         elif name in ('and', 'in', 'not', 'not in', 'or'):
             self.word_op(name)
         else:
             self.word(name)
+
+    def gen_class_or_def(self, name):
+        self.decorator_seen = False
+        state = self.state_stack[-1]
+        if state.kind == 'decorator':
+            self.clean_blank_lines()
+            self.line_end()
+            self.state_stack.pop()
+        else:
+            self.blank_lines(1)
+            # self.blank_lines(2 if self.level == 0 else 1)
+        self.push_state(name)
+        self.push_state('indent', self.level)
+            # For trailing lines after inner classes/defs.
+        if name == 'def':
+            self.in_def_line = True
+            self.in_class_line = False
+            self.def_name_seen = False
+        else:
+            self.extends_flag = False
+            self.in_class_line = True
+            self.word(name)
+
+    def gen_import(self, name):
+        self.add_token('comment', '# ' + name)
+
+    def gen_self(self):
+        if self.in_def_line:
+            self.after_self = True
+        else:
+            self.blank_op('@')
+            self.after_self = True
 
     def do_newline(self):
         '''Handle a regular newline.'''
@@ -305,37 +323,31 @@ class CoffeeScriptTokenizer:
         '''Handle an op token.'''
         val = self.val
         if val == '.':
-            self.op_no_blanks(val)
+            self.gen_period()
         elif val == '@':
-            if not self.decorator_seen:
-                self.blank_lines(1)
-                self.decorator_seen = True
-            self.op_no_blanks(val)
-            self.push_state('decorator')
-        elif val in ',;:':
+            self.gen_at()
+        elif val == ':':
+            self.gen_colon()
+        elif val == '(':
+            self.gen_open_paren()
+        elif val == ')':
+            self.gen_close_paren()
+        elif val == ',':
+            self.gen_comma()
+        elif val == ';':
             # Pep 8: Avoid extraneous whitespace immediately before
             # comma, semicolon, or colon.
-            if self.in_def_line and val == ':':
-                self.in_def_line = False
-            elif self.in_class_line and val == ':':
-                self.in_class_line = False
-            else:
-                self.op_blank(val)
-        elif val in '([{':
+            self.op_blank(val)
+        elif val in '[{':
             # Pep 8: Avoid extraneous whitespace immediately inside
             # parentheses, brackets or braces.
             self.lt(val)
-        elif val in ')]}':
-            if self.in_def_line and val == ')':
-                self.rt(val)
-                self.op('->')
-            else:
-                # Ditto.
-                self.rt(val)
+        elif val in ']}':
+            self.rt(val)
         elif val == '=':
             # Pep 8: Don't use spaces around the = sign when used to indicate
             # a keyword argument or a default parameter value.
-            if self.paren_level:
+            if self.output_paren_level:
                 self.op_no_blanks(val)
             else:
                 self.op(val)
@@ -352,6 +364,75 @@ class CoffeeScriptTokenizer:
             # Pep 8: If operators with different priorities are used,
             # consider adding whitespace around the operators with the lowest priority(ies).
             self.op(val)
+
+    def gen_at(self):
+        
+        val = self.val
+        assert val == '@', val
+        if not self.decorator_seen:
+            self.blank_lines(1)
+            self.decorator_seen = True
+        self.op_no_blanks(val)
+        self.push_state('decorator')
+
+    def gen_colon(self):
+        
+        val = self.val
+        assert val == ':', val
+        if self.in_def_line:
+            if self.input_paren_level == 0:
+                self.in_def_line = False
+                self.op('->')
+        elif self.in_class_line:
+            if self.input_paren_level == 0:
+                self.in_class_line = False
+        else:
+            self.op_blank(val)
+    def gen_comma(self):
+        
+        val = self.val
+        assert val == ',', val
+        if self.after_self:
+            self.after_self = False
+        else:
+            # Pep 8: Avoid extraneous whitespace immediately before
+            # comma, semicolon, or colon.
+            self.op_blank(val)
+
+    def gen_open_paren(self):
+        
+        val = self.val
+        assert val == '(', val
+        self.input_paren_level += 1
+        if self.in_class_line:
+            if not self.extends_flag:
+                self.word('extends')
+                self.extends_flag = True
+        else:
+            self.lt(val)
+
+    def gen_close_paren(self):
+        
+        val = self.val
+        assert val == ')', val
+        self.input_paren_level -= 1
+        prev = self.code_list[-1]
+        if self.in_class_line:
+            self.in_class_line = False
+        elif prev.kind == 'lt' and prev.value == '(':
+            self.clean('lt')
+            self.output_paren_level -= 1
+        else:
+            self.rt(val)
+
+    def gen_period(self):
+        
+        val = self.val
+        assert val == '.', val
+        if self.after_self:
+            self.after_self = False
+        else:
+            self.op_no_blanks(val)
 
     def do_string(self):
         '''Handle a 'string' token.'''
@@ -387,7 +468,7 @@ class CoffeeScriptTokenizer:
         '''Add a blank request on the code list.'''
         prev = self.code_list[-1]
         if not prev.kind in (
-            'blank', 'blank-lines',
+            'blank', 'blank-lines', 'blank-op',
             'file-start',
             'line-end', 'line-indent',
             'lt', 'op-no-blanks', 'unary-op',
@@ -464,11 +545,10 @@ class CoffeeScriptTokenizer:
         '''Add a line-start request to the code list.'''
         self.line_indent()
 
-
     def lt(self, s):
         '''Add a left paren request to the code list.'''
         assert s in '([{', repr(s)
-        self.paren_level += 1
+        self.output_paren_level += 1
         self.clean('blank')
         prev = self.code_list[-1]
         if prev.kind in ('op', 'word-op'):
@@ -487,7 +567,7 @@ class CoffeeScriptTokenizer:
     def rt(self, s):
         '''Add a right paren request to the code list.'''
         assert s in ')]}', repr(s)
-        self.paren_level -= 1
+        self.output_paren_level -= 1
         prev = self.code_list[-1]
         if prev.kind == 'arg-end':
             # Remove a blank token preceding the arg-end token.
@@ -516,6 +596,11 @@ class CoffeeScriptTokenizer:
         '''Add an operator *not* surrounded by blanks.'''
         self.clean('blank')
         self.add_token('op-no-blanks', s)
+        
+    def blank_op(self, s):
+        '''Add an operator possibly with a preceding blank.'''
+        self.blank()
+        self.add_token('blank-op', s)
 
     def possible_unary_op(self, s):
         '''Add a unary or binary op to the token list.'''
@@ -537,7 +622,7 @@ class CoffeeScriptTokenizer:
     def star_op(self):
         '''Put a '*' op, with special cases for *args.'''
         val = '*'
-        if self.paren_level:
+        if self.output_paren_level:
             i = len(self.code_list) - 1
             if self.code_list[i].kind == 'blank':
                 i -= 1
@@ -555,7 +640,7 @@ class CoffeeScriptTokenizer:
     def star_star_op(self):
         '''Put a ** operator, with a special case for **kwargs.'''
         val = '**'
-        if self.paren_level:
+        if self.output_paren_level:
             i = len(self.code_list) - 1
             if self.code_list[i].kind == 'blank':
                 i -= 1
@@ -599,11 +684,13 @@ class CoffeeScriptTokenizer:
         state = self.ParseState(kind, value)
         self.state_stack.append(state)
 
+    def in_state(self, kind):
+        '''Return True if state.kind == kind for some ParseState on the state_stack.'''
+        return any([z.kind == kind for z in self.state_stack])
+
 
 class LeoGlobals(object):
     '''A class supporting g.pdb and g.trace for compatibility with Leo.'''
-
-
 
 
     class NullObject:
@@ -611,26 +698,15 @@ class LeoGlobals(object):
         An object that does nothing, and does it very well.
         From the Python cookbook, recipe 5.23
         """
-
         def __init__(self, *args, **keys): pass
-
         def __call__(self, *args, **keys): return self
-
         def __repr__(self): return "NullObject"
-
         def __str__(self): return "NullObject"
-
         def __bool__(self): return False
-
         def __nonzero__(self): return 0
-
         def __delattr__(self, attr): return self
-
         def __getattr__(self, attr): return self
-
         def __setattr__(self, attr, val): return self
-
-
 
 
     class ReadLinesClass:
@@ -652,7 +728,6 @@ class LeoGlobals(object):
 
         __next__ = next
 
-
     def _callerName(self, n=1, files=False):
         # print('_callerName: %s %s' % (n,files))
         try: # get the function name from the call stack.
@@ -672,7 +747,6 @@ class LeoGlobals(object):
         except Exception:
             # es_exception()
             return '' # "<no caller name>"
-
 
     def callers(self, n=4, count=0, excludeCaller=True, files=False):
         '''Return a list containing the callers of the function that called g.callerList.
@@ -698,12 +772,10 @@ class LeoGlobals(object):
         sep = '\n' if files else ','
         return sep.join(result)
 
-
     def cls(self):
         '''Clear the screen.'''
         if sys.platform.lower().startswith('win'):
             os.system('cls')
-
 
     def computeLeadingWhitespace(self, width, tab_width):
         '''Returns optimized whitespace corresponding to width with the indicated tab_width.'''
@@ -716,7 +788,6 @@ class LeoGlobals(object):
         else: # Negative tab width always gets converted to blanks.
             return (' ' * width)
 
-
     def computeLeadingWhitespaceWidth(self, s, tab_width):
         '''Returns optimized whitespace corresponding to width with the indicated tab_width.'''
         w = 0
@@ -728,7 +799,6 @@ class LeoGlobals(object):
             else:
                 break
         return w
-
 
     def isString(self, s):
         '''Return True if s is any string, but not bytes.'''
@@ -744,7 +814,6 @@ class LeoGlobals(object):
         else:
             return type(s) == types.UnicodeType
 
-
     def pdb(self):
         try:
             import leo.core.leoGlobals as leo_g
@@ -753,18 +822,15 @@ class LeoGlobals(object):
             import pdb
             pdb.set_trace()
 
-
     def shortFileName(self, fileName, n=None):
         if n is None or n < 1:
             return os.path.basename(fileName)
         else:
             return '/'.join(fileName.replace('\\', '/').split('/')[-n:])
 
-
     def splitLines(self, s):
         '''Split s into lines, preserving trailing newlines.'''
         return s.splitlines(True) if s else []
-
 
     def toUnicode(self, s, encoding='utf-8', reportErrors=False):
         '''Connvert a non-unicode string with the given encoding to unicode.'''
@@ -793,14 +859,12 @@ class LeoGlobals(object):
             print('toUnicode: returns %s' % s)
         return s
 
-
     def trace(self, *args, **keys):
         try:
             import leo.core.leoGlobals as leo_g
             leo_g.trace(caller_level=2, *args, **keys)
         except ImportError:
             print(args, keys)
-
 
     if isPython3:
 
@@ -820,7 +884,6 @@ class LeoGlobals(object):
 
 
 
-
 class MakeCoffeeScriptController(object):
     '''The controller class for python_to_coffeescript.py.'''
 
@@ -836,10 +899,7 @@ class MakeCoffeeScriptController(object):
         # Ivars set in the config file...
         self.output_directory = self.finalize('.')
         self.overwrite = False
-        self.trace_visitors = False
-        self.update_flag = False
         self.verbose = False # Trace config arguments.
-
 
     def finalize(self, fn):
         '''Finalize and regularize a filename.'''
@@ -847,7 +907,6 @@ class MakeCoffeeScriptController(object):
         fn = os.path.abspath(fn)
         fn = os.path.normpath(fn)
         return fn
-
 
     def make_coffeescript_file(self, fn):
         '''
@@ -881,12 +940,10 @@ class MakeCoffeeScriptController(object):
         else:
             print('output directory not not found: %s' % dir_)
 
-
     def output_time_stamp(self, f):
         '''Put a time-stamp in the output file f.'''
         f.write('# python_to_coffeescript: %s\n' %
             time.strftime("%a %d %b %Y at %H:%M:%S"))
-
 
     def run(self):
         '''
@@ -908,7 +965,6 @@ class MakeCoffeeScriptController(object):
         elif not self.enable_unit_tests:
             print('no input files')
 
-
     def run_all_unit_tests(self):
         '''Run all unit tests in the python-to-coffeescript/test directory.'''
         import unittest
@@ -917,7 +973,6 @@ class MakeCoffeeScriptController(object):
                                 pattern='test*.py',
                                 top_level_dir=None)
         unittest.TextTestRunner(verbosity=1).run(suite)
-
 
     def scan_command_line(self):
         '''Set ivars from command-line arguments.'''
@@ -933,33 +988,13 @@ class MakeCoffeeScriptController(object):
             help='overwrite existing .coffee files')
         add('-t', '--test', action='store_true', default=False,
             help='run unit tests on startup')
-        # add('--trace-matches', action='store_true', default=False,
-            # help='trace Pattern.matches')
-        # add('--trace-patterns', action='store_true', default=False,
-            # help='trace pattern creation')
-        # add('--trace-reduce', action='store_true', default=False,
-            # help='trace st.reduce_types')
-        add('--trace-visitors', action='store_true', default=False,
-            help='trace visitor methods')
-        # add('-u', '--update', action='store_true', default=False,
-            # help='update stubs in existing stub file')
         add('-v', '--verbose', action='store_true', default=False,
             help='verbose output')
-        # add('-w', '--warn', action='store_true', default=False,
-            # help='warn about unannotated args')
         # Parse the options
         options, args = parser.parse_args()
         # Handle the options...
         self.enable_unit_tests = options.test
         self.overwrite = options.overwrite
-        self.trace_visitors = options.trace_visitors
-        ###
-        # self.trace_matches = options.trace_matches
-        # self.trace_patterns = options.trace_patterns
-        # self.trace_reduce = options.trace_reduce
-        # self.update_flag = options.update
-        # self.verbose = options.verbose
-        # self.warn = options.warn
         if options.fn:
             self.config_fn = options.fn
         if options.dir:
@@ -976,7 +1011,6 @@ class MakeCoffeeScriptController(object):
             args = [self.finalize(z) for z in args]
             if args:
                 self.files = args
-
 
     def scan_options(self):
         '''Set all configuration-related ivars.'''
@@ -1028,14 +1062,12 @@ class MakeCoffeeScriptController(object):
         # self.general_patterns = self.scan_patterns('General Patterns')
         # self.make_patterns_dict()
 
-
     def create_parser(self):
         '''Create a RawConfigParser and return it.'''
         parser = configparser.RawConfigParser(dict_type=OrderedDict)
             # Requires Python 2.7
         parser.optionxform = str
         return parser
-
 
     def get_config_string(self):
         fn = self.finalize(self.config_fn)
@@ -1049,7 +1081,6 @@ class MakeCoffeeScriptController(object):
         else:
             print('\nconfiguration file not found: %s' % fn)
             return ''
-
 
     def init_parser(self, s):
         '''Add double back-slashes to all patterns starting with '['.'''
@@ -1069,7 +1100,6 @@ class MakeCoffeeScriptController(object):
         file_object = io.StringIO(s)
         self.parser.readfp(file_object)
 
-
     def is_section_name(self, s):
 
         def munge(s):
@@ -1082,7 +1112,6 @@ class MakeCoffeeScriptController(object):
                 if s == munge(s2):
                     return True
         return False
-
 
 
 
@@ -1110,19 +1139,15 @@ class TestClass(object):
         assert all(g == '.' for g in group[1:: 2]), group
         return ndots, os.sep.join(group[:: 2])
 
-
     def return_all(self):
         return all([is_known_type(z) for z in s3.split(',')])
         # return all(['abc'])
 
-
     def return_array():
         return f(s[1: -1])
 
-
     def return_list(self, a):
         return [a]
-
 
     def return_two_lists(s):
         if 1:

@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sat 20 Feb 2016 at 12:05:51
+# python_to_coffeescript: Sat 20 Feb 2016 at 16:38:05
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -19,45 +19,43 @@ Written by Edward K. Ream.
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 # **THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
-import ast
-# import ast_utils
-from collections import OrderedDict
+# from collections # import OrderedDict
     # Requires Python 2.7 or above. Without OrderedDict
     # the configparser will give random order for patterns.
 try:
-    import ConfigParser as configparser # Python 2
+    # import ConfigParser as configparser # Python 2
 except ImportError:
-    import configparser # Python 3
-import glob
-import optparse
-import os
+    # import configparser # Python 3
+# import glob
+# import optparse
+# import os
 # import re
-import sys
-import time
-import token
-import tokenize
-import types
+# import sys
+# import time
+# import token
+# import tokenize
+# import types
 try:
-    import StringIO as io # Python 2
+    # import StringIO as io # Python 2
 except ImportError:
-    import io # Python 3
+    # import io # Python 3
 isPython3 = sys.version_info >= (3, 0, 0)
 
-main = () ->
+main = ->
     '''
     The driver for the stand-alone version of make-stub-files.
     All options come from ~/stubs/make_stub_files.cfg.
     '''
     # g.cls()
-    controller = MakeCoffeeScriptController()
-    controller.scan_command_line()
-    controller.scan_options()
-    controller.run()
+    controller = MakeCoffeeScriptController
+    controller.scan_command_line
+    controller.scan_options
+    controller.run
     print('done')
 
 dump = (title, s=None) ->
     if s:
-        print('===== %s...\n%s\n' % (title, s.rstrip()))
+        print('===== %s...\n%s\n' % (title, s.rstrip))
     else:
         print('===== %s...\n' % title)
 
@@ -75,14 +73,14 @@ dump_list = (title, aList) ->
         print(z)
     print('')
 
-pdb = (self) ->
+pdb = ->
     '''Invoke a debugger during unit testing.'''
     try:
-        import leo.core.leoGlobals as leo_g
-        leo_g.pdb()
+        # import leo core.leoGlobals as leo_g
+        leo_g.pdb
     except ImportError:
-        import pdb
-        pdb.set_trace()
+        # import pdb
+        pdb.set_trace
 
 truncate = (s, n) ->
     '''Return s truncated to n characters.'''
@@ -94,267 +92,359 @@ class CoffeeScriptTokenizer
     class OutputToken
         '''A class representing Output Tokens'''
 
-        __init__ = (self, kind, value) ->
-            self.kind = kind
-            self.value = value
+        constructor: (kind, value) ->
+            @kind = kind
+            @value = value
 
-        __repr__ = (self) ->
-            if self.kind == 'line-indent':
-                assert not self.value.strip(' ')
-                return '%15s %s' % (self.kind, len(self.value))
+        __repr__: ->
+            if @kind == 'line-indent':
+                assert not @value.strip(' ')
+                return '%15s %s' % (@kind, len(@value))
             else:
-                return '%15s %r' % (self.kind, self.value)
+                return '%15s %r' % (@kind, @value)
 
         __str__ = __repr__
 
-        to_string = (self) ->
+        to_string: ->
             '''Convert an output token to a string.'''
-            return self.value if g.isString(self.value) else ''
+            return @value if g.isString(@value) else ''
 
     class ParseState
         '''A class representing items parse state stack.'''
 
-        __init__ = (self, kind, value) ->
-            self.kind = kind
-            self.value = value
+        constructor: (kind, value) ->
+            @kind = kind
+            @value = value
 
-        __repr__ = (self) ->
-            return 'State: %10s %s' % (self.kind, repr(self.value))
+        __repr__: ->
+            return 'State: %10s %s' % (@kind, repr(@value))
 
         __str__ = __repr__
 
-    __init__ = (self, controller) ->
-        '''Ctor for PythonPrettyPrinter class.'''
-        self.controller = controller
+    constructor: (controller) ->
+        '''Ctor for CoffeeScriptTokenizer class.'''
+        @controller = controller
         # Globals...
-        self.code_list = [] # The list of output tokens.
+        @code_list = [] # The list of output tokens.
         # The present line and token...
-        self.last_line_number = 0
-        self.raw_val = None # Raw value for strings, comments.
-        self.s = None # The string containing the line.
-        self.val = None
+        @last_line_number = 0
+        @raw_val = None # Raw value for strings, comments.
+        @s = None # The string containing the line.
+        @val = None
         # State vars...
-        self.backslash_seen = False
-        self.decorator_seen = False
-        self.in_class_line = False
-        self.in_def_line = False
-        self.def_name_seen = False
-        self.level = 0 # indentation level.
-        self.lws = '' # Leading whitespace.
+        @after_self = False
+        @backslash_seen = False
+        @decorator_seen = False
+        @extends_flag = False
+        @in_class_line = False
+        @in_def_line = False
+        @in_import = False
+        @input_paren_level = 0
+        @def_name_seen = False
+        @level = 0 # indentation level.
+        @lws = '' # Leading whitespace.
             # Typically ' '*self.tab_width*self.level,
             # but may be changed for continued lines.
-        self.paren_level = 0 # Number of unmatched left parens.
-        self.state_stack = [] # Stack of ParseState objects.
+        @output_paren_level = 0 # Number of unmatched left parens in output.
+        @state_stack = [] # Stack of ParseState objects.
         # Settings...
-        self.delete_blank_lines = False
-        self.tab_width = 4
+        @delete_blank_lines = False
+        @tab_width = 4
         # Statistics
-        self.n_changed_nodes = 0
-        self.n_input_tokens = 0
-        self.n_output_tokens = 0
-        self.n_strings = 0
-        self.parse_time = 0.0
-        self.tokenize_time = 0.0
-        self.beautify_time = 0.0
-        self.check_time = 0.0
-        self.total_time = 0.0
+        @n_changed_nodes = 0
+        @n_input_tokens = 0
+        @n_output_tokens = 0
+        @n_strings = 0
+        @parse_time = 0.0
+        @tokenize_time = 0.0
+        @beautify_time = 0.0
+        @check_time = 0.0
+        @total_time = 0.0
          # Undo vars
-        self.changed = False
-        self.dirtyVnodeList = []
+        @changed = False
+        @dirtyVnodeList = []
 
-    format = (self, tokens) ->
+    format: (tokens) ->
         '''
         The main line of PythonTokenBeautifier class.
         Called by prettPrintNode & test_beautifier.
         '''
 
-        oops = () ->
-            g.trace('unknown kind', self.kind)
+        oops: ->
+            g.trace('unknown kind', @kind)
 
-        self.code_list = []
-        self.state_stack = []
-        self.file_start()
+        @code_list = []
+        @state_stack = []
+        @file_start
         for token5tuple in tokens:
             t1, t2, t3, t4, t5 = token5tuple
             srow, scol = t3
-            self.kind = token.tok_name[t1].lower()
-            self.val = g.toUnicode(t2)
-            self.raw_val = g.toUnicode(t5)
-            if srow != self.last_line_number:
+            @kind = token.tok_name[t1].lower
+            @val = g.toUnicode(t2)
+            @raw_val = g.toUnicode(t5)
+            if srow != @last_line_number:
                 # Handle a previous backslash.
-                if self.backslash_seen:
-                    self.backslash()
+                if @backslash_seen:
+                    @backslash
                 # Start a new row.
-                raw_val = self.raw_val.rstrip()
-                self.backslash_seen = raw_val.endswith('\\')
+                raw_val = @raw_val.rstrip
+                @backslash_seen = raw_val.endswith('\\')
                 # g.trace('backslash_seen',self.backslash_seen)
-                if self.paren_level > 0:
-                    s = self.raw_val.rstrip()
-                    n = g.computeLeadingWhitespaceWidth(s, self.tab_width)
+                if @output_paren_level > 0:
+                    s = @raw_val.rstrip
+                    n = g.computeLeadingWhitespaceWidth(s, @tab_width)
                     # This n will be one-too-many if formatting has
                     # changed: foo (
                     # to:      foo(
-                    self.line_indent(ws=' ' * n)
+                    @line_indent(ws=' ' * n)
                         # Do not set self.lws here!
-                self.last_line_number = srow
+                @last_line_number = srow
             # g.trace('%10s %r'% (self.kind,self.val))
-            func = getattr(self, 'do_' + self.kind, oops)
-            func()
-        self.file_end()
-        return ''.join([z.to_string() for z in self.code_list])
+            func = getattr(@'do_' + @kind, oops)
+            func
+        @file_end
+        return ''.join([z.to_string for z in @code_list])
 
-    do_comment = (self) ->
+    do_comment: ->
         '''Handle a comment token.'''
-        raw_val = self.raw_val.rstrip()
-        val = self.val.rstrip()
-        entire_line = raw_val.lstrip().startswith('#')
-        self.backslash_seen = False
+        raw_val = @raw_val.rstrip
+        val = @val.rstrip
+        entire_line = raw_val.lstrip.startswith('#')
+        @backslash_seen = False
             # Putting the comment will put the backslash.
         if entire_line:
-            self.clean('line-indent')
-            self.add_token('comment', raw_val)
+            @clean('line-indent')
+            @add_token('comment', raw_val)
         else:
-            self.blank()
-            self.add_token('comment', val)
+            @blank
+            @add_token('comment', val)
 
-    do_endmarker = (self) ->
+    do_endmarker: ->
         '''Handle an endmarker token.'''
         pass
 
-    do_errortoken = (self) ->
+    do_errortoken: ->
         '''Handle an errortoken token.'''
         # This code is executed for versions of Python earlier than 2.4
-        if self.val == '@':
-            self.op(self.val)
+        if @val == '@':
+            @op(@val)
 
-    do_dedent = (self) ->
+    do_dedent: ->
         '''Handle dedent token.'''
-        self.level -= 1
-        self.lws = self.level * self.tab_width * ' '
-        self.line_start()
-        state = self.state_stack[-1]
-        if state.kind == 'indent' and state.value == self.level:
-            self.state_stack.pop()
-            state = self.state_stack[-1]
+        @level -= 1
+        @lws = @level * @tab_width * ' '
+        @line_start
+        state = @state_stack[-1]
+        if state.kind == 'indent' and state.value == @level:
+            @state_stack.pop
+            state = @state_stack[-1]
             if state.kind in ('class', 'def'):
-                self.state_stack.pop()
-                self.blank_lines(1)
+                @state_stack.pop
+                @blank_lines(1)
 
-    do_indent = (self) ->
+    do_indent: ->
         '''Handle indent token.'''
-        self.level += 1
-        self.lws = self.val
-        self.line_start()
+        @level += 1
+        @lws = @val
+        @line_start
 
-    do_name = (self) ->
+    do_name: ->
         '''Handle a name token.'''
-        name = self.val
+        name = @val
         if name in ('class', 'def'):
-            self.decorator_seen = False
-            state = self.state_stack[-1]
-            if state.kind == 'decorator':
-                self.clean_blank_lines()
-                self.line_end()
-                self.state_stack.pop()
+            @gen_class_or_def(name)
+        elif name in ('from', 'import'):
+            @gen_import(name)
+        elif name == 'self':
+            @gen_self
+        elif @in_def_line and not @def_name_seen:
+            if name == '__init__':
+                name = 'constructor'
+            @word(name)
+            if @in_state('class'):
+                @op_blank(':')
             else:
-                self.blank_lines(1)
-                # self.blank_lines(2 if self.level == 0 else 1)
-            self.push_state(name)
-            self.push_state('indent', self.level)
-                # For trailing lines after inner classes/defs.
-            if name == 'def':
-                self.in_def_line = True
-                self.def_name_seen = False
-            else:
-                self.in_class_line = True
-                self.word(name)
-        elif self.in_def_line and not self.def_name_seen:
-            self.word(name)
-            self.op('=')
-            self.def_name_seen = True
+                @op('=')
+            @def_name_seen = True
         elif name in ('and', 'in', 'not', 'not in', 'or'):
-            self.word_op(name)
+            @word_op(name)
         else:
-            self.word(name)
+            @word(name)
 
-    do_newline = (self) ->
+    gen_class_or_def: (name) ->
+        @decorator_seen = False
+        state = @state_stack[-1]
+        if state.kind == 'decorator':
+            @clean_blank_lines
+            @line_end
+            @state_stack.pop
+        else:
+            @blank_lines(1)
+            # self.blank_lines(2 if self.level == 0 else 1)
+        @push_state(name)
+        @push_state('indent', @level)
+            # For trailing lines after inner classes/defs.
+        if name == 'def':
+            @in_def_line = True
+            @in_class_line = False
+            @def_name_seen = False
+        else:
+            @extends_flag = False
+            @in_class_line = True
+            @word(name)
+
+    gen_import: (name) ->
+        @add_token('comment', '# ' + name)
+
+    gen_self: ->
+        if @in_def_line:
+            @after_self = True
+        else:
+            @blank_op('@')
+            @after_self = True
+
+    do_newline: ->
         '''Handle a regular newline.'''
-        self.line_end()
+        @line_end
 
-    do_nl = (self) ->
+    do_nl: ->
         '''Handle a continuation line.'''
-        self.line_end()
+        @line_end
 
-    do_number = (self) ->
+    do_number: ->
         '''Handle a number token.'''
-        self.add_token('number', self.val)
+        @add_token('number', @val)
 
-    do_op = (self) ->
+    do_op: ->
         '''Handle an op token.'''
-        val = self.val
+        val = @val
         if val == '.':
-            self.op_no_blanks(val)
+            @gen_period
         elif val == '@':
-            if not self.decorator_seen:
-                self.blank_lines(1)
-                self.decorator_seen = True
-            self.op_no_blanks(val)
-            self.push_state('decorator')
-        elif val in ',;:':
+            @gen_at
+        elif val == ':':
+            @gen_colon
+        elif val == '(':
+            @gen_open_paren
+        elif val == ')':
+            @gen_close_paren
+        elif val == ',':
+            @gen_comma
+        elif val == ';':
             # Pep 8: Avoid extraneous whitespace immediately before
             # comma, semicolon, or colon.
-            if self.in_def_line and val == ':':
-                self.in_def_line = False
-            elif self.in_class_line and val == ':':
-                self.in_class_line = False
-            else:
-                self.op_blank(val)
-        elif val in '([{':
+            @op_blank(val)
+        elif val in '[{':
             # Pep 8: Avoid extraneous whitespace immediately inside
             # parentheses, brackets or braces.
-            self.lt(val)
-        elif val in ')]}':
-            if self.in_def_line and val == ')':
-                self.rt(val)
-                self.op('->')
-            else:
-                # Ditto.
-                self.rt(val)
+            @lt(val)
+        elif val in ']}':
+            @rt(val)
         elif val == '=':
             # Pep 8: Don't use spaces around the = sign when used to indicate
             # a keyword argument or a default parameter value.
-            if self.paren_level:
-                self.op_no_blanks(val)
+            if @output_paren_level:
+                @op_no_blanks(val)
             else:
-                self.op(val)
+                @op(val)
         elif val in '~+-':
-            self.possible_unary_op(val)
+            @possible_unary_op(val)
         elif val == '*':
-            self.star_op()
+            @star_op
         elif val == '**':
-            self.star_star_op()
+            @star_star_op
         else:
             # Pep 8: always surround binary operators with a single space.
             # '==','+=','-=','*=','**=','/=','//=','%=','!=','<=','>=','<','>',
             # '^','~','*','**','&','|','/','//',
             # Pep 8: If operators with different priorities are used,
             # consider adding whitespace around the operators with the lowest priority(ies).
-            self.op(val)
+            @op(val)
 
-    do_string = (self) ->
+    gen_at: ->
+
+        val = @val
+        assert val == '@', val
+        if not @decorator_seen:
+            @blank_lines(1)
+            @decorator_seen = True
+        @op_no_blanks(val)
+        @push_state('decorator')
+
+    gen_colon: ->
+
+        val = @val
+        assert val == ':', val
+        if @in_def_line:
+            if @input_paren_level == 0:
+                @in_def_line = False
+                @op('->')
+        elif @in_class_line:
+            if @input_paren_level == 0:
+                @in_class_line = False
+        else:
+            @op_blank(val)
+
+    gen_comma: ->
+
+        val = @val
+        assert val == ',', val
+        if @after_self:
+            @after_self = False
+        else:
+            # Pep 8: Avoid extraneous whitespace immediately before
+            # comma, semicolon, or colon.
+            @op_blank(val)
+
+    gen_open_paren: ->
+
+        val = @val
+        assert val == '(', val
+        @input_paren_level += 1
+        if @in_class_line:
+            if not @extends_flag:
+                @word('extends')
+                @extends_flag = True
+        else:
+            @lt(val)
+
+    gen_close_paren: ->
+
+        val = @val
+        assert val == ')', val
+        @input_paren_level -= 1
+        prev = @code_list[-1]
+        if @in_class_line:
+            @in_class_line = False
+        elif prev.kind == 'lt' and prev.value == '(':
+            @clean('lt')
+            @output_paren_level -= 1
+        else:
+            @rt(val)
+
+    gen_period: ->
+
+        val = @val
+        assert val == '.', val
+        if @after_self:
+            @after_self = False
+        else:
+            @op_no_blanks(val)
+
+    do_string: ->
         '''Handle a 'string' token.'''
-        self.add_token('string', self.val)
-        if self.val.find('\\\n'):
-            self.backslash_seen = False
+        @add_token('string', @val)
+        if @val.find('\\\n'):
+            @backslash_seen = False
             # This *does* retain the string's spelling.
-        self.blank()
+        @blank
 
-    add_token = (self, kind, value='') ->
+    add_token: (kind, value='') ->
         '''Add a token to the code list.'''
         # if kind in ('line-indent','line-start','line-end'):
             # g.trace(kind,repr(value),g.callers())
-        tok = self.OutputToken(kind, value)
-        self.code_list.append(tok)
+        tok = @OutputToken(kind, value)
+        @code_list.append(tok)
 
     # def arg_end(self):
         # '''Add a token indicating the end of an argument list.'''
@@ -364,229 +454,238 @@ class CoffeeScriptTokenizer
         # '''Add a token indicating the start of an argument list.'''
         # self.add_token('arg-start')
 
-    backslash = (self) ->
+    backslash: ->
         '''Add a backslash token and clear .backslash_seen'''
-        self.add_token('backslash', '\\')
-        self.add_token('line-end', '\n')
-        self.line_indent()
-        self.backslash_seen = False
+        @add_token('backslash', '\\')
+        @add_token('line-end', '\n')
+        @line_indent
+        @backslash_seen = False
 
-    blank = (self) ->
+    blank: ->
         '''Add a blank request on the code list.'''
-        prev = self.code_list[-1]
+        prev = @code_list[-1]
         if not prev.kind in (
-            'blank', 'blank-lines',
+            'blank', 'blank-lines', 'blank-op',
             'file-start',
             'line-end', 'line-indent',
             'lt', 'op-no-blanks', 'unary-op',
         ):
-            self.add_token('blank', ' ')
+            @add_token('blank', ' ')
 
-    blank_lines = (self, n) ->
+    blank_lines: (n) ->
         '''
         Add a request for n blank lines to the code list.
         Multiple blank-lines request yield at least the maximum of all requests.
         '''
-        self.clean_blank_lines()
-        kind = self.code_list[-1].kind
+        @clean_blank_lines
+        kind = @code_list[-1].kind
         if kind == 'file-start':
-            self.add_token('blank-lines', n)
+            @add_token('blank-lines', n)
         else:
             for i in range(0, n + 1):
-                self.add_token('line-end', '\n')
+                @add_token('line-end', '\n')
             # Retain the token (intention) for debugging.
-            self.add_token('blank-lines', n)
-            self.line_indent()
+            @add_token('blank-lines', n)
+            @line_indent
 
-    clean = (self, kind) ->
+    clean: (kind) ->
         '''Remove the last item of token list if it has the given kind.'''
-        prev = self.code_list[-1]
+        prev = @code_list[-1]
         if prev.kind == kind:
-            self.code_list.pop()
+            @code_list.pop
 
-    clean_blank_lines = (self) ->
+    clean_blank_lines: ->
         '''Remove all vestiges of previous lines.'''
-        table = ('blank-lines', 'line-end', 'line-indent')
-        while self.code_list[-1].kind in table:
-            self.code_list.pop()
+        table = ('blank-lines' 'line-end', 'line-indent')
+        while @code_list[-1].kind in table:
+            @code_list.pop
 
-    file_end = (self) ->
+    file_end: ->
         '''
         Add a file-end token to the code list.
         Retain exactly one line-end token.
         '''
-        self.clean_blank_lines()
-        self.add_token('line-end', '\n')
-        self.add_token('line-end', '\n')
-        self.add_token('file-end')
+        @clean_blank_lines
+        @add_token('line-end', '\n')
+        @add_token('line-end', '\n')
+        @add_token('file-end')
 
-    file_start = (self) ->
+    file_start: ->
         '''Add a file-start token to the code list and the state stack.'''
-        self.add_token('file-start')
-        self.push_state('file-start')
+        @add_token('file-start')
+        @push_state('file-start')
 
-    line_indent = (self, ws=None) ->
+    line_indent: (ws=None) ->
         '''Add a line-indent token if indentation is non-empty.'''
-        self.clean('line-indent')
-        ws = ws or self.lws
+        @clean('line-indent')
+        ws = ws or @lws
         if ws:
-            self.add_token('line-indent', ws)
+            @add_token('line-indent', ws)
 
-    line_end = (self) ->
+    line_end: ->
         '''Add a line-end request to the code list.'''
-        prev = self.code_list[-1]
+        prev = @code_list[-1]
         if prev.kind == 'file-start':
             return
-        self.clean('blank') # Important!
-        if self.delete_blank_lines:
-            self.clean_blank_lines()
-        self.clean('line-indent')
-        if self.backslash_seen:
-            self.backslash()
-        self.add_token('line-end', '\n')
-        self.line_indent()
+        @clean('blank') # Important!
+        if @delete_blank_lines:
+            @clean_blank_lines
+        @clean('line-indent')
+        if @backslash_seen:
+            @backslash
+        @add_token('line-end', '\n')
+        @line_indent
             # Add the indentation for all lines
             # until the next indent or unindent token.
 
-    line_start = (self) ->
+    line_start: ->
         '''Add a line-start request to the code list.'''
-        self.line_indent()
+        @line_indent
 
-    lt = (self, s) ->
+    lt: (s) ->
         '''Add a left paren request to the code list.'''
         assert s in '([{', repr(s)
-        self.paren_level += 1
-        self.clean('blank')
-        prev = self.code_list[-1]
+        @output_paren_level += 1
+        @clean('blank')
+        prev = @code_list[-1]
         if prev.kind in ('op', 'word-op'):
-            self.blank()
-            self.add_token('lt', s)
+            @blank
+            @add_token('lt', s)
         elif prev.kind == 'word':
             # Only suppress blanks before '(' or '[' for non-keyworks.
             if s == '{' or prev.value in ('if', 'else', 'return'):
-                self.blank()
-            self.add_token('lt', s)
+                @blank
+            @add_token('lt', s)
         elif prev.kind == 'op':
-            self.op(s)
+            @op(s)
         else:
-            self.op_no_blanks(s)
+            @op_no_blanks(s)
 
-    rt = (self, s) ->
+    rt: (s) ->
         '''Add a right paren request to the code list.'''
         assert s in ')]}', repr(s)
-        self.paren_level -= 1
-        prev = self.code_list[-1]
+        @output_paren_level -= 1
+        prev = @code_list[-1]
         if prev.kind == 'arg-end':
             # Remove a blank token preceding the arg-end token.
-            prev = self.code_list.pop()
-            self.clean('blank')
-            self.code_list.append(prev)
+            prev = @code_list.pop
+            @clean('blank')
+            @code_list.append(prev)
         else:
-            self.clean('blank')
-        self.add_token('rt', s)
+            @clean('blank')
+        @add_token('rt', s)
 
-    op = (self, s) ->
+    op: (s) ->
         '''Add op token to code list.'''
         assert s and g.isString(s), repr(s)
-        self.blank()
-        self.add_token('op', s)
-        self.blank()
+        @blank
+        @add_token('op', s)
+        @blank
 
-    op_blank = (self, s) ->
+    op_blank: (s) ->
         '''Remove a preceding blank token, then add op and blank tokens.'''
         assert s and g.isString(s), repr(s)
-        self.clean('blank')
-        self.add_token('op', s)
-        self.blank()
+        @clean('blank')
+        @add_token('op', s)
+        @blank
 
-    op_no_blanks = (self, s) ->
+    op_no_blanks: (s) ->
         '''Add an operator *not* surrounded by blanks.'''
-        self.clean('blank')
-        self.add_token('op-no-blanks', s)
+        @clean('blank')
+        @add_token('op-no-blanks', s)
 
-    possible_unary_op = (self, s) ->
+    blank_op: (s) ->
+        '''Add an operator possibly with a preceding blank.'''
+        @blank
+        @add_token('blank-op', s)
+
+    possible_unary_op: (s) ->
         '''Add a unary or binary op to the token list.'''
-        self.clean('blank')
-        prev = self.code_list[-1]
+        @clean('blank')
+        prev = @code_list[-1]
         if prev.kind in ('lt', 'op', 'op-no-blanks', 'word-op'):
-            self.unary_op(s)
+            @unary_op(s)
         elif prev.kind == 'word' and prev.value in ('elif', 'if', 'return', 'while'):
-            self.unary_op(s)
+            @unary_op(s)
         else:
-            self.op(s)
+            @op(s)
 
-    unary_op = (self, s) ->
+    unary_op: (s) ->
         '''Add an operator request to the code list.'''
         assert s and g.isString(s), repr(s)
-        self.blank()
-        self.add_token('unary-op', s)
+        @blank
+        @add_token('unary-op', s)
 
-    star_op = (self) ->
+    star_op: ->
         '''Put a '*' op, with special cases for *args.'''
         val = '*'
-        if self.paren_level:
-            i = len(self.code_list) - 1
-            if self.code_list[i].kind == 'blank':
+        if @output_paren_level:
+            i = len(@code_list) - 1
+            if @code_list[i].kind == 'blank':
                 i -= 1
-            token = self.code_list[i]
+            token = @code_list[i]
             if token.kind == 'lt':
-                self.op_no_blanks(val)
+                @op_no_blanks(val)
             elif token.value == ',':
-                self.blank()
-                self.add_token('op-no-blanks', val)
+                @blank
+                @add_token('op-no-blanks', val)
             else:
-                self.op(val)
+                @op(val)
         else:
-            self.op(val)
+            @op(val)
 
-    star_star_op = (self) ->
+    star_star_op: ->
         '''Put a ** operator, with a special case for **kwargs.'''
         val = '**'
-        if self.paren_level:
-            i = len(self.code_list) - 1
-            if self.code_list[i].kind == 'blank':
+        if @output_paren_level:
+            i = len(@code_list) - 1
+            if @code_list[i].kind == 'blank':
                 i -= 1
-            token = self.code_list[i]
+            token = @code_list[i]
             if token.value == ',':
-                self.blank()
-                self.add_token('op-no-blanks', val)
+                @blank
+                @add_token('op-no-blanks', val)
             else:
-                self.op(val)
+                @op(val)
         else:
-            self.op(val)
+            @op(val)
 
-    word = (self, s) ->
+    word: (s) ->
         '''Add a word request to the code list.'''
         assert s and g.isString(s), repr(s)
-        self.blank()
-        self.add_token('word', s)
-        self.blank()
+        @blank
+        @add_token('word', s)
+        @blank
 
-    word_op = (self, s) ->
+    word_op: (s) ->
         '''Add a word-op request to the code list.'''
         assert s and g.isString(s), repr(s)
-        self.blank()
-        self.add_token('word-op', s)
-        self.blank()
+        @blank
+        @add_token('word-op', s)
+        @blank
 
-    print_stats = (self) ->
+    print_stats: ->
         print('==================== stats')
-        print('changed nodes  %s' % self.n_changed_nodes)
-        print('tokens         %s' % self.n_input_tokens)
-        print('len(code_list) %s' % self.n_output_tokens)
-        print('len(s)         %s' % self.n_strings)
-        print('parse          %4.2f sec.' % self.parse_time)
-        print('tokenize       %4.2f sec.' % self.tokenize_time)
-        print('format         %4.2f sec.' % self.beautify_time)
-        print('check          %4.2f sec.' % self.check_time)
-        print('total          %4.2f sec.' % self.total_time)
+        print('changed nodes  %s' % @n_changed_nodes)
+        print('tokens         %s' % @n_input_tokens)
+        print('len(code_list) %s' % @n_output_tokens)
+        print('len(s)         %s' % @n_strings)
+        print('parse          %4.2f sec.' % @parse_time)
+        print('tokenize       %4.2f sec.' % @tokenize_time)
+        print('format         %4.2f sec.' % @beautify_time)
+        print('check          %4.2f sec.' % @check_time)
+        print('total          %4.2f sec.' % @total_time)
 
-    push_state = (self, kind, value=None) ->
+    push_state: (kind, value=None) ->
         '''Append a state to the state stack.'''
-        state = self.ParseState(kind, value)
-        self.state_stack.append(state)
+        state = @ParseState(kind, value)
+        @state_stack.append(state)
 
-class LeoGlobals(object)
+    in_state: (kind) ->
+        '''Return True if state.kind == kind for some ParseState on the state_stack.'''
+        return any([z.kind == kind for z in @state_stack])
+
+class LeoGlobals extends object:
     '''A class supporting g.pdb and g.trace for compatibility with Leo.'''
 
     class NullObject
@@ -595,36 +694,36 @@ class LeoGlobals(object)
         From the Python cookbook, recipe 5.23
         """
 
-        __init__ = (self, *args, **keys) -> pass
+        constructor: (*args, **keys) -> pass
 
-        __call__ = (self, *args, **keys) -> return self
+        __call__: (*args, **keys) -> return @
 
-        __repr__ = (self) -> return "NullObject"
+        __repr__: -> return "NullObject"
 
-        __str__ = (self) -> return "NullObject"
+        __str__: -> return "NullObject"
 
-        __bool__ = (self) -> return False
+        __bool__: -> return False
 
-        __nonzero__ = (self) -> return 0
+        __nonzero__: -> return 0
 
-        __delattr__ = (self, attr) -> return self
+        __delattr__: (attr) -> return @
 
-        __getattr__ = (self, attr) -> return self
+        __getattr__: (attr) -> return @
 
-        __setattr__ = (self, attr, val) -> return self
+        __setattr__: (attr, val) -> return @
 
     class ReadLinesClass
         """A class whose next method provides a readline method for Python's tokenize module."""
 
-        __init__ = (self, s) ->
-            self.lines = s.splitlines(True) if s else []
+        constructor: (s) ->
+            @lines = s.splitlines(True) if s else []
                 # g.splitLines(s)
-            self.i = 0
+            @i = 0
 
-        next = (self) ->
-            if self.i < len(self.lines):
-                line = self.lines[self.i]
-                self.i += 1
+        next: ->
+            if @i < len(@lines):
+                line = @lines[@i]
+                @i += 1
             else:
                 line = ''
             # g.trace(repr(line))
@@ -632,7 +731,7 @@ class LeoGlobals(object)
 
         __next__ = next
 
-    _callerName = (self, n=1, files=False) ->
+    _callerName: (n=1, files=False) ->
         # print('_callerName: %s %s' % (n,files))
         try: # get the function name from the call stack.
             f1 = sys._getframe(n) # The stack frame, n levels up.
@@ -640,9 +739,9 @@ class LeoGlobals(object)
             name = code1.co_name
             if name == '__init__':
                 name = '__init__(%s,line %s)' % (
-                    self.shortFileName(code1.co_filename), code1.co_firstlineno)
+                    @shortFileName(code1.co_filename), code1.co_firstlineno)
             if files:
-                return '%s:%s' % (self.shortFileName(code1.co_filename), name)
+                return '%s:%s' % (@shortFileName(code1.co_filename), name)
             else:
                 return name # The code name
         except ValueError:
@@ -652,7 +751,7 @@ class LeoGlobals(object)
             # es_exception()
             return '' # "<no caller name>"
 
-    callers = (self, n=4, count=0, excludeCaller=True, files=False) ->
+    callers: (n=4, count=0, excludeCaller=True, files=False) ->
         '''Return a list containing the callers of the function that called g.callerList.
 
         If the excludeCaller keyword is True (the default), g.callers is not on the list.
@@ -665,23 +764,23 @@ class LeoGlobals(object)
         result = []
         i = 3 if excludeCaller else 2
         while 1:
-            s = self._callerName(i, files=files)
+            s = @_callerName(i, files=files)
             # print(i,s)
             if s:
                 result.append(s)
             if not s or len(result) >= n: break
             i += 1
-        result.reverse()
+        result.reverse
         if count > 0: result = result[: count]
         sep = '\n' if files else ','
         return sep.join(result)
 
-    cls = (self) ->
+    cls: ->
         '''Clear the screen.'''
-        if sys.platform.lower().startswith('win'):
+        if sys platform.lower.startswith('win'):
             os.system('cls')
 
-    computeLeadingWhitespace = (self, width, tab_width) ->
+    computeLeadingWhitespace: (width, tab_width) ->
         '''Returns optimized whitespace corresponding to width with the indicated tab_width.'''
         if width <= 0:
             return ""
@@ -692,7 +791,7 @@ class LeoGlobals(object)
         else: # Negative tab width always gets converted to blanks.
             return (' ' * width)
 
-    computeLeadingWhitespaceWidth = (self, s, tab_width) ->
+    computeLeadingWhitespaceWidth: (s, tab_width) ->
         '''Returns optimized whitespace corresponding to width with the indicated tab_width.'''
         w = 0
         for ch in s:
@@ -704,39 +803,39 @@ class LeoGlobals(object)
                 break
         return w
 
-    isString = (self, s) ->
+    isString: (s) ->
         '''Return True if s is any string, but not bytes.'''
         if isPython3:
             return type(s) == type('a')
         else:
             return type(s) in types.StringTypes
 
-    isUnicode = (self, s) ->
+    isUnicode: (s) ->
         '''Return True if s is a unicode string.'''
         if isPython3:
             return type(s) == type('a')
         else:
             return type(s) == types.UnicodeType
 
-    pdb = (self) ->
+    pdb: ->
         try:
-            import leo.core.leoGlobals as leo_g
-            leo_g.pdb()
+            # import leo core.leoGlobals as leo_g
+            leo_g.pdb
         except ImportError:
-            import pdb
-            pdb.set_trace()
+            # import pdb
+            pdb.set_trace
 
-    shortFileName = (self, fileName, n=None) ->
+    shortFileName: (fileName, n=None) ->
         if n is None or n < 1:
             return os.path.basename(fileName)
         else:
             return '/'.join(fileName.replace('\\', '/').split('/')[-n:])
 
-    splitLines = (self, s) ->
+    splitLines: (s) ->
         '''Split s into lines, preserving trailing newlines.'''
         return s.splitlines(True) if s else []
 
-    toUnicode = (self, s, encoding='utf-8', reportErrors=False) ->
+    toUnicode: (s, encoding='utf-8', reportErrors=False) ->
         '''Connvert a non-unicode string with the given encoding to unicode.'''
         trace = False
         if g.isUnicode(s):
@@ -751,7 +850,7 @@ class LeoGlobals(object)
         except UnicodeError:
             s = s.decode(encoding, 'replace')
             if trace or reportErrors:
-                g.trace(g.callers())
+                g.trace(g.callers)
                 print("toUnicode: Error converting %s... from %s encoding to unicode" % (
                     s[: 200], encoding))
         except AttributeError:
@@ -763,55 +862,53 @@ class LeoGlobals(object)
             print('toUnicode: returns %s' % s)
         return s
 
-    trace = (self, *args, **keys) ->
+    trace: (*args, **keys) ->
         try:
-            import leo.core.leoGlobals as leo_g
+            # import leo.core.leoGlobals as leo_g
             leo_g.trace(caller_level=2, *args, **keys)
         except ImportError:
             print(args, keys)
 
     if isPython3:
 
-        u = (self, s) ->
+        u: (s) ->
             return s
 
-        ue = (self, s, encoding) ->
+        ue: (s, encoding) ->
             return s if g.isUnicode(s) else str(s, encoding)
 
     else:
 
-        u = (self, s) ->
+        u: (s) ->
             return unicode(s)
 
-        ue = (self, s, encoding) ->
+        ue: (s, encoding) ->
             return unicode(s, encoding)
 
-class MakeCoffeeScriptController(object)
+class MakeCoffeeScriptController extends object:
     '''The controller class for python_to_coffeescript.py.'''
 
-    __init__ = (self) ->
+    constructor: ->
         '''Ctor for MakeCoffeeScriptController class.'''
-        self.options = {}
+        @options = {}
         # Ivars set on the command line...
-        self.config_fn = None
-        self.enable_unit_tests = False
-        self.files = [] # May also be set in the config file.
-        self.section_names = ('Global',)
+        @config_fn = None
+        @enable_unit_tests = False
+        @files = [] # May also be set in the config file.
+        @section_names = ('Global',)
         # Ivars set in the config file...
-        self.output_directory = self.finalize('.')
-        self.overwrite = False
-        self.trace_visitors = False
-        self.update_flag = False
-        self.verbose = False # Trace config arguments.
+        @output_directory = @finalize('.')
+        @overwrite = False
+        @verbose = False # Trace config arguments.
 
-    finalize = (self, fn) ->
+    finalize: (fn) ->
         '''Finalize and regularize a filename.'''
         fn = os.path.expanduser(fn)
         fn = os.path.abspath(fn)
         fn = os.path.normpath(fn)
         return fn
 
-    make_coffeescript_file = (self, fn) ->
+    make_coffeescript_file: (fn) ->
         '''
         Make a stub file in the output directory for all source files mentioned
         in the [Source Files] section of the configuration file.
@@ -823,65 +920,65 @@ class MakeCoffeeScriptController(object)
             print('not found', fn)
             return
         base_fn = os.path.basename(fn)
-        out_fn = os.path.join(self.output_directory, base_fn)
+        out_fn = os.path.join(@output_directory, base_fn)
         out_fn = os.path.normpath(out_fn)
         out_fn = out_fn[: -3] + '.coffee'
         dir_ = os.path.dirname(out_fn)
-        if os.path.exists(out_fn) and not self.overwrite:
+        if os.path.exists(out_fn) and not @overwrite:
             print('file exists: %s' % out_fn)
         elif not dir_ or os.path.exists(dir_):
-            t1 = time.clock()
-            s = open(fn).read()
+            t1 = time.clock
+            s = open(fn).read
             readlines = g.ReadLinesClass(s).next
             tokens = list(tokenize.generate_tokens(readlines))
-            s = CoffeeScriptTokenizer(controller=self).format(tokens)
+            s = CoffeeScriptTokenizer(controller=@) format(tokens)
             f = open(out_fn, 'w')
-            self.output_time_stamp(f)
+            @output_time_stamp(f)
             f.write(s)
-            f.close()
+            f.close
             print('wrote: %s' % out_fn)
         else:
             print('output directory not not found: %s' % dir_)
 
-    output_time_stamp = (self, f) ->
+    output_time_stamp: (f) ->
         '''Put a time-stamp in the output file f.'''
         f.write('# python_to_coffeescript: %s\n' %
             time.strftime("%a %d %b %Y at %H:%M:%S"))
 
-    run = (self) ->
+    run: ->
         '''
         Make stub files for all files.
         Do nothing if the output directory does not exist.
         '''
-        if self.enable_unit_tests:
-            self.run_all_unit_tests()
-        if self.files:
-            dir_ = self.output_directory
+        if @enable_unit_tests:
+            @run_all_unit_tests
+        if @files:
+            dir_ = @output_directory
             if dir_:
                 if os.path.exists(dir_):
-                    for fn in self.files:
-                        self.make_coffeescript_file(fn)
+                    for fn in @files:
+                        @make_coffeescript_file(fn)
                 else:
                     print('output directory not found: %s' % dir_)
             else:
                 print('no output directory')
-        elif not self.enable_unit_tests:
+        elif not @enable_unit_tests:
             print('no input files')
 
-    run_all_unit_tests = (self) ->
+    run_all_unit_tests: ->
         '''Run all unit tests in the python-to-coffeescript/test directory.'''
-        import unittest
-        loader = unittest.TestLoader()
+        # import unittest
+        loader = unittest TestLoader
         suite = loader.discover(os.path.abspath('.'),
                                 pattern='test*.py',
                                 top_level_dir=None)
         unittest.TextTestRunner(verbosity=1).run(suite)
 
-    scan_command_line = (self) ->
+    scan_command_line: ->
         '''Set ivars from command-line arguments.'''
         # This automatically implements the --help option.
         usage = "usage: python_to_coffeescript.py [options] file1, file2, ..."
-        parser = optparse.OptionParser(usage=usage)
+        parser = optparse OptionParser(usage=usage)
         add = parser.add_option
         add('-c', '--config', dest='fn',
             help='full path to configuration file')
@@ -891,93 +988,73 @@ class MakeCoffeeScriptController(object)
             help='overwrite existing .coffee files')
         add('-t', '--test', action='store_true', default=False,
             help='run unit tests on startup')
-        # add('--trace-matches', action='store_true', default=False,
-            # help='trace Pattern.matches')
-        # add('--trace-patterns', action='store_true', default=False,
-            # help='trace pattern creation')
-        # add('--trace-reduce', action='store_true', default=False,
-            # help='trace st.reduce_types')
-        add('--trace-visitors', action='store_true', default=False,
-            help='trace visitor methods')
-        # add('-u', '--update', action='store_true', default=False,
-            # help='update stubs in existing stub file')
         add('-v', '--verbose', action='store_true', default=False,
             help='verbose output')
-        # add('-w', '--warn', action='store_true', default=False,
-            # help='warn about unannotated args')
         # Parse the options
-        options, args = parser.parse_args()
+        options, args = parser.parse_args
         # Handle the options...
-        self.enable_unit_tests = options.test
-        self.overwrite = options.overwrite
-        self.trace_visitors = options.trace_visitors
-        ###
-        # self.trace_matches = options.trace_matches
-        # self.trace_patterns = options.trace_patterns
-        # self.trace_reduce = options.trace_reduce
-        # self.update_flag = options.update
-        # self.verbose = options.verbose
-        # self.warn = options.warn
+        @enable_unit_tests = options.test
+        @overwrite = options.overwrite
         if options.fn:
-            self.config_fn = options.fn
+            @config_fn = options.fn
         if options.dir:
             dir_ = options.dir
-            dir_ = self.finalize(dir_)
+            dir_ = @finalize(dir_)
             if os.path.exists(dir_):
-                self.output_directory = dir_
+                @output_directory = dir_
             else:
                 print('--dir: directory does not exist: %s' % dir_)
                 print('exiting')
                 sys.exit(1)
         # If any files remain, set self.files.
         if args:
-            args = [self.finalize(z) for z in args]
+            args = [@finalize(z) for z in args]
             if args:
-                self.files = args
+                @files = args
 
-    scan_options = (self) ->
+    scan_options: ->
         '''Set all configuration-related ivars.'''
         trace = False
-        if not self.config_fn:
+        if not @config_fn:
             return
-        self.parser = parser = self.create_parser()
-        s = self.get_config_string()
-        self.init_parser(s)
-        if self.files:
+        @parser = parser = @create_parser
+        s = @get_config_string
+        @init_parser(s)
+        if @files:
             files_source = 'command-line'
-            files = self.files
+            files = @files
         elif parser.has_section('Global'):
             files_source = 'config file'
             files = parser.get('Global', 'files')
-            files = [z.strip() for z in files.split('\n') if z.strip()]
+            files = [z.strip for z in files.split('\n') if z.strip]
         else:
             return
         files2 = []
         for z in files:
-            files2.extend(glob.glob(self.finalize(z)))
-        self.files = [z for z in files2 if z and os.path.exists(z)]
+            files2.extend(glob.glob(@finalize(z)))
+        @files = [z for z in files2 if z and os.path.exists(z)]
         if trace:
             print('Files (from %s)...\n' % files_source)
-            for z in self.files:
+            for z in @files:
                 print(z)
             print('')
         if 'output_directory' in parser.options('Global'):
             s = parser.get('Global', 'output_directory')
-            output_dir = self.finalize(s)
+            output_dir = @finalize(s)
             if os.path.exists(output_dir):
-                self.output_directory = output_dir
-                if self.verbose:
+                @output_directory = output_dir
+                if @verbose:
                     print('output directory: %s\n' % output_dir)
             else:
                 print('output directory not found: %s\n' % output_dir)
-                self.output_directory = None # inhibit run().
+                @output_directory = None # inhibit run().
         if 'prefix_lines' in parser.options('Global'):
             prefix = parser.get('Global', 'prefix_lines')
-            self.prefix_lines = prefix.split('\n')
+            @prefix_lines = prefix.split('\n')
                 # The parser does not preserve leading whitespace.
             if trace:
                 print('Prefix lines...\n')
-                for z in self.prefix_lines:
+                for z in @prefix_lines:
                     print(z)
                 print('')
         #
@@ -985,35 +1062,35 @@ class MakeCoffeeScriptController(object)
         # self.general_patterns = self.scan_patterns('General Patterns')
         # self.make_patterns_dict()
 
-    create_parser = (self) ->
+    create_parser: ->
         '''Create a RawConfigParser and return it.'''
-        parser = configparser.RawConfigParser(dict_type=OrderedDict)
+        parser = configparser RawConfigParser(dict_type=OrderedDict)
             # Requires Python 2.7
         parser.optionxform = str
         return parser
 
-    get_config_string = (self) ->
-        fn = self.finalize(self.config_fn)
+    get_config_string: ->
+        fn = @finalize(@config_fn)
         if os.path.exists(fn):
-            if self.verbose:
+            if @verbose:
                 print('\nconfiguration file: %s\n' % fn)
             f = open(fn, 'r')
-            s = f.read()
-            f.close()
+            s = f.read
+            f.close
             return s
         else:
             print('\nconfiguration file not found: %s' % fn)
             return ''
 
-    init_parser = (self, s) ->
+    init_parser: (s) ->
         '''Add double back-slashes to all patterns starting with '['.'''
         trace = False
         if not s: return
         aList = []
         for s in s.split('\n'):
-            if self.is_section_name(s):
+            if @is_section_name(s):
                 aList.append(s)
-            elif s.strip().startswith('['):
+            elif s.strip.startswith('['):
                 aList.append(r'\\' + s[1:])
                 if trace: g.trace('*** escaping:', s)
             else:
@@ -1021,22 +1098,22 @@ class MakeCoffeeScriptController(object)
         s = '\n'.join(aList) + '\n'
         if trace: g.trace(s)
         file_object = io.StringIO(s)
-        self.parser.readfp(file_object)
+        @parser.readfp(file_object)
 
-    is_section_name = (self, s) ->
+    is_section_name: (s) ->
 
-        munge = (s) ->
-            return s.strip().lower().replace(' ', '')
+        munge: (s) ->
+            return s.strip.lower.replace(' ', '')
 
-        s = s.strip()
+        s = s.strip
         if s.startswith('[') and s.endswith(']'):
             s = munge(s[1: -1])
-            for s2 in self.section_names:
+            for s2 in @section_names:
                 if s == munge(s2):
                     return True
         return False
 
-class TestClass(object)
+class TestClass extends object:
     '''
     A class containing constructs that have caused difficulties.
     This is in the make_stub_files directory, not the test directory.
@@ -1046,7 +1123,7 @@ class TestClass(object)
     # pylint: disable=no-self-argument
     # pylint: disable=no-method-argument
 
-    parse_group = (group) ->
+    parse_group: (group) ->
         if len(group) >= 3 and group[-2] == 'as':
             del group[-2:]
         ndots = 0
@@ -1059,23 +1136,23 @@ class TestClass(object)
         assert all(g == '.' for g in group[1:: 2]), group
         return ndots, os.sep.join(group[:: 2])
 
-    return_all = (self) ->
-        return all([is_known_type(z) for z in s3.split(',')])
+    return_all: ->
+        return all([is_known_type(z) for z in s3 split(',')])
         # return all(['abc'])
 
-    return_array = () ->
+    return_array: ->
         return f(s[1: -1])
 
-    return_list = (self, a) ->
+    return_list: (a) ->
         return [a]
 
-    return_two_lists = (s) ->
+    return_two_lists: (s) ->
         if 1:
             return aList
         else:
-            return list(self.regex.finditer(s))
+            return list(@regex.finditer(s))
 
-g = LeoGlobals() # For ekr.
+g = LeoGlobals # For ekr.
 if __name__ == "__main__":
-    main()
+    main
 
