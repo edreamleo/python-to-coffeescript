@@ -2668,7 +2668,7 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-* Announce: inspired by DropBox sprint.
+* Announce
 
 ***** Experiment with synching tokens from a traverser.
 - This may be the most flexible approach.
@@ -2943,9 +2943,9 @@ Finally, note that no matter how the code list is generated, it would be possibl
 
 This has been a success proof of concept. It is surely useful as is.
 
-I have years of experience working with tokens and parse trees. I literally write this code in my sleep. I awake with new code fresh at hand. Despite this deep knowledge, it remains unclear whether tokens or parse trees will come to dominate the code. Only further work will reveal the best way.
+I have years of experience working with tokens and parse trees. Nevertheless, it remains unclear whether tokens or parse trees will come to dominate the code. Only further work will reveal the best way.
 
-Edward K. Ream
+Edward K. Ream  
 February 21, 2016
 </t>
 </tnodes>
