@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sun 21 Feb 2016 at 09:09:30
+# python_to_coffeescript: Sun 21 Feb 2016 at 12:04:47
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -23,6 +23,7 @@ pass # from collections pass # import OrderedDict
     # Requires Python 2.7 or above. Without OrderedDict
     # the configparser will give random order for patterns.
 
+pass # import ast
 pass # import glob
 pass # import optparse
 pass # import os
@@ -48,6 +49,7 @@ else
     # import StringIO as io # Python 2
 # except ImportError:
     # import io # Python 3
+use_tree = False
 
 main = ->
     '''
@@ -60,6 +62,7 @@ main = ->
     controller.scan_options
     controller.run
     print('done')
+
 #
 # Utility functions...
 #
@@ -247,6 +250,7 @@ class CoffeeScriptTokenizer
             func
         @gen_file_end
         return ''.join([z.to_string for z in @code_list])
+
     #
     # Input token handlers...
     #
@@ -386,6 +390,7 @@ class CoffeeScriptTokenizer
             @backslash_seen = False
             # This *does* retain the string's spelling.
         @gen_blank
+
     #
     # Output token generators and helpers...
     #
@@ -739,17 +744,655 @@ class CoffeeScriptTokenizer
         @add_token('word-op', s)
         @gen_blank
 
-class ParseState extends object
-    '''A class representing items parse state stack.'''
+class CoffeeScriptTraverser extends object
+    '''A class to convert python sources to coffeescript sources.'''
+    # pylint: disable=consider-using-enumerate
 
-    constructor: (kind, value) ->
-        @kind = kind
-        @value = value
+    constructor: (controller) ->
+        '''Ctor for CoffeeScriptFormatter class.'''
+        @controller = controller
+        @first_statement = False
 
-    __repr__: ->
-        return 'State: %10s %s' % [@kind, repr(@value)]
+    format: (node, tokens) ->
+        '''Format the node (or list of nodes) and its descendants.'''
+        @level = 0
+        @tokens = tokens
+        val = @visit(node)
+        return val or ''
 
-    __str__ = __repr__
+    indent: (s) ->
+        '''Return s, properly indented.'''
+        assert not s.startswith('\n'), g.callers
+        return '%s%s' % [' ' * 4 * @level, s]
+
+    visit: (node) ->
+        '''Return the formatted version of an Ast node, or list of Ast nodes.'''
+        # g.trace(node.__class__.__name__)
+        if isinstance(node, [list, tuple])
+            return ', '.join([@visit(z) for z in node])
+        elif node is None
+            return 'None'
+        else
+            assert isinstance(node, ast.AST), node.__class__.__name__
+            method_name = 'do_' + node.__class__.__name__
+            method = getattr(@method_name)
+            s = method(node)
+            # pylint: disable=unidiomatic-typecheck
+            assert type(s) == type('abc'), [node, type(s)]
+            return s
+
+    # Contexts...
+
+    # ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
+
+    do_ClassDef: (node) ->
+        result = []
+        name = node.name # Only a plain string is valid.
+        bases = [@visit(z) for z in node.bases] if node.bases else []
+        result.append('\n\n')
+        if bases
+            result.append(@indent('class %s(%s):\n' % [name, ', '.join(bases)]))
+        else
+            result.append(@indent('class %s:\n' % name))
+        for i, z in enumerate(node.body)
+            @level += 1
+            @first_statement = i == 0
+            result.append(@visit(z))
+            @level -= 1
+        return ''.join(result)
+
+    # FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
+
+    do_FunctionDef: (node) ->
+        '''Format a FunctionDef node.'''
+        result = []
+        if node.decorator_list
+            for z in node.decorator_list
+                result.append(@indent('@%s\n' % @visit(z)))
+        name = node.name # Only a plain string is valid.
+        args = @visit(node.args) if node.args else ''
+        result.append('\n')
+        result.append(@indent('def %s(%s):\n' % [name, args]))
+        for i, z in enumerate(node.body)
+            @level += 1
+            @first_statement = i == 0
+            result.append(@visit(z))
+            @level -= 1
+        return ''.join(result)
+
+    do_Interactive: (node) ->
+        for z in node.body
+            @visit(z)
+
+    do_Module: (node) ->
+
+        return ''.join([@visit(z) for z in node.body])
+
+    do_Lambda: (node) ->
+        return @indent('lambda %s: %s' % [
+            @visit(node.args),
+            @visit(node.body)])
+
+    # Expressions...
+
+    do_Expr: (node) ->
+        '''An outer expression: must be indented.'''
+        return @indent('%s\n' % @visit(node.value))
+
+    do_Expression: (node) ->
+        '''An inner expression: do not indent.'''
+        return '%s\n' % @visit(node.body)
+
+    do_GeneratorExp: (node) ->
+        elt = @visit(node.elt) or ''
+        gens = [@visit(z) for z in node.generators]
+        gens = [z if z else '<**None**>' for z in gens] # Kludge: probable bug.
+        return '<gen %s for %s>' % [elt, ','.join(gens)]
+
+    do_AugLoad: (node) ->
+        return 'AugLoad'
+
+    do_Del: (node) ->
+        return 'Del'
+
+    do_Load: (node) ->
+        return 'Load'
+
+    do_Param: (node) ->
+        return 'Param'
+
+    do_Store: (node) ->
+        return 'Store'
+
+    # Operands...
+
+    # arguments = (expr* args, identifier? vararg, identifier? kwarg, expr* defaults)
+
+    do_arguments: (node) ->
+        '''Format the arguments node.'''
+        assert isinstance(node, ast.arguments)
+        args = [@visit(z) for z in node.args]
+        defaults = [@visit(z) for z in node.defaults]
+        # Assign default values to the last args.
+        args2 = []
+        n_plain = len(args) - len(defaults)
+        for i in range(len(args))
+            if i < n_plain
+                args2.append(args[i])
+            else
+                args2.append('%s=%s' % [args[i], defaults[i - n_plain]])
+        # Now add the vararg and kwarg args.
+        name = getattr(node, 'vararg', None)
+        if name
+            # pylint: disable=no-member
+            if isPython3 and isinstance(name, ast.arg)
+                name = name.arg
+            args2.append('*' + name)
+        name = getattr(node, 'kwarg', None)
+        if name
+            # pylint: disable=no-member
+            if isPython3 and isinstance(name, ast.arg)
+                name = name.arg
+            args2.append('**' + name)
+        return ','.join(args2)
+
+    # Python 3:
+    # arg = (identifier arg, expr? annotation)
+
+    do_arg: (node) ->
+        return node.arg
+
+    # Attribute(expr value, identifier attr, expr_context ctx)
+
+    do_Attribute: (node) ->
+        return '%s.%s' % [
+            @visit(node.value),
+            node.attr] # Don't visit node.attr: it is always a string.
+
+    do_Bytes: (node) -> # Python 3.x only.
+        return str(node.s)
+
+    # Call(expr func, expr* args, keyword* keywords, expr? starargs, expr? kwargs)
+
+    do_Call: (node) ->
+        func = @visit(node.func)
+        args = [@visit(z) for z in node.args]
+        for z in node.keywords
+            # Calls f.do_keyword.
+            args.append(@visit(z))
+        if getattr(node, 'starargs', None)
+            args.append('*%s' % [@visit(node.starargs)])
+        if getattr(node, 'kwargs', None)
+            args.append('**%s' % [@visit(node.kwargs)])
+        args = [z for z in args if z] # Kludge: Defensive coding.
+        return '%s(%s)' % [func, ','.join(args)]
+
+    # keyword = (identifier arg, expr value)
+
+    do_keyword: (node) ->
+        # node.arg is a string.
+        value = @visit(node.value)
+        # This is a keyword *arg*, not a Python keyword!
+        return '%s=%s' % [node.arg, value]
+
+    do_comprehension: (node) ->
+        result = []
+        name = @visit(node.target) # A name.
+        it = @visit(node.iter) # An attribute.
+        result.append('%s in %s' % [name, it])
+        ifs = [@visit(z) for z in node.ifs]
+        if ifs
+            result.append(' if %s' % [''.join(ifs)])
+        return ''.join(result)
+
+    do_Dict: (node) ->
+        result = []
+        keys = [@visit(z) for z in node.keys]
+        values = [@visit(z) for z in node.values]
+        if len(keys) == len(values)
+            # result.append('{\n' if keys else '{')
+            result.append('{')
+            items = []
+            for i in range(len(keys))
+                items.append('%s:%s' % [keys[i], values[i]])
+            result.append(', '.join(items))
+            result.append('}')
+            # result.append(',\n'.join(items))
+            # result.append('\n}' if keys else '}')
+        else
+            print('Error: f.Dict: len(keys) != len(values)\nkeys: %s\nvals: %s' % [
+                repr(keys), repr(values)])
+        return ''.join(result)
+
+    do_Ellipsis: (node) ->
+        return '...'
+
+    do_ExtSlice: (node) ->
+        return ':'.join([@visit(z) for z in node.dims])
+
+    do_Index: (node) ->
+        return @visit(node.value)
+
+    do_List: (node) ->
+        # Not used: list context.
+        # self.visit(node.ctx)
+        elts = [@visit(z) for z in node.elts]
+        elst = [z for z in elts if z] # Defensive.
+        return '[%s]' % ','.join(elts)
+
+    do_ListComp: (node) ->
+        elt = @visit(node.elt)
+        gens = [@visit(z) for z in node.generators]
+        gens = [z if z else '<**None**>' for z in gens] # Kludge: probable bug.
+        return '%s for %s' % [elt, ''.join(gens)]
+
+    do_Name: (node) ->
+        return node.id
+
+    do_NameConstant: (node) -> # Python 3 only.
+        s = repr(node.value)
+        return 'bool' if s in ['True', 'False'] else s
+
+    do_Num: (node) ->
+        return repr(node.n)
+
+    # Python 2.x only
+
+    do_Repr: (node) ->
+        return 'repr(%s)' % @visit(node.value)
+
+    do_Slice: (node) ->
+        lower, upper, step = '', '', ''
+        if getattr(node, 'lower', None) is not None
+            lower = @visit(node.lower)
+        if getattr(node, 'upper', None) is not None
+            upper = @visit(node.upper)
+        if getattr(node, 'step', None) is not None
+            step = @visit(node.step)
+        if step
+            return '%s:%s:%s' % [lower, upper, step]
+        else
+            return '%s:%s' % [lower, upper]
+
+    do_Str: (node) ->
+        '''A string constant, including docstrings.'''
+        # A pretty spectacular hack.
+        # We assume docstrings are the first expr following a class or def.
+        docstring = False
+        if @first_statement
+            callers = ''.join([z for z in g.callers(2).split(',') if z != 'visit'])
+            docstring = callers.endswith('do_Expr')
+        if docstring
+            s = repr(node.s).replace('\\n', '\n')
+            if s.startswith('"')
+                return '""%s""' % s
+            else
+                return "''%s''" % s
+        else
+            return repr(node.s)
+
+    # Subscript(expr value, slice slice, expr_context ctx)
+
+    do_Subscript: (node) ->
+        value = @visit(node.value)
+        the_slice = @visit(node.slice)
+        return '%s[%s]' % [value, the_slice]
+
+    do_Tuple: (node) ->
+        elts = [@visit(z) for z in node.elts]
+        return '(%s)' % ', '.join(elts)
+
+    # Operators...
+
+    op_name: (node, strict=True) ->
+        '''Return the print name of an operator node.'''
+        d = {
+            # Binary operators.
+            'Add' '+',
+            'BitAnd' '&',
+            'BitOr' '|',
+            'BitXor' '^',
+            'Div' '/',
+            'FloorDiv' '//',
+            'LShift' '<<',
+            'Mod' '%',
+            'Mult' '*',
+            'Pow' '**',
+            'RShift' '>>',
+            'Sub' '-',
+            # Boolean operators.
+            'And' ' and ',
+            'Or' ' or ',
+            # Comparison operators
+            'Eq' '==',
+            'Gt' '>',
+            'GtE' '>=',
+            'In' ' in ',
+            'Is' ' is ',
+            'IsNot' ' is not ',
+            'Lt' '<',
+            'LtE' '<=',
+            'NotEq' '!=',
+            'NotIn' ' not in ',
+            # Context operators.
+            'AugLoad' '<AugLoad>',
+            'AugStore' '<AugStore>',
+            'Del' '<Del>',
+            'Load' '<Load>',
+            'Param' '<Param>',
+            'Store' '<Store>',
+            # Unary operators.
+            'Invert' '~',
+            'Not' ' not ',
+            'UAdd' '+',
+            'USub' '-',
+        }
+        kind = node.__class__.__name__
+        name = d.get(kind, '<%s>' % kind)
+        if strict assert name, kind
+        return name
+
+    do_BinOp: (node) ->
+        return '%s%s%s' % [
+            @visit(node.left),
+            @op_name(node.op),
+            @visit(node.right)]
+
+    do_BoolOp: (node) ->
+        op_name = @op_name(node.op)
+        values = [@visit(z) for z in node.values]
+        return op_name.join(values)
+
+    do_Compare: (node) ->
+        result = []
+        lt = @visit(node.left)
+        ops = [@op_name(z) for z in node.ops]
+        comps = [@visit(z) for z in node.comparators]
+        result.append(lt)
+        if len(ops) == len(comps)
+            for i in range(len(ops))
+                result.append('%s%s' % [ops[i], comps[i]])
+        else
+            print('can not happen: ops', repr(ops), 'comparators', repr(comps))
+        return ''.join(result)
+
+    do_IfExp: (node) ->
+        return '%s if %s else %s ' % [
+            @visit(node.body),
+            @visit(node.test),
+            @visit(node.orelse)]
+
+    do_UnaryOp: (node) ->
+        return '%s%s' % [
+            @op_name(node.op),
+            @visit(node.operand)]
+
+    # Statements...
+
+    do_Assert: (node) ->
+        test = @visit(node.test)
+        if getattr(node, 'msg', None)
+            message = @visit(node.msg)
+            return @indent('assert %s, %s\n' % [test, message])
+        else
+            return @indent('assert %s\n' % test)
+
+    do_Assign: (node) ->
+        return @indent('%s=%s\n' % [
+            '='.join([@visit(z) for z in node.targets]),
+            @visit(node.value)])
+
+    do_AugAssign: (node) ->
+        return @indent('%s%s=%s\n' % [
+            @visit(node.target),
+            @op_name(node.op), # Bug fix: 2013/03/08.
+            @visit(node.value)])
+
+    do_Break: (node) ->
+        return @indent('break\n')
+
+    do_Continue: (node) ->
+        return @indent('continue\n')
+
+    do_Delete: (node) ->
+        targets = [@visit(z) for z in node.targets]
+        return @indent('del %s\n' % ','.join(targets))
+
+    do_ExceptHandler: (node) ->
+        result = []
+        result.append(@indent('except'))
+        if getattr(node, 'type', None)
+            result.append(' %s' % @visit(node.type))
+        if getattr(node, 'name', None)
+            if isinstance(node.name, ast.AST)
+                result.append(' as %s' % @visit(node.name))
+            else
+                result.append(' as %s' % node.name) # Python 3.x.
+        result.append(':\n')
+        for z in node.body
+            @level += 1
+            result.append(@visit(z))
+            @level -= 1
+        return ''.join(result)
+
+    # Python 2.x only
+
+    do_Exec: (node) ->
+        body = @visit(node.body)
+        args = [] # Globals before locals.
+        if getattr(node, 'globals', None)
+            args.append(@visit(node.globals))
+        if getattr(node, 'locals', None)
+            args.append(@visit(node.locals))
+        if args
+            return @indent('exec %s in %s\n' % [
+                body, ','.join(args)])
+        else
+            return @indent('exec %s\n' % [body])
+
+    do_For: (node) ->
+        result = []
+        result.append(@indent('for %s in %s:\n' % [
+            @visit(node.target),
+            @visit(node.iter)]))
+        for z in node.body
+            @level += 1
+            result.append(@visit(z))
+            @level -= 1
+        if node.orelse
+            result.append(@indent('else:\n'))
+            for z in node.orelse
+                @level += 1
+                result.append(@visit(z))
+                @level -= 1
+        return ''.join(result)
+
+    do_Global: (node) ->
+        return @indent('global %s\n' % [
+            ','.join(node.names)])
+
+    do_If: (node) ->
+        result = []
+        result.append(@indent('if %s:\n' % [
+            @visit(node.test)]))
+        for z in node.body
+            @level += 1
+            result.append(@visit(z))
+            @level -= 1
+        if node.orelse
+            result.append(@indent('else:\n'))
+            for z in node.orelse
+                @level += 1
+                result.append(@visit(z))
+                @level -= 1
+        return ''.join(result)
+
+    do_Import: (node) ->
+        names = []
+        for fn, asname in @get_import_names(node)
+            if asname
+                names.append('%s as %s' % [fn, asname])
+            else
+                names.append(fn)
+        return @indent('import %s\n' % [
+            ','.join(names)])
+
+    get_import_names: (node) ->
+        '''Return a list of the the full file names in the import statement.'''
+        result = []
+        for ast2 in node.names
+            assert isinstance(ast2, ast.alias)
+            data = ast2.name, ast2.asname
+            result.append(data)
+        return result
+
+    do_ImportFrom: (node) ->
+        names = []
+        for fn, asname in @get_import_names(node)
+            if asname
+                names.append('%s as %s' % [fn, asname])
+            else
+                names.append(fn)
+        return @indent('from %s import %s\n' % [
+            node.module,
+            ','.join(names)])
+
+    do_Pass: (node) ->
+        return @indent('pass\n')
+
+    # Python 2.x only
+
+    do_Print: (node) ->
+        vals = []
+        for z in node.values
+            vals.append(@visit(z))
+        if getattr(node, 'dest', None)
+            vals.append('dest=%s' % @visit(node.dest))
+        if getattr(node, 'nl', None)
+            if node.nl == 'False'
+                vals.append('nl=%s' % node.nl)
+        return @indent('print(%s)\n' % [
+            ','.join(vals)])
+
+    do_Raise: (node) ->
+        args = []
+        for attr in ['type', 'inst', 'tback']
+            if getattr(node, attr, None) is not None
+                args.append(@visit(getattr(node, attr)))
+        if args
+            return @indent('raise %s\n' % [
+                ','.join(args)])
+        else
+            return @indent('raise\n')
+
+    do_Return: (node) ->
+        if node.value
+            return @indent('return %s\n' % [
+                @visit(node.value).strip()])
+        else
+            return @indent('return\n')
+
+    # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
+
+    do_Try: (node) -> # Python 3
+        result = []
+        result.append(@indent('try:\n'))
+        for z in node.body
+            @level += 1
+            result.append(@visit(z))
+            @level -= 1
+        if node.handlers
+            for z in node.handlers
+                result.append(@visit(z))
+        if node.orelse
+            result.append(@indent('else:\n'))
+            for z in node.orelse
+                @level += 1
+                result.append(@visit(z))
+                @level -= 1
+        if node.finalbody
+            result.append(@indent('finally:\n'))
+            for z in node.finalbody
+                @level += 1
+                result.append(@visit(z))
+                @level -= 1
+        return ''.join(result)
+
+    do_TryExcept: (node) ->
+        result = []
+        result.append(@indent('try:\n'))
+        for z in node.body
+            @level += 1
+            result.append(@visit(z))
+            @level -= 1
+        if node.handlers
+            for z in node.handlers
+                result.append(@visit(z))
+        if node.orelse
+            result.append('else:\n')
+            for z in node.orelse
+                @level += 1
+                result.append(@visit(z))
+                @level -= 1
+        return ''.join(result)
+
+    do_TryFinally: (node) ->
+        result = []
+        result.append(@indent('try:\n'))
+        for z in node.body
+            @level += 1
+            result.append(@visit(z))
+            @level -= 1
+        result.append(@indent('finally:\n'))
+        for z in node.finalbody
+            @level += 1
+            result.append(@visit(z))
+            @level -= 1
+        return ''.join(result)
+
+    do_While: (node) ->
+        result = []
+        result.append(@indent('while %s:\n' % [
+            @visit(node.test)]))
+        for z in node.body
+            @level += 1
+            result.append(@visit(z))
+            @level -= 1
+        if node.orelse
+            result.append('else:\n')
+            for z in node.orelse
+                @level += 1
+                result.append(@visit(z))
+                @level -= 1
+        return ''.join(result)
+
+    do_With: (node) ->
+        result = []
+        result.append(@indent('with '))
+        if hasattr(node, 'context_expression')
+            result.append(@visit(node.context_expresssion))
+        vars_list = []
+        if hasattr(node, 'optional_vars')
+            try
+                for z in node.optional_vars
+                    vars_list.append(@visit(z))
+            except TypeError # Not iterable.
+                vars_list.append(@visit(node.optional_vars))
+        result.append(','.join(vars_list))
+        result.append(':\n')
+        for z in node.body
+            @level += 1
+            result.append(@visit(z))
+            @level -= 1
+        result.append('\n')
+        return ''.join(result)
+
+    do_Yield: (node) ->
+        if getattr(node, 'value', None)
+            return @indent('yield %s\n' % [
+                @visit(node.value)])
+        else
+            return @indent('yield\n')
 
 class LeoGlobals extends object
     '''A class supporting g.pdb and g.trace for compatibility with Leo.'''
@@ -997,7 +1640,11 @@ class MakeCoffeeScriptController extends object
             s = open(fn).read
             readlines = g.ReadLinesClass(s).next
             tokens = list(tokenize.generate_tokens(readlines))
-            s = CoffeeScriptTokenizer(controller=@).format(tokens)
+            if use_tree
+                node = ast.parse(s, filename=fn, mode='exec')
+                s = CoffeeScriptTraverser(controller=@).format(node, tokens)
+            else
+                s = CoffeeScriptTokenizer(controller=@).format(tokens)
             f = open(out_fn, 'w')
             @output_time_stamp(f)
             f.write(s)
@@ -1178,6 +1825,18 @@ class MakeCoffeeScriptController extends object
                 if s == munge(s2)
                     return True
         return False
+
+class ParseState extends object
+    '''A class representing items parse state stack.'''
+
+    constructor: (kind, value) ->
+        @kind = kind
+        @value = value
+
+    __repr__: ->
+        return 'State: %10s %s' % [@kind, repr(@value)]
+
+    __str__ = __repr__
 
 class TestClass extends object
     '''A class containing constructs that have caused difficulties.'''

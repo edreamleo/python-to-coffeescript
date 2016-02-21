@@ -51,6 +51,81 @@
 <v t="ekr.20160220081959.12"><vh>compare_node_positions</vh></v>
 </v>
 </v>
+<v t="ekr.20160221033247.1"><vh>stat vars</vh></v>
+<v t="ekr.20160220103223.39"><vh>cst.print_stats</vh></v>
+<v t="ekr.20160220103223.21"><vh>cst.gen_arg_start &amp; gen_arg_end (not used)</vh></v>
+</v>
+</v>
+<v t="ekr.20160220050053.2"><vh>@clean README.md</vh>
+<v t="ekr.20160221071334.1"><vh>Overview</vh></v>
+<v t="ekr.20160221071354.1"><vh>Rationale</vh></v>
+<v t="ekr.20160221070924.1"><vh>Quick start</vh></v>
+<v t="ekr.20160221071222.1"><vh>Command-line arguments</vh></v>
+<v t="ekr.20160221071408.1"><vh>Code notes</vh></v>
+<v t="ekr.20160221071735.1"><vh>Summary</vh></v>
+</v>
+<v t="ekr.20160220131008.1"><vh>** To do</vh></v>
+<v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
+<v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
+<v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
+<v t="ekr.20160220050433.11"><vh>  main</vh></v>
+<v t="ekr.20160220050433.7"><vh>  utility functions</vh>
+<v t="ekr.20160220050433.8"><vh>dump</vh></v>
+<v t="ekr.20160220050433.9"><vh>dump_dict</vh></v>
+<v t="ekr.20160220050433.10"><vh>dump_list</vh></v>
+<v t="ekr.20160220050433.12"><vh>pdb</vh></v>
+<v t="ekr.20160220050433.13"><vh>truncate</vh></v>
+</v>
+<v t="ekr.20160220103223.1"><vh>class CoffeeScriptTokenizer</vh>
+<v t="ekr.20160220103223.2"><vh>class OutputToken</vh></v>
+<v t="ekr.20160221024549.1"><vh>class StateStack</vh>
+<v t="ekr.20160220175541.1"><vh>ss.get</vh></v>
+<v t="ekr.20160220151109.1"><vh>ss.has</vh></v>
+<v t="ekr.20160221025511.1"><vh>ss.pop</vh></v>
+<v t="ekr.20160220103223.40"><vh>ss.push</vh></v>
+<v t="ekr.20160220174952.1"><vh>ss.remove</vh></v>
+</v>
+<v t="ekr.20160220103223.4"><vh> cst.ctor</vh></v>
+<v t="ekr.20160220103223.7"><vh> cst.format</vh></v>
+<v t="ekr.20160220103223.8"><vh>cst.Input token Handlers</vh>
+<v t="ekr.20160220103223.9"><vh>cst.do_comment</vh></v>
+<v t="ekr.20160220103223.10"><vh>cst.do_endmarker</vh></v>
+<v t="ekr.20160220103223.11"><vh>cst.do_errortoken</vh></v>
+<v t="ekr.20160220103223.12"><vh>cst.do_indent &amp; do_dedent</vh></v>
+<v t="ekr.20160220103223.13"><vh>cst.do_name &amp; helpers</vh></v>
+<v t="ekr.20160220103223.14"><vh>cst.do_newline</vh></v>
+<v t="ekr.20160220103223.15"><vh>cst.do_nl</vh></v>
+<v t="ekr.20160220103223.16"><vh>cst.do_number</vh></v>
+<v t="ekr.20160220103223.17"><vh>cst.do_op</vh></v>
+<v t="ekr.20160220103223.18"><vh>cst.do_string</vh></v>
+</v>
+<v t="ekr.20160220103223.19"><vh>cst.Output token generators</vh>
+<v t="ekr.20160220103223.20"><vh>cst.add_token</vh></v>
+<v t="ekr.20160220103223.25"><vh>cst.clean</vh></v>
+<v t="ekr.20160220103223.26"><vh>cst.clean_blank_lines</vh></v>
+<v t="ekr.20160220152030.1"><vh>cst.gen_at</vh></v>
+<v t="ekr.20160220103223.22"><vh>cst.gen_backslash</vh></v>
+<v t="ekr.20160220103223.23"><vh>cst.gen_blank</vh></v>
+<v t="ekr.20160220103223.24"><vh>cst.gen_blank_lines</vh></v>
+<v t="ekr.20160220143251.1"><vh>cst.gen_class_or_def</vh></v>
+<v t="ekr.20160220143853.1"><vh>cst.gen_close_paren</vh></v>
+<v t="ekr.20160220143629.1"><vh>cst.gen_colon</vh></v>
+<v t="ekr.20160220160809.1"><vh>cst.gen_comma</vh></v>
+<v t="ekr.20160220103223.27"><vh>cst.gen_file_start &amp; gen_file_end</vh></v>
+<v t="ekr.20160220144848.1"><vh>cst.gen_import</vh></v>
+<v t="ekr.20160220103223.28"><vh>cst.gen_line_indent</vh></v>
+<v t="ekr.20160220103223.29"><vh>cst.gen_line_start &amp; gen_line_end</vh></v>
+<v t="ekr.20160220103223.30"><vh>cst.gen_lt &amp; gen_rt</vh></v>
+<v t="ekr.20160220103223.31"><vh>cst.gen_op*</vh></v>
+<v t="ekr.20160220143842.1"><vh>cst.gen_open_paren</vh></v>
+<v t="ekr.20160220151922.1"><vh>cst.gen_period</vh></v>
+<v t="ekr.20160220103223.32"><vh>cst.gen_possible_unary_op &amp; gen_unary_op</vh></v>
+<v t="ekr.20160220151729.1"><vh>cst.gen_self</vh></v>
+<v t="ekr.20160220103223.33"><vh>cst.gen_star_op</vh></v>
+<v t="ekr.20160220103223.34"><vh>cst.gen_star_star_op</vh></v>
+<v t="ekr.20160220103223.35"><vh>cst.gen_word &amp; gen_word_op</vh></v>
+</v>
+</v>
 <v t="ekr.20160220050433.14"><vh>class CoffeeScriptTraverser</vh>
 <v t="ekr.20160220050433.16"><vh> cf.format</vh></v>
 <v t="ekr.20160220050433.82"><vh> cf.indent</vh></v>
@@ -127,82 +202,6 @@
 <v t="ekr.20160220050433.79"><vh>cf.Yield</vh></v>
 </v>
 </v>
-<v t="ekr.20160221033247.1"><vh>stat vars</vh></v>
-<v t="ekr.20160220103223.39"><vh>cst.print_stats</vh></v>
-<v t="ekr.20160220103223.21"><vh>cst.gen_arg_start &amp; gen_arg_end (not used)</vh></v>
-</v>
-</v>
-<v t="ekr.20160220050053.2"><vh>@clean README.md</vh>
-<v t="ekr.20160221071334.1"><vh>Overview</vh></v>
-<v t="ekr.20160221071354.1"><vh>Rationale</vh></v>
-<v t="ekr.20160221070924.1"><vh>Quick start</vh></v>
-<v t="ekr.20160221071222.1"><vh>Command-line arguments</vh></v>
-<v t="ekr.20160221071408.1"><vh>Code notes</vh></v>
-<v t="ekr.20160221071735.1"><vh>Summary</vh></v>
-</v>
-<v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
-<v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
-<v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
-<v t="ekr.20160220050433.11"><vh>  main</vh></v>
-<v t="ekr.20160220050433.7"><vh>  utility functions</vh>
-<v t="ekr.20160220050433.8"><vh>dump</vh></v>
-<v t="ekr.20160220050433.9"><vh>dump_dict</vh></v>
-<v t="ekr.20160220050433.10"><vh>dump_list</vh></v>
-<v t="ekr.20160220050433.12"><vh>pdb</vh></v>
-<v t="ekr.20160220050433.13"><vh>truncate</vh></v>
-</v>
-<v t="ekr.20160220103223.1"><vh>class CoffeeScriptTokenizer</vh>
-<v t="ekr.20160220103223.2"><vh>class OutputToken</vh></v>
-<v t="ekr.20160221024549.1"><vh>class StateStack</vh>
-<v t="ekr.20160220175541.1"><vh>ss.get</vh></v>
-<v t="ekr.20160220151109.1"><vh>ss.has</vh></v>
-<v t="ekr.20160221025511.1"><vh>ss.pop</vh></v>
-<v t="ekr.20160220103223.40"><vh>ss.push</vh></v>
-<v t="ekr.20160220174952.1"><vh>ss.remove</vh></v>
-</v>
-<v t="ekr.20160220103223.4"><vh> cst.ctor</vh></v>
-<v t="ekr.20160220103223.7"><vh> cst.format</vh></v>
-<v t="ekr.20160220103223.8"><vh>cst.Input token Handlers</vh>
-<v t="ekr.20160220103223.9"><vh>cst.do_comment</vh></v>
-<v t="ekr.20160220103223.10"><vh>cst.do_endmarker</vh></v>
-<v t="ekr.20160220103223.11"><vh>cst.do_errortoken</vh></v>
-<v t="ekr.20160220103223.12"><vh>cst.do_indent &amp; do_dedent</vh></v>
-<v t="ekr.20160220103223.13"><vh>cst.do_name &amp; helpers</vh></v>
-<v t="ekr.20160220103223.14"><vh>cst.do_newline</vh></v>
-<v t="ekr.20160220103223.15"><vh>cst.do_nl</vh></v>
-<v t="ekr.20160220103223.16"><vh>cst.do_number</vh></v>
-<v t="ekr.20160220103223.17"><vh>cst.do_op</vh></v>
-<v t="ekr.20160220103223.18"><vh>cst.do_string</vh></v>
-</v>
-<v t="ekr.20160220103223.19"><vh>cst.Output token generators</vh>
-<v t="ekr.20160220103223.20"><vh>cst.add_token</vh></v>
-<v t="ekr.20160220103223.25"><vh>cst.clean</vh></v>
-<v t="ekr.20160220103223.26"><vh>cst.clean_blank_lines</vh></v>
-<v t="ekr.20160220152030.1"><vh>cst.gen_at</vh></v>
-<v t="ekr.20160220103223.22"><vh>cst.gen_backslash</vh></v>
-<v t="ekr.20160220103223.23"><vh>cst.gen_blank</vh></v>
-<v t="ekr.20160220103223.24"><vh>cst.gen_blank_lines</vh></v>
-<v t="ekr.20160220143251.1"><vh>cst.gen_class_or_def</vh></v>
-<v t="ekr.20160220143853.1"><vh>cst.gen_close_paren</vh></v>
-<v t="ekr.20160220143629.1"><vh>cst.gen_colon</vh></v>
-<v t="ekr.20160220160809.1"><vh>cst.gen_comma</vh></v>
-<v t="ekr.20160220103223.27"><vh>cst.gen_file_start &amp; gen_file_end</vh></v>
-<v t="ekr.20160220144848.1"><vh>cst.gen_import</vh></v>
-<v t="ekr.20160220103223.28"><vh>cst.gen_line_indent</vh></v>
-<v t="ekr.20160220103223.29"><vh>cst.gen_line_start &amp; gen_line_end</vh></v>
-<v t="ekr.20160220103223.30"><vh>cst.gen_lt &amp; gen_rt</vh></v>
-<v t="ekr.20160220103223.31"><vh>cst.gen_op*</vh></v>
-<v t="ekr.20160220143842.1"><vh>cst.gen_open_paren</vh></v>
-<v t="ekr.20160220151922.1"><vh>cst.gen_period</vh></v>
-<v t="ekr.20160220103223.32"><vh>cst.gen_possible_unary_op &amp; gen_unary_op</vh></v>
-<v t="ekr.20160220151729.1"><vh>cst.gen_self</vh></v>
-<v t="ekr.20160220103223.33"><vh>cst.gen_star_op</vh></v>
-<v t="ekr.20160220103223.34"><vh>cst.gen_star_star_op</vh></v>
-<v t="ekr.20160220103223.35"><vh>cst.gen_word &amp; gen_word_op</vh></v>
-</v>
-</v>
-<v t="ekr.20160220103223.3"><vh>class ParseState</vh></v>
 <v t="ekr.20160220050433.86"><vh>class LeoGlobals</vh>
 <v t="ekr.20160220050433.87"><vh>class NullObject (Python Cookbook)</vh></v>
 <v t="ekr.20160220110252.1"><vh>class ReadLinesClass</vh></v>
@@ -234,6 +233,7 @@
 <v t="ekr.20160220050433.131"><vh>mcs.is_section_name</vh></v>
 </v>
 </v>
+<v t="ekr.20160220103223.3"><vh>class ParseState</vh></v>
 <v t="ekr.20160220050433.188"><vh>class TestClass</vh>
 <v t="ekr.20160220050433.189"><vh>parse_group (Guido)</vh></v>
 <v t="ekr.20160220050433.190"><vh>return_all</vh></v>
@@ -248,6 +248,7 @@
 <v t="ekr.20160220103223.30"></v>
 <v t="ekr.20160220143853.1"></v>
 <v t="ekr.20160220143842.1"></v>
+<v t="ekr.20160220050433.121"></v>
 </v>
 </vnodes>
 <tnodes>
@@ -271,6 +272,7 @@ Written by Edward K. Ream.
 '''
 &lt;&lt; license &gt;&gt;
 &lt;&lt; imports &gt;&gt;
+use_tree = False
 @others
 
 g = LeoGlobals() # For ekr.
@@ -363,7 +365,11 @@ def make_coffeescript_file(self, fn):
         s = open(fn).read()
         readlines = g.ReadLinesClass(s).next
         tokens = list(tokenize.generate_tokens(readlines))
-        s = CoffeeScriptTokenizer(controller=self).format(tokens)
+        if use_tree:
+            node = ast.parse(s, filename=fn, mode='exec')
+            s = CoffeeScriptTraverser(controller=self).format(node, tokens)
+        else:
+            s = CoffeeScriptTokenizer(controller=self).format(tokens)
         f = open(out_fn, 'w')
         self.output_time_stamp(f)
         f.write(s)
@@ -563,22 +569,21 @@ class CoffeeScriptTraverser(object):
         '''Ctor for CoffeeScriptFormatter class.'''
         self.controller = controller
         self.first_statement = False
-        self.trace_visitors = controller.trace_visitors
 
     @others
 </t>
 <t tx="ekr.20160220050433.16">
-def format(self, node):
+def format(self, node, tokens):
     '''Format the node (or list of nodes) and its descendants.'''
     self.level = 0
+    self.tokens = tokens
     val = self.visit(node)
     return val or ''
 </t>
 <t tx="ekr.20160220050433.17">
 def visit(self, node):
     '''Return the formatted version of an Ast node, or list of Ast nodes.'''
-    if self.trace_visitors:
-        g.trace(node.__class__.__name__)
+    # g.trace(node.__class__.__name__)
     if isinstance(node, (list, tuple)):
         return ', '.join([self.visit(z) for z in node])
     elif node is None:
@@ -663,6 +668,7 @@ def return_two_lists(s):
     # Requires Python 2.7 or above. Without OrderedDict
     # the configparser will give random order for patterns.
 
+import ast
 import glob
 import optparse
 import os
@@ -1136,7 +1142,8 @@ def get_import_names(self, node):
         result.append(data)
     return result
 </t>
-<t tx="ekr.20160220050433.7">#
+<t tx="ekr.20160220050433.7">
+#
 # Utility functions...
 #</t>
 <t tx="ekr.20160220050433.70">
@@ -2143,7 +2150,8 @@ def do_string(self):
         # This *does* retain the string's spelling.
     self.gen_blank()
 </t>
-<t tx="ekr.20160220103223.19">#
+<t tx="ekr.20160220103223.19">
+#
 # Output token generators and helpers...
 #</t>
 <t tx="ekr.20160220103223.2">
@@ -2543,7 +2551,8 @@ def format(self, tokens):
     self.gen_file_end()
     return ''.join([z.to_string() for z in self.code_list])
 </t>
-<t tx="ekr.20160220103223.8">#
+<t tx="ekr.20160220103223.8">
+#
 # Input token handlers...
 #</t>
 <t tx="ekr.20160220103223.9">
@@ -2670,19 +2679,12 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-- Remove ()
+- Handle `elif`
 
-***** Experiment with synching tokens from a traverser.
-- This may be the most flexible approach.
-
-- Must remove most colons.
-
-- `###` means something (invalid) to coffeescript
-
-- Check results by running through coffee python_to_coffeescript.coffee
-    - Replace tuples by lists.
+*** Experiment with synching tokens from a traverser.
 
 Later:
+- `###` means something (invalid) to coffeescript
 - Remove type hints from arg lists.
 - Change `is not` to `isnt`
 - Revise TestClass.
