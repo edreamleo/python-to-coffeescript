@@ -40,7 +40,6 @@ except ImportError:
     import io # Python 3
 isPython3 = sys.version_info >= (3, 0, 0)
 
-
 def main():
     '''
     The driver for the stand-alone version of make-stub-files.
@@ -84,15 +83,14 @@ def pdb(self):
 
 def truncate(s, n):
     '''Return s truncated to n characters.'''
-    return s if len(s) <= n else s[: n - 3] + '...'
-
+    return s if len(s) <= n else s[:n-3] + '...'
 
 
 class CoffeeScriptTokenizer:
     '''A token-based Python beautifier.'''
 
 
-    class OutputToken:
+    class OutputToken(object):
         '''A class representing Output Tokens'''
 
         def __init__(self, kind, value):
@@ -113,17 +111,59 @@ class CoffeeScriptTokenizer:
             return self.value if g.isString(self.value) else ''
 
 
-    class ParseState:
-        '''A class representing items parse state stack.'''
+    class StateStack(object):
+        '''
+        A class representing a stack of ParseStates and encapsulating various
+        operations on same.
+        '''
+        
+        def __init__(self):
+            '''Ctor for ParseStack class.'''
+            self.stack = []
 
-        def __init__(self, kind, value):
-            self.kind = kind
-            self.value = value
+        def get(self, kind):
+            '''Return the last state of the given kind, leaving the stack unchanged.'''
+            n = len(self.stack)
+            i = n - 1
+            while 0 <= i:
+                state = self.stack[i]
+                if state.kind == kind:
+                    return state
+                i -= 1
+            return None
 
-        def __repr__(self):
-            return 'State: %10s %s' % (self.kind, repr(self.value))
+        def has(self, kind):
+            '''Return True if state.kind == kind for some ParseState on the stack.'''
+            return any([z.kind == kind for z in self.stack])
 
-        __str__ = __repr__
+        def pop(self):
+            '''Pop the state on the stack and return it.'''
+            return self.stack.pop()
+
+        def push(self, kind, value=None):
+            '''Append a state to the state stack.'''
+            self.stack.append(ParseState(kind, value))
+            if kind == 'tuple':
+                g.trace(kind, value, g.callers(2))
+
+        def remove(self, kind):
+            '''Remove the last state on the stack of the given kind.'''
+            trace = True
+            n = len(self.stack)
+            i = n - 1
+            found = None
+            while 0 <= i:
+                state = self.stack[i]
+                if state.kind == kind:
+                    found = state
+                    self.stack = self.stack[:i] + self.stack[i+1:]
+                    assert len(self.stack) == n-1, (len(self.stack), n-1)
+                    break
+                i -= 1
+            if trace and kind == 'tuple':
+                kind = found and found.kind or 'fail'
+                value = found and found.value or 'fail'
+                g.trace(kind, value, g.callers(2))
 
     def __init__(self, controller):
         '''Ctor for CoffeeScriptTokenizer class.'''
@@ -143,6 +183,7 @@ class CoffeeScriptTokenizer:
         self.in_class_line = False
         self.in_def_line = False
         self.in_import = False
+        self.in_list = False
         self.input_paren_level = 0
         self.def_name_seen = False
         self.level = 0 # indentation level.
@@ -150,20 +191,11 @@ class CoffeeScriptTokenizer:
             # Typically ' '*self.tab_width*self.level,
             # but may be changed for continued lines.
         self.output_paren_level = 0 # Number of unmatched left parens in output.
-        self.state_stack = [] # Stack of ParseState objects.
+        self.stack = None # Stack of ParseState objects, set in format.
         # Settings...
         self.delete_blank_lines = False
         self.tab_width = 4
-        # Statistics
-        self.n_changed_nodes = 0
-        self.n_input_tokens = 0
-        self.n_output_tokens = 0
-        self.n_strings = 0
-        self.parse_time = 0.0
-        self.tokenize_time = 0.0
-        self.beautify_time = 0.0
-        self.check_time = 0.0
-        self.total_time = 0.0
+        
          # Undo vars
         self.changed = False
         self.dirtyVnodeList = []
@@ -177,8 +209,9 @@ class CoffeeScriptTokenizer:
         def oops():
             g.trace('unknown kind', self.kind)
 
+        trace = False
         self.code_list = []
-        self.state_stack = []
+        self.stack = self.StateStack()
         self.file_start()
         for token5tuple in tokens:
             t1, t2, t3, t4, t5 = token5tuple
@@ -203,7 +236,7 @@ class CoffeeScriptTokenizer:
                     self.line_indent(ws=' ' * n)
                         # Do not set self.lws here!
                 self.last_line_number = srow
-            # g.trace('%10s %r'% (self.kind,self.val))
+            if trace: g.trace('%10s %r'% (self.kind,self.val))
             func = getattr(self, 'do_' + self.kind, oops)
             func()
         self.file_end()
@@ -238,13 +271,14 @@ class CoffeeScriptTokenizer:
         self.level -= 1
         self.lws = self.level * self.tab_width * ' '
         self.line_start()
-        state = self.state_stack[-1]
-        if state.kind == 'indent' and state.value == self.level:
-            self.state_stack.pop()
-            state = self.state_stack[-1]
+        # End all classes & defs.
+        for state in self.stack.stack:
             if state.kind in ('class', 'def'):
-                self.state_stack.pop()
-                self.blank_lines(1)
+                if state.value >= self.level:
+                    # g.trace(self.level, 'end', state.kind)
+                    self.stack.remove(state.kind)
+                else:
+                    break
 
     def do_indent(self):
         '''Handle indent token.'''
@@ -265,29 +299,32 @@ class CoffeeScriptTokenizer:
             if name == '__init__':
                 name = 'constructor'
             self.word(name)
-            if self.in_state('class'):
+            if self.stack.has('class'):
                 self.op_blank(':')
             else:
                 self.op('=')
             self.def_name_seen = True
         elif name in ('and', 'in', 'not', 'not in', 'or'):
             self.word_op(name)
+        elif name == 'default':
+            # Hard to know where to put a warning comment.
+            self.word(name+'_')
         else:
             self.word(name)
 
     def gen_class_or_def(self, name):
+        
+        # g.trace(self.level, name)
         self.decorator_seen = False
-        state = self.state_stack[-1]
-        if state.kind == 'decorator':
+        if self.stack.has('decorator'):
+            self.stack.remove('decorator')
             self.clean_blank_lines()
             self.line_end()
-            self.state_stack.pop()
         else:
             self.blank_lines(1)
-            # self.blank_lines(2 if self.level == 0 else 1)
-        self.push_state(name)
-        self.push_state('indent', self.level)
-            # For trailing lines after inner classes/defs.
+        self.stack.push(name, self.level)
+            # name is 'class' or 'def'
+            # do_dedent pops these entries.
         if name == 'def':
             self.in_def_line = True
             self.in_class_line = False
@@ -298,6 +335,8 @@ class CoffeeScriptTokenizer:
             self.word(name)
 
     def gen_import(self, name):
+        '''Convert an import to something that looks like a call.'''
+        self.word('pass')
         self.add_token('comment', '# ' + name)
 
     def gen_self(self):
@@ -373,7 +412,7 @@ class CoffeeScriptTokenizer:
             self.blank_lines(1)
             self.decorator_seen = True
         self.op_no_blanks(val)
-        self.push_state('decorator')
+        self.stack.push('decorator')
 
     def gen_colon(self):
         
@@ -388,6 +427,7 @@ class CoffeeScriptTokenizer:
                 self.in_class_line = False
         else:
             self.op_blank(val)
+
     def gen_comma(self):
         
         val = self.val
@@ -409,21 +449,27 @@ class CoffeeScriptTokenizer:
                 self.word('extends')
                 self.extends_flag = True
         else:
+            # Generate a function call or a list.
             self.lt(val)
+        self.after_self = False
 
     def gen_close_paren(self):
         
         val = self.val
         assert val == ')', val
         self.input_paren_level -= 1
-        prev = self.code_list[-1]
+        ### prev = self.code_list[-1]
         if self.in_class_line:
             self.in_class_line = False
-        elif prev.kind == 'lt' and prev.value == '(':
-            self.clean('lt')
-            self.output_paren_level -= 1
         else:
             self.rt(val)
+        ###
+        # elif prev.kind == 'lt' and prev.value == '(':
+            # self.clean('lt')
+            # self.output_paren_level -= 1
+        # else:
+            # self.rt(val)
+        self.after_self = False
 
     def gen_period(self):
         
@@ -516,7 +562,7 @@ class CoffeeScriptTokenizer:
     def file_start(self):
         '''Add a file-start token to the code list and the state stack.'''
         self.add_token('file-start')
-        self.push_state('file-start')
+        self.stack.push('file-start')
 
     def line_indent(self, ws=None):
         '''Add a line-indent token if indentation is non-empty.'''
@@ -551,8 +597,20 @@ class CoffeeScriptTokenizer:
         self.output_paren_level += 1
         self.clean('blank')
         prev = self.code_list[-1]
-        if prev.kind in ('op', 'word-op'):
+        ####
+        # if prev.kind in ('op', 'word-op'):
+            # self.blank()
+            # self.add_token('lt', s)
+        if self.in_def_line:
             self.blank()
+            self.add_token('lt', s)
+        elif prev.kind in ('op', 'word-op'):
+            self.blank()
+            ###
+            # if s == '(':
+                # s = '['
+                # self.stack.push('tuple', self.output_paren_level)
+                # g.trace('line', self.last_line_number, self.output_paren_level)
             self.add_token('lt', s)
         elif prev.kind == 'word':
             # Only suppress blanks before '(' or '[' for non-keyworks.
@@ -576,7 +634,16 @@ class CoffeeScriptTokenizer:
             self.code_list.append(prev)
         else:
             self.clean('blank')
-        self.add_token('rt', s)
+        if self.stack.has('tuple'):
+            g.trace('line', self.last_line_number, self.output_paren_level)
+            state = self.stack.get('tuple')
+            if state.value == self.output_paren_level:
+                self.add_token('rt', ']')
+                self.stack.remove('tuple')
+            else:
+                self.add_token('rt', s)
+        else:
+            self.add_token('rt', s)
 
     def op(self, s):
         '''Add op token to code list.'''
@@ -667,26 +734,18 @@ class CoffeeScriptTokenizer:
         self.add_token('word-op', s)
         self.blank()
 
-    def print_stats(self):
-        print('==================== stats')
-        print('changed nodes  %s' % self.n_changed_nodes)
-        print('tokens         %s' % self.n_input_tokens)
-        print('len(code_list) %s' % self.n_output_tokens)
-        print('len(s)         %s' % self.n_strings)
-        print('parse          %4.2f sec.' % self.parse_time)
-        print('tokenize       %4.2f sec.' % self.tokenize_time)
-        print('format         %4.2f sec.' % self.beautify_time)
-        print('check          %4.2f sec.' % self.check_time)
-        print('total          %4.2f sec.' % self.total_time)
 
-    def push_state(self, kind, value=None):
-        '''Append a state to the state stack.'''
-        state = self.ParseState(kind, value)
-        self.state_stack.append(state)
+class ParseState(object):
+    '''A class representing items parse state stack.'''
 
-    def in_state(self, kind):
-        '''Return True if state.kind == kind for some ParseState on the state_stack.'''
-        return any([z.kind == kind for z in self.state_stack])
+    def __init__(self, kind, value):
+        self.kind = kind
+        self.value = value
+
+    def __repr__(self):
+        return 'State: %10s %s' % (self.kind, repr(self.value))
+
+    __str__ = __repr__
 
 
 class LeoGlobals(object):
@@ -881,7 +940,6 @@ class LeoGlobals(object):
 
         def ue(self, s, encoding):
             return unicode(s, encoding)
-
 
 
 class MakeCoffeeScriptController(object):
@@ -1114,7 +1172,6 @@ class MakeCoffeeScriptController(object):
         return False
 
 
-
 class TestClass(object):
     '''
     A class containing constructs that have caused difficulties.
@@ -1154,6 +1211,7 @@ class TestClass(object):
             return aList
         else:
             return list(self.regex.finditer(s))
+
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
     main()

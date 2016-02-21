@@ -33,7 +33,25 @@
 <v t="ekr.20160220051417.14"><vh>@button check-leading-lines</vh></v>
 </v>
 <v t="ekr.20160220051105.1"><vh>Unused</vh>
-<v t="ekr.20160220050433.14"><vh>class CoffeeScriptFormatter</vh>
+<v t="ekr.20160220081725.1"><vh>ast_utils.py</vh>
+<v t="ekr.20160220081959.1"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
+<v t="ekr.20160220093908.1"><vh>class Bunch (Python Cookbook)</vh></v>
+<v t="ekr.20160220081959.9"><vh>mark_text_ranges &amp; helpers</vh>
+<v t="ekr.20160220084232.1"><vh>&lt;&lt; mark_text_ranges helpers &gt;&gt;</vh>
+<v t="ekr.20160220084252.1"><vh>_extract_tokens</vh></v>
+<v t="ekr.20160220084252.2"><vh>_mark_text_ranges_rec</vh></v>
+<v t="ekr.20160220084252.3"><vh>_strip_trailing_junk_from_expressions</vh></v>
+<v t="ekr.20160220084252.4"><vh>_strip_trailing_extra_closers</vh></v>
+<v t="ekr.20160220084252.5"><vh>_strip_unclosed_brackets</vh></v>
+<v t="ekr.20160220084252.6"><vh>_mark_end_and_return_child_tokens</vh></v>
+</v>
+<v t="ekr.20160220081959.14"><vh>_get_ordered_child_nodes</vh></v>
+<v t="ekr.20160220081959.15"><vh>_tokens_text</vh></v>
+<v t="ekr.20160220081959.11"><vh>fix_ast_problems</vh></v>
+<v t="ekr.20160220081959.12"><vh>compare_node_positions</vh></v>
+</v>
+</v>
+<v t="ekr.20160220050433.14"><vh>class CoffeeScriptTraverser</vh>
 <v t="ekr.20160220050433.16"><vh> cf.format</vh></v>
 <v t="ekr.20160220050433.82"><vh> cf.indent</vh></v>
 <v t="ekr.20160220050433.17"><vh> cf.visit</vh></v>
@@ -109,24 +127,8 @@
 <v t="ekr.20160220050433.79"><vh>cf.Yield</vh></v>
 </v>
 </v>
-<v t="ekr.20160220081725.1"><vh>ast_utils.py</vh>
-<v t="ekr.20160220081959.1"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
-<v t="ekr.20160220093908.1"><vh>class Bunch (Python Cookbook)</vh></v>
-<v t="ekr.20160220081959.9"><vh>mark_text_ranges &amp; helpers</vh>
-<v t="ekr.20160220084232.1"><vh>&lt;&lt; mark_text_ranges helpers &gt;&gt;</vh>
-<v t="ekr.20160220084252.1"><vh>_extract_tokens</vh></v>
-<v t="ekr.20160220084252.2"><vh>_mark_text_ranges_rec</vh></v>
-<v t="ekr.20160220084252.3"><vh>_strip_trailing_junk_from_expressions</vh></v>
-<v t="ekr.20160220084252.4"><vh>_strip_trailing_extra_closers</vh></v>
-<v t="ekr.20160220084252.5"><vh>_strip_unclosed_brackets</vh></v>
-<v t="ekr.20160220084252.6"><vh>_mark_end_and_return_child_tokens</vh></v>
-</v>
-<v t="ekr.20160220081959.14"><vh>_get_ordered_child_nodes</vh></v>
-<v t="ekr.20160220081959.15"><vh>_tokens_text</vh></v>
-<v t="ekr.20160220081959.11"><vh>fix_ast_problems</vh></v>
-<v t="ekr.20160220081959.12"><vh>compare_node_positions</vh></v>
-</v>
-</v>
+<v t="ekr.20160221033247.1"><vh>stat vars</vh></v>
+<v t="ekr.20160220103223.39"><vh> cst.print_stats</vh></v>
 </v>
 </v>
 <v t="ekr.20160220050053.2"><vh>@clean README.md</vh></v>
@@ -143,9 +145,15 @@
 </v>
 <v t="ekr.20160220103223.1"><vh>class CoffeeScriptTokenizer</vh>
 <v t="ekr.20160220103223.2"><vh>class OutputToken</vh></v>
-<v t="ekr.20160220103223.3"><vh>class ParseState</vh></v>
-<v t="ekr.20160220103223.4"><vh>cst.ctor</vh></v>
-<v t="ekr.20160220103223.7"><vh>cst.format</vh></v>
+<v t="ekr.20160221024549.1"><vh>class StateStack</vh>
+<v t="ekr.20160220175541.1"><vh>ss.get</vh></v>
+<v t="ekr.20160220151109.1"><vh>ss.has</vh></v>
+<v t="ekr.20160221025511.1"><vh>ss.pop</vh></v>
+<v t="ekr.20160220103223.40"><vh>ss.push</vh></v>
+<v t="ekr.20160220174952.1"><vh>ss.remove</vh></v>
+</v>
+<v t="ekr.20160220103223.4"><vh> cst.ctor</vh></v>
+<v t="ekr.20160220103223.7"><vh> cst.format</vh></v>
 <v t="ekr.20160220103223.8"><vh>cst.Input token Handlers</vh>
 <v t="ekr.20160220103223.9"><vh>cst.do_comment</vh></v>
 <v t="ekr.20160220103223.10"><vh>cst.do_endmarker</vh></v>
@@ -187,12 +195,8 @@
 <v t="ekr.20160220103223.34"><vh>cst.star_star_op</vh></v>
 <v t="ekr.20160220103223.35"><vh>cst.word &amp; word_op</vh></v>
 </v>
-<v t="ekr.20160220103223.36"><vh>cst.Utils</vh>
-<v t="ekr.20160220103223.39"><vh>cst.print_stats</vh></v>
-<v t="ekr.20160220103223.40"><vh>cst.push_state</vh></v>
-<v t="ekr.20160220151109.1"><vh>cst.in_state</vh></v>
 </v>
-</v>
+<v t="ekr.20160220103223.3"><vh>class ParseState</vh></v>
 <v t="ekr.20160220050433.86"><vh>class LeoGlobals</vh>
 <v t="ekr.20160220050433.87"><vh>class NullObject (Python Cookbook)</vh></v>
 <v t="ekr.20160220110252.1"><vh>class ReadLinesClass</vh></v>
@@ -232,13 +236,14 @@
 <v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
 </v>
 </v>
-<v t="ekr.20160220163911.1"><vh>recent</vh>
 <v t="ekr.20160220103223.1"></v>
 <v t="ekr.20160220103223.4"></v>
 <v t="ekr.20160220103223.13"></v>
 <v t="ekr.20160220103223.17"></v>
-</v>
-<v t="ekr.20160220131008.1"><vh>** To do &amp; log</vh></v>
+<v t="ekr.20160220131008.1"><vh>** To do</vh></v>
+<v t="ekr.20160220103223.12"></v>
+<v t="ekr.20160220103223.30"></v>
+<v t="ekr.20160220143251.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -268,8 +273,8 @@ Written by Edward K. Ream.
 &lt;&lt; license &gt;&gt;
 &lt;&lt; imports &gt;&gt;
 isPython3 = sys.version_info &gt;= (3, 0, 0)
-
 @others
+
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
     main()
@@ -513,8 +518,7 @@ def get_config_string(self):
 <t tx="ekr.20160220050433.13">
 def truncate(s, n):
     '''Return s truncated to n characters.'''
-    return s if len(s) &lt;= n else s[: n - 3] + '...'
-
+    return s if len(s) &lt;= n else s[:n-3] + '...'
 </t>
 <t tx="ekr.20160220050433.130">
 def init_parser(self, s):
@@ -548,11 +552,10 @@ def is_section_name(self, s):
             if s == munge(s2):
                 return True
     return False
-
 </t>
 <t tx="ekr.20160220050433.14">
 
-class CoffeeScriptFormatter(object):
+class CoffeeScriptTraverser(object):
     '''A class to convert python sources to coffeescript sources.'''
     # pylint: disable=consider-using-enumerate
     
@@ -2019,13 +2022,14 @@ def do_dedent(self):
     self.level -= 1
     self.lws = self.level * self.tab_width * ' '
     self.line_start()
-    state = self.state_stack[-1]
-    if state.kind == 'indent' and state.value == self.level:
-        self.state_stack.pop()
-        state = self.state_stack[-1]
+    # End all classes &amp; defs.
+    for state in self.stack.stack:
         if state.kind in ('class', 'def'):
-            self.state_stack.pop()
-            self.blank_lines(1)
+            if state.value &gt;= self.level:
+                # g.trace(self.level, 'end', state.kind)
+                self.stack.remove(state.kind)
+            else:
+                break
 
 def do_indent(self):
     '''Handle indent token.'''
@@ -2047,13 +2051,16 @@ def do_name(self):
         if name == '__init__':
             name = 'constructor'
         self.word(name)
-        if self.in_state('class'):
+        if self.stack.has('class'):
             self.op_blank(':')
         else:
             self.op('=')
         self.def_name_seen = True
     elif name in ('and', 'in', 'not', 'not in', 'or'):
         self.word_op(name)
+    elif name == 'default':
+        # Hard to know where to put a warning comment.
+        self.word(name+'_')
     else:
         self.word(name)
 </t>
@@ -2131,7 +2138,7 @@ def do_string(self):
 <t tx="ekr.20160220103223.19"></t>
 <t tx="ekr.20160220103223.2">
 
-class OutputToken:
+class OutputToken(object):
     '''A class representing Output Tokens'''
 
     def __init__(self, kind, value):
@@ -2233,7 +2240,7 @@ def file_end(self):
 def file_start(self):
     '''Add a file-start token to the code list and the state stack.'''
     self.add_token('file-start')
-    self.push_state('file-start')
+    self.stack.push('file-start')
 </t>
 <t tx="ekr.20160220103223.28">
 def line_indent(self, ws=None):
@@ -2266,7 +2273,7 @@ def line_start(self):
 </t>
 <t tx="ekr.20160220103223.3">
 
-class ParseState:
+class ParseState(object):
     '''A class representing items parse state stack.'''
 
     def __init__(self, kind, value):
@@ -2285,8 +2292,20 @@ def lt(self, s):
     self.output_paren_level += 1
     self.clean('blank')
     prev = self.code_list[-1]
-    if prev.kind in ('op', 'word-op'):
+    ####
+    # if prev.kind in ('op', 'word-op'):
+        # self.blank()
+        # self.add_token('lt', s)
+    if self.in_def_line:
         self.blank()
+        self.add_token('lt', s)
+    elif prev.kind in ('op', 'word-op'):
+        self.blank()
+        ###
+        # if s == '(':
+            # s = '['
+            # self.stack.push('tuple', self.output_paren_level)
+            # g.trace('line', self.last_line_number, self.output_paren_level)
         self.add_token('lt', s)
     elif prev.kind == 'word':
         # Only suppress blanks before '(' or '[' for non-keyworks.
@@ -2310,7 +2329,16 @@ def rt(self, s):
         self.code_list.append(prev)
     else:
         self.clean('blank')
-    self.add_token('rt', s)
+    if self.stack.has('tuple'):
+        g.trace('line', self.last_line_number, self.output_paren_level)
+        state = self.stack.get('tuple')
+        if state.value == self.output_paren_level:
+            self.add_token('rt', ']')
+            self.stack.remove('tuple')
+        else:
+            self.add_token('rt', s)
+    else:
+        self.add_token('rt', s)
 </t>
 <t tx="ekr.20160220103223.31">
 def op(self, s):
@@ -2406,7 +2434,6 @@ def word_op(self, s):
     self.add_token('word-op', s)
     self.blank()
 </t>
-<t tx="ekr.20160220103223.36"></t>
 <t tx="ekr.20160220103223.39">
 def print_stats(self):
     print('==================== stats')
@@ -2439,6 +2466,7 @@ def __init__(self, controller):
     self.in_class_line = False
     self.in_def_line = False
     self.in_import = False
+    self.in_list = False
     self.input_paren_level = 0
     self.def_name_seen = False
     self.level = 0 # indentation level.
@@ -2446,29 +2474,21 @@ def __init__(self, controller):
         # Typically ' '*self.tab_width*self.level,
         # but may be changed for continued lines.
     self.output_paren_level = 0 # Number of unmatched left parens in output.
-    self.state_stack = [] # Stack of ParseState objects.
+    self.stack = None # Stack of ParseState objects, set in format.
     # Settings...
     self.delete_blank_lines = False
     self.tab_width = 4
-    # Statistics
-    self.n_changed_nodes = 0
-    self.n_input_tokens = 0
-    self.n_output_tokens = 0
-    self.n_strings = 0
-    self.parse_time = 0.0
-    self.tokenize_time = 0.0
-    self.beautify_time = 0.0
-    self.check_time = 0.0
-    self.total_time = 0.0
+    
      # Undo vars
     self.changed = False
     self.dirtyVnodeList = []
 </t>
 <t tx="ekr.20160220103223.40">
-def push_state(self, kind, value=None):
+def push(self, kind, value=None):
     '''Append a state to the state stack.'''
-    state = self.ParseState(kind, value)
-    self.state_stack.append(state)
+    self.stack.append(ParseState(kind, value))
+    if kind == 'tuple':
+        g.trace(kind, value, g.callers(2))
 </t>
 <t tx="ekr.20160220103223.7">
 def format(self, tokens):
@@ -2480,8 +2500,9 @@ def format(self, tokens):
     def oops():
         g.trace('unknown kind', self.kind)
 
+    trace = False
     self.code_list = []
-    self.state_stack = []
+    self.stack = self.StateStack()
     self.file_start()
     for token5tuple in tokens:
         t1, t2, t3, t4, t5 = token5tuple
@@ -2506,7 +2527,7 @@ def format(self, tokens):
                 self.line_indent(ws=' ' * n)
                     # Do not set self.lws here!
             self.last_line_number = srow
-        # g.trace('%10s %r'% (self.kind,self.val))
+        if trace: g.trace('%10s %r'% (self.kind,self.val))
         func = getattr(self, 'do_' + self.kind, oops)
         func()
     self.file_end()
@@ -2599,7 +2620,6 @@ else:
 
     def ue(self, s, encoding):
         return unicode(s, encoding)
-
 </t>
 <t tx="ekr.20160220105138.1">
 def computeLeadingWhitespaceWidth(self, s, tab_width):
@@ -2638,38 +2658,31 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-- Handle bases in class line.
 - Check results by running through coffeescript.
-    - What to do about try/except involving imports?
+- Rename all output methods gen_* ?
+- Replace tuples by lists.
+
+Later:
 - Remove type hints from arg lists.
 - Change `is not` to `isnt`
 - Revise TestClass.
-
-Peepholes:
+- Peepholes:
     - last return of def.
-
-Log:
-- Created gen_* helpers. Little state machines using ivars.
-- Comment out import lines.
-- Added cst.in_state
-- Added : after def name in classes.
-- Changed self to '@'
-- Changed __init__ to constructor
 </t>
 <t tx="ekr.20160220143251.1">
 def gen_class_or_def(self, name):
+    
+    # g.trace(self.level, name)
     self.decorator_seen = False
-    state = self.state_stack[-1]
-    if state.kind == 'decorator':
+    if self.stack.has('decorator'):
+        self.stack.remove('decorator')
         self.clean_blank_lines()
         self.line_end()
-        self.state_stack.pop()
     else:
         self.blank_lines(1)
-        # self.blank_lines(2 if self.level == 0 else 1)
-    self.push_state(name)
-    self.push_state('indent', self.level)
-        # For trailing lines after inner classes/defs.
+    self.stack.push(name, self.level)
+        # name is 'class' or 'def'
+        # do_dedent pops these entries.
     if name == 'def':
         self.in_def_line = True
         self.in_class_line = False
@@ -2704,7 +2717,9 @@ def gen_open_paren(self):
             self.word('extends')
             self.extends_flag = True
     else:
+        # Generate a function call or a list.
         self.lt(val)
+    self.after_self = False
 </t>
 <t tx="ekr.20160220143853.1">
 def gen_close_paren(self):
@@ -2712,23 +2727,29 @@ def gen_close_paren(self):
     val = self.val
     assert val == ')', val
     self.input_paren_level -= 1
-    prev = self.code_list[-1]
+    ### prev = self.code_list[-1]
     if self.in_class_line:
         self.in_class_line = False
-    elif prev.kind == 'lt' and prev.value == '(':
-        self.clean('lt')
-        self.output_paren_level -= 1
     else:
         self.rt(val)
+    ###
+    # elif prev.kind == 'lt' and prev.value == '(':
+        # self.clean('lt')
+        # self.output_paren_level -= 1
+    # else:
+        # self.rt(val)
+    self.after_self = False
 </t>
 <t tx="ekr.20160220144848.1">
 def gen_import(self, name):
+    '''Convert an import to something that looks like a call.'''
+    self.word('pass')
     self.add_token('comment', '# ' + name)
 </t>
 <t tx="ekr.20160220151109.1">
-def in_state(self, kind):
-    '''Return True if state.kind == kind for some ParseState on the state_stack.'''
-    return any([z.kind == kind for z in self.state_stack])</t>
+def has(self, kind):
+    '''Return True if state.kind == kind for some ParseState on the stack.'''
+    return any([z.kind == kind for z in self.stack])</t>
 <t tx="ekr.20160220151729.1">
 def gen_self(self):
     if self.in_def_line:
@@ -2756,8 +2777,9 @@ def gen_at(self):
         self.blank_lines(1)
         self.decorator_seen = True
     self.op_no_blanks(val)
-    self.push_state('decorator')</t>
-<t tx="ekr.20160220160809.1">def gen_comma(self):
+    self.stack.push('decorator')</t>
+<t tx="ekr.20160220160809.1">
+def gen_comma(self):
     
     val = self.val
     assert val == ',', val
@@ -2768,6 +2790,64 @@ def gen_at(self):
         # comma, semicolon, or colon.
         self.op_blank(val)
 </t>
-<t tx="ekr.20160220163911.1"></t>
+<t tx="ekr.20160220174952.1">
+def remove(self, kind):
+    '''Remove the last state on the stack of the given kind.'''
+    trace = True
+    n = len(self.stack)
+    i = n - 1
+    found = None
+    while 0 &lt;= i:
+        state = self.stack[i]
+        if state.kind == kind:
+            found = state
+            self.stack = self.stack[:i] + self.stack[i+1:]
+            assert len(self.stack) == n-1, (len(self.stack), n-1)
+            break
+        i -= 1
+    if trace and kind == 'tuple':
+        kind = found and found.kind or 'fail'
+        value = found and found.value or 'fail'
+        g.trace(kind, value, g.callers(2))
+</t>
+<t tx="ekr.20160220175541.1">
+def get(self, kind):
+    '''Return the last state of the given kind, leaving the stack unchanged.'''
+    n = len(self.stack)
+    i = n - 1
+    while 0 &lt;= i:
+        state = self.stack[i]
+        if state.kind == kind:
+            return state
+        i -= 1
+    return None
+</t>
+<t tx="ekr.20160221024549.1">
+
+class StateStack(object):
+    '''
+    A class representing a stack of ParseStates and encapsulating various
+    operations on same.
+    '''
+    
+    def __init__(self):
+        '''Ctor for ParseStack class.'''
+        self.stack = []
+    @others</t>
+<t tx="ekr.20160221025511.1">
+def pop(self):
+    '''Pop the state on the stack and return it.'''
+    return self.stack.pop()</t>
+<t tx="ekr.20160221033247.1">
+    # Statistics
+    self.n_changed_nodes = 0
+    self.n_input_tokens = 0
+    self.n_output_tokens = 0
+    self.n_strings = 0
+    self.parse_time = 0.0
+    self.tokenize_time = 0.0
+    self.beautify_time = 0.0
+    self.check_time = 0.0
+    self.total_time = 0.0</t>
 </tnodes>
 </leo_file>
