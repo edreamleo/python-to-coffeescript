@@ -134,6 +134,13 @@
 </v>
 <v t="ekr.20160220050053.2"><vh>@clean README.md</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
+<v t="ekr.20160221042509.1"><vh>recent</vh>
+<v t="ekr.20160220103223.4"><vh> cst.ctor</vh></v>
+<v t="ekr.20160220103223.20"><vh>cst.add_token</vh></v>
+<v t="ekr.20160220103223.30"><vh>cst.gen_lt &amp; gen_rt</vh></v>
+<v t="ekr.20160220143853.1"><vh>cst.gen_close_paren</vh></v>
+<v t="ekr.20160220143842.1"><vh>cst.gen_open_paren</vh></v>
+</v>
 <v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
 <v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
@@ -154,7 +161,7 @@
 <v t="ekr.20160220103223.40"><vh>ss.push</vh></v>
 <v t="ekr.20160220174952.1"><vh>ss.remove</vh></v>
 </v>
-<v t="ekr.20160220103223.4"><vh> cst.ctor</vh></v>
+<v t="ekr.20160220103223.4"></v>
 <v t="ekr.20160220103223.7"><vh> cst.format</vh></v>
 <v t="ekr.20160220103223.8"><vh>cst.Input token Handlers</vh>
 <v t="ekr.20160220103223.9"><vh>cst.do_comment</vh></v>
@@ -173,14 +180,14 @@
 <v t="ekr.20160220152030.1"><vh>cst.gen_at</vh></v>
 <v t="ekr.20160220143629.1"><vh>cst.gen_colon</vh></v>
 <v t="ekr.20160220160809.1"><vh>cst.gen_comma</vh></v>
-<v t="ekr.20160220143842.1"><vh>cst.gen_open_paren</vh></v>
-<v t="ekr.20160220143853.1"><vh>cst.gen_close_paren</vh></v>
+<v t="ekr.20160220143842.1"></v>
+<v t="ekr.20160220143853.1"></v>
 <v t="ekr.20160220151922.1"><vh>cst.gen_period</vh></v>
 </v>
 <v t="ekr.20160220103223.18"><vh>cst.do_string</vh></v>
 </v>
 <v t="ekr.20160220103223.19"><vh>cst.Output token generators</vh>
-<v t="ekr.20160220103223.20"><vh>cst.add_token</vh></v>
+<v t="ekr.20160220103223.20"></v>
 <v t="ekr.20160220103223.25"><vh>cst.clean</vh></v>
 <v t="ekr.20160220103223.26"><vh>cst.clean_blank_lines</vh></v>
 <v t="ekr.20160220103223.22"><vh>cst.gen_backslash</vh></v>
@@ -189,7 +196,7 @@
 <v t="ekr.20160220103223.27"><vh>cst.gen_file_start &amp; gen_file_end</vh></v>
 <v t="ekr.20160220103223.28"><vh>cst.gen_line_indent</vh></v>
 <v t="ekr.20160220103223.29"><vh>cst.gen_line_start &amp; gen_line_end</vh></v>
-<v t="ekr.20160220103223.30"><vh>cst.gen_lt &amp; gen_rt</vh></v>
+<v t="ekr.20160220103223.30"></v>
 <v t="ekr.20160220103223.31"><vh>cst.gen_op*</vh></v>
 <v t="ekr.20160220103223.32"><vh>cst.gen_possible_unary_op &amp; gen_unary_op</vh></v>
 <v t="ekr.20160220103223.33"><vh>cst.gen_star_op</vh></v>
@@ -237,11 +244,7 @@
 <v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
 </v>
 </v>
-<v t="ekr.20160220103223.4"></v>
-<v t="ekr.20160220103223.20"></v>
-<v t="ekr.20160220103223.30"></v>
-<v t="ekr.20160220143853.1"></v>
-<v t="ekr.20160220143842.1"></v>
+<v t="ekr.20160220103223.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -270,7 +273,6 @@ Written by Edward K. Ream.
 '''
 &lt;&lt; license &gt;&gt;
 &lt;&lt; imports &gt;&gt;
-isPython3 = sys.version_info &gt;= (3, 0, 0)
 @others
 
 g = LeoGlobals() # For ekr.
@@ -322,12 +324,14 @@ def __init__(self):
 <t tx="ekr.20160220050433.12">
 def pdb(self):
     '''Invoke a debugger during unit testing.'''
-    try:
-        import leo.core.leoGlobals as leo_g
-        leo_g.pdb()
-    except ImportError:
-        import pdb
-        pdb.set_trace()
+    print('pdb')
+    # Avoid try/except during development.
+    # try:
+        # import leo.core.leoGlobals as leo_g
+        # leo_g.pdb()
+    # except ImportError:
+        # import pdb
+        # pdb.set_trace()
 </t>
 <t tx="ekr.20160220050433.120">
 def finalize(self, fn):
@@ -663,10 +667,7 @@ def return_two_lists(s):
 <t tx="ekr.20160220050433.2">from collections import OrderedDict
     # Requires Python 2.7 or above. Without OrderedDict
     # the configparser will give random order for patterns.
-try:
-    import ConfigParser as configparser # Python 2
-except ImportError:
-    import configparser # Python 3
+
 import glob
 import optparse
 import os
@@ -676,10 +677,22 @@ import time
 import token
 import tokenize
 import types
-try:
-    import StringIO as io # Python 2
-except ImportError:
-    import io # Python 3
+isPython3 = sys.version_info &gt;= (3, 0, 0)
+# Avoid try/except here during development.
+if isPython3:
+    import configparser
+    import io
+else:
+    import ConfigParser as configparser
+    import StringIO as io
+# try:
+    # import ConfigParser as configparser # Python 2
+# except ImportError:
+    # import configparser # Python 3
+# try:
+    # import StringIO as io # Python 2
+# except ImportError:
+    # import io # Python 3
 </t>
 <t tx="ekr.20160220050433.20">
 # FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
@@ -2657,9 +2670,11 @@ class ReadLinesClass:
 
 * Announce: inspired by DropBox sprint.
 
-* self.prev_significant_token
+- Must remove most colons.
 
-- Check results by running through coffeescript.
+- `###` means something (invalid) to coffeescript
+
+- Check results by running through coffee python_to_coffeescript.coffee
     - Replace tuples by lists.
 
 Later:
@@ -2704,7 +2719,10 @@ def gen_colon(self):
         if self.input_paren_level == 0:
             self.in_class_line = False
     else:
-        self.gen_op_blank(val)
+        pass
+        # TODO
+        # Some colons are correct.
+        # self.gen_op_blank(val)
 </t>
 <t tx="ekr.20160220143842.1">
 def gen_open_paren(self):
@@ -2842,5 +2860,6 @@ def pop(self):
     self.beautify_time = 0.0
     self.check_time = 0.0
     self.total_time = 0.0</t>
+<t tx="ekr.20160221042509.1"></t>
 </tnodes>
 </leo_file>

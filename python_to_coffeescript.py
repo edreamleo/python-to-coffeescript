@@ -21,10 +21,7 @@ Written by Edward K. Ream.
 from collections import OrderedDict
     # Requires Python 2.7 or above. Without OrderedDict
     # the configparser will give random order for patterns.
-try:
-    import ConfigParser as configparser # Python 2
-except ImportError:
-    import configparser # Python 3
+
 import glob
 import optparse
 import os
@@ -34,11 +31,22 @@ import time
 import token
 import tokenize
 import types
-try:
-    import StringIO as io # Python 2
-except ImportError:
-    import io # Python 3
 isPython3 = sys.version_info >= (3, 0, 0)
+# Avoid try/except here during development.
+if isPython3:
+    import configparser
+    import io
+else:
+    import ConfigParser as configparser
+    import StringIO as io
+# try:
+    # import ConfigParser as configparser # Python 2
+# except ImportError:
+    # import configparser # Python 3
+# try:
+    # import StringIO as io # Python 2
+# except ImportError:
+    # import io # Python 3
 
 def main():
     '''
@@ -74,12 +82,14 @@ def dump_list(title, aList):
 
 def pdb(self):
     '''Invoke a debugger during unit testing.'''
-    try:
-        import leo.core.leoGlobals as leo_g
-        leo_g.pdb()
-    except ImportError:
-        import pdb
-        pdb.set_trace()
+    print('pdb')
+    # Avoid try/except during development.
+    # try:
+        # import leo.core.leoGlobals as leo_g
+        # leo_g.pdb()
+    # except ImportError:
+        # import pdb
+        # pdb.set_trace()
 
 def truncate(s, n):
     '''Return s truncated to n characters.'''
@@ -424,7 +434,10 @@ class CoffeeScriptTokenizer:
             if self.input_paren_level == 0:
                 self.in_class_line = False
         else:
-            self.gen_op_blank(val)
+            pass
+            # TODO
+            # Some colons are correct.
+            # self.gen_op_blank(val)
 
     def gen_comma(self):
         
