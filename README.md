@@ -50,15 +50,15 @@ Googling 'python to javascript' or 'python to coffeescript' yields no similar to
 
 ### Command-line arguments
 
-Usage: python_to_coffeescript.py [options] file1, file2, ...
-
-Options:
-  -h, --help          show this help message and exit
-  -c FN, --config=FN  full path to configuration file
-  -d DIR, --dir=DIR   full path to the output directory
-  -o, --overwrite     overwrite existing .coffee files
-  -t, --test          run unit tests on startup
-  -v, --verbose       verbose output
+    Usage: python_to_coffeescript.py [options] file1, file2, ...
+    
+    Options:
+      -h, --help          show this help message and exit
+      -c FN, --config=FN  full path to configuration file
+      -d DIR, --dir=DIR   full path to the output directory
+      -o, --overwrite     overwrite existing .coffee files
+      -t, --test          run unit tests on startup
+      -v, --verbose       verbose output
 
 *Note*: glob.glob wildcards can be used in file1, file2, ...
 
