@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sun 21 Feb 2016 at 09:06:38
+# python_to_coffeescript: Sun 21 Feb 2016 at 09:09:30
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -321,40 +321,6 @@ class CoffeeScriptTokenizer
         else
             @gen_word(name)
 
-    gen_class_or_def: (name) ->
-
-        # g.trace(self.level, name)
-        @decorator_seen = False
-        if @stack.has('decorator')
-            @stack.remove('decorator')
-            @clean_blank_lines
-            @gen_line_end
-        else
-            @gen_blank_lines(1)
-        @stack.push(name, @level)
-            # name is 'class' or 'def'
-            # do_dedent pops these entries.
-        if name == 'def'
-            @in_def_line = True
-            @in_class_line = False
-            @def_name_seen = False
-        else
-            @extends_flag = False
-            @in_class_line = True
-            @gen_word(name)
-
-    gen_import: (name) ->
-        '''Convert an import to something that looks like a call.'''
-        @gen_word('pass')
-        @add_token('comment', '# ' + name)
-
-    gen_self: ->
-        if @in_def_line
-            @after_self = True
-        else
-            @gen_blank_op('@')
-            @after_self = True
-
     do_newline: ->
         '''Handle a regular newline.'''
         @gen_line_end
@@ -413,78 +379,6 @@ class CoffeeScriptTokenizer
             # consider adding whitespace around the operators with the lowest priority(ies).
             @gen_op(val)
 
-    gen_at: ->
-
-        val = @val
-        assert val == '@', val
-        if not @decorator_seen
-            @gen_blank_lines(1)
-            @decorator_seen = True
-        @gen_op_no_blanks(val)
-        @stack.push('decorator')
-
-    gen_colon: ->
-
-        val = @val
-        assert val == ':', val
-        if @in_def_line
-            if @input_paren_level == 0
-                @in_def_line = False
-                @gen_op('->')
-        elif @in_class_line
-            if @input_paren_level == 0
-                @in_class_line = False
-        else
-            pass
-            # TODO
-            # Some colons are correct.
-            # self.gen_op_blank(val)
-
-    gen_comma: ->
-
-        val = @val
-        assert val == ',', val
-        if @after_self
-            @after_self = False
-        else
-            # Pep 8: Avoid extraneous whitespace immediately before
-            # comma, semicolon, or colon.
-            @gen_op_blank(val)
-
-    gen_open_paren: ->
-
-        val = @val
-        assert val == '(', val
-        @input_paren_level += 1
-        if @in_class_line
-            if not @extends_flag
-                @gen_word('extends')
-                @extends_flag = True
-        else
-            # Generate a function call or a list.
-            @gen_lt(val)
-        @after_self = False
-
-    gen_close_paren: ->
-
-        val = @val
-        assert val == ')', val
-        @input_paren_level -= 1
-        if @in_class_line
-            @in_class_line = False
-        else
-            @gen_rt(val)
-        @after_self = False
-
-    gen_period: ->
-
-        val = @val
-        assert val == '.', val
-        if @after_self
-            @after_self = False
-        else
-            @gen_op_no_blanks(val)
-
     do_string: ->
         '''Handle a 'string' token.'''
         @add_token('string', @val)
@@ -521,6 +415,16 @@ class CoffeeScriptTokenizer
         while @code_list[-1].kind in table
             @code_list.pop
 
+    gen_at: ->
+
+        val = @val
+        assert val == '@', val
+        if not @decorator_seen
+            @gen_blank_lines(1)
+            @decorator_seen = True
+        @gen_op_no_blanks(val)
+        @stack.push('decorator')
+
     gen_backslash: ->
         '''Add a backslash token and clear .backslash_seen'''
         @add_token('backslash', '\\')
@@ -555,6 +459,67 @@ class CoffeeScriptTokenizer
             @add_token('blank-lines', n)
             @gen_line_indent
 
+    gen_class_or_def: (name) ->
+
+        # g.trace(self.level, name)
+        @decorator_seen = False
+        if @stack.has('decorator')
+            @stack.remove('decorator')
+            @clean_blank_lines
+            @gen_line_end
+        else
+            @gen_blank_lines(1)
+        @stack.push(name, @level)
+            # name is 'class' or 'def'
+            # do_dedent pops these entries.
+        if name == 'def'
+            @in_def_line = True
+            @in_class_line = False
+            @def_name_seen = False
+        else
+            @extends_flag = False
+            @in_class_line = True
+            @gen_word(name)
+
+    gen_close_paren: ->
+
+        val = @val
+        assert val == ')', val
+        @input_paren_level -= 1
+        if @in_class_line
+            @in_class_line = False
+        else
+            @gen_rt(val)
+        @after_self = False
+
+    gen_colon: ->
+
+        val = @val
+        assert val == ':', val
+        if @in_def_line
+            if @input_paren_level == 0
+                @in_def_line = False
+                @gen_op('->')
+        elif @in_class_line
+            if @input_paren_level == 0
+                @in_class_line = False
+        else
+            pass
+            # TODO
+            # Some colons are correct.
+            # self.gen_op_blank(val)
+
+    gen_comma: ->
+
+        val = @val
+        assert val == ',', val
+        if @after_self
+            @after_self = False
+        else
+            # Pep 8: Avoid extraneous whitespace immediately before
+            # comma, semicolon, or colon.
+            @gen_op_blank(val)
+
     gen_file_end: ->
         '''
         Add a file-end token to the code list.
@@ -569,6 +534,11 @@ class CoffeeScriptTokenizer
         '''Add a file-start token to the code list and the state stack.'''
         @add_token('file-start')
         @stack.push('file-start')
+
+    gen_import: (name) ->
+        '''Convert an import to something that looks like a call.'''
+        @gen_word('pass')
+        @add_token('comment', '# ' + name)
 
     gen_line_indent: (ws=None) ->
         '''Add a line-indent token if indentation is non-empty.'''
@@ -674,6 +644,29 @@ class CoffeeScriptTokenizer
         @gen_blank
         @add_token('blank-op', s)
 
+    gen_open_paren: ->
+
+        val = @val
+        assert val == '(', val
+        @input_paren_level += 1
+        if @in_class_line
+            if not @extends_flag
+                @gen_word('extends')
+                @extends_flag = True
+        else
+            # Generate a function call or a list.
+            @gen_lt(val)
+        @after_self = False
+
+    gen_period: ->
+
+        val = @val
+        assert val == '.', val
+        if @after_self
+            @after_self = False
+        else
+            @gen_op_no_blanks(val)
+
     gen_possible_unary_op: (s) ->
         '''Add a unary or binary op to the token list.'''
         @clean('blank')
@@ -690,6 +683,13 @@ class CoffeeScriptTokenizer
         assert s and g.isString(s), repr(s)
         @gen_blank
         @add_token('unary-op', s)
+
+    gen_self: ->
+        if @in_def_line
+            @after_self = True
+        else
+            @gen_blank_op('@')
+            @after_self = True
 
     gen_star_op: ->
         '''Put a '*' op, with special cases for *args.'''

@@ -323,40 +323,6 @@ class CoffeeScriptTokenizer:
         else:
             self.gen_word(name)
 
-    def gen_class_or_def(self, name):
-        
-        # g.trace(self.level, name)
-        self.decorator_seen = False
-        if self.stack.has('decorator'):
-            self.stack.remove('decorator')
-            self.clean_blank_lines()
-            self.gen_line_end()
-        else:
-            self.gen_blank_lines(1)
-        self.stack.push(name, self.level)
-            # name is 'class' or 'def'
-            # do_dedent pops these entries.
-        if name == 'def':
-            self.in_def_line = True
-            self.in_class_line = False
-            self.def_name_seen = False
-        else:
-            self.extends_flag = False
-            self.in_class_line = True
-            self.gen_word(name)
-
-    def gen_import(self, name):
-        '''Convert an import to something that looks like a call.'''
-        self.gen_word('pass')
-        self.add_token('comment', '# ' + name)
-
-    def gen_self(self):
-        if self.in_def_line:
-            self.after_self = True
-        else:
-            self.gen_blank_op('@')
-            self.after_self = True
-
     def do_newline(self):
         '''Handle a regular newline.'''
         self.gen_line_end()
@@ -415,78 +381,6 @@ class CoffeeScriptTokenizer:
             # consider adding whitespace around the operators with the lowest priority(ies).
             self.gen_op(val)
 
-    def gen_at(self):
-        
-        val = self.val
-        assert val == '@', val
-        if not self.decorator_seen:
-            self.gen_blank_lines(1)
-            self.decorator_seen = True
-        self.gen_op_no_blanks(val)
-        self.stack.push('decorator')
-
-    def gen_colon(self):
-        
-        val = self.val
-        assert val == ':', val
-        if self.in_def_line:
-            if self.input_paren_level == 0:
-                self.in_def_line = False
-                self.gen_op('->')
-        elif self.in_class_line:
-            if self.input_paren_level == 0:
-                self.in_class_line = False
-        else:
-            pass
-            # TODO
-            # Some colons are correct.
-            # self.gen_op_blank(val)
-
-    def gen_comma(self):
-        
-        val = self.val
-        assert val == ',', val
-        if self.after_self:
-            self.after_self = False
-        else:
-            # Pep 8: Avoid extraneous whitespace immediately before
-            # comma, semicolon, or colon.
-            self.gen_op_blank(val)
-
-    def gen_open_paren(self):
-        
-        val = self.val
-        assert val == '(', val
-        self.input_paren_level += 1
-        if self.in_class_line:
-            if not self.extends_flag:
-                self.gen_word('extends')
-                self.extends_flag = True
-        else:
-            # Generate a function call or a list.
-            self.gen_lt(val)
-        self.after_self = False
-
-    def gen_close_paren(self):
-        
-        val = self.val
-        assert val == ')', val
-        self.input_paren_level -= 1
-        if self.in_class_line:
-            self.in_class_line = False
-        else:
-            self.gen_rt(val)
-        self.after_self = False
-
-    def gen_period(self):
-        
-        val = self.val
-        assert val == '.', val
-        if self.after_self:
-            self.after_self = False
-        else:
-            self.gen_op_no_blanks(val)
-
     def do_string(self):
         '''Handle a 'string' token.'''
         self.add_token('string', self.val)
@@ -523,6 +417,16 @@ class CoffeeScriptTokenizer:
         while self.code_list[-1].kind in table:
             self.code_list.pop()
 
+    def gen_at(self):
+        
+        val = self.val
+        assert val == '@', val
+        if not self.decorator_seen:
+            self.gen_blank_lines(1)
+            self.decorator_seen = True
+        self.gen_op_no_blanks(val)
+        self.stack.push('decorator')
+
     def gen_backslash(self):
         '''Add a backslash token and clear .backslash_seen'''
         self.add_token('backslash', '\\')
@@ -557,6 +461,67 @@ class CoffeeScriptTokenizer:
             self.add_token('blank-lines', n)
             self.gen_line_indent()
 
+    def gen_class_or_def(self, name):
+        
+        # g.trace(self.level, name)
+        self.decorator_seen = False
+        if self.stack.has('decorator'):
+            self.stack.remove('decorator')
+            self.clean_blank_lines()
+            self.gen_line_end()
+        else:
+            self.gen_blank_lines(1)
+        self.stack.push(name, self.level)
+            # name is 'class' or 'def'
+            # do_dedent pops these entries.
+        if name == 'def':
+            self.in_def_line = True
+            self.in_class_line = False
+            self.def_name_seen = False
+        else:
+            self.extends_flag = False
+            self.in_class_line = True
+            self.gen_word(name)
+
+    def gen_close_paren(self):
+        
+        val = self.val
+        assert val == ')', val
+        self.input_paren_level -= 1
+        if self.in_class_line:
+            self.in_class_line = False
+        else:
+            self.gen_rt(val)
+        self.after_self = False
+
+    def gen_colon(self):
+        
+        val = self.val
+        assert val == ':', val
+        if self.in_def_line:
+            if self.input_paren_level == 0:
+                self.in_def_line = False
+                self.gen_op('->')
+        elif self.in_class_line:
+            if self.input_paren_level == 0:
+                self.in_class_line = False
+        else:
+            pass
+            # TODO
+            # Some colons are correct.
+            # self.gen_op_blank(val)
+
+    def gen_comma(self):
+        
+        val = self.val
+        assert val == ',', val
+        if self.after_self:
+            self.after_self = False
+        else:
+            # Pep 8: Avoid extraneous whitespace immediately before
+            # comma, semicolon, or colon.
+            self.gen_op_blank(val)
+
     def gen_file_end(self):
         '''
         Add a file-end token to the code list.
@@ -571,6 +536,11 @@ class CoffeeScriptTokenizer:
         '''Add a file-start token to the code list and the state stack.'''
         self.add_token('file-start')
         self.stack.push('file-start')
+
+    def gen_import(self, name):
+        '''Convert an import to something that looks like a call.'''
+        self.gen_word('pass')
+        self.add_token('comment', '# ' + name)
 
     def gen_line_indent(self, ws=None):
         '''Add a line-indent token if indentation is non-empty.'''
@@ -676,6 +646,29 @@ class CoffeeScriptTokenizer:
         self.gen_blank()
         self.add_token('blank-op', s)
 
+    def gen_open_paren(self):
+        
+        val = self.val
+        assert val == '(', val
+        self.input_paren_level += 1
+        if self.in_class_line:
+            if not self.extends_flag:
+                self.gen_word('extends')
+                self.extends_flag = True
+        else:
+            # Generate a function call or a list.
+            self.gen_lt(val)
+        self.after_self = False
+
+    def gen_period(self):
+        
+        val = self.val
+        assert val == '.', val
+        if self.after_self:
+            self.after_self = False
+        else:
+            self.gen_op_no_blanks(val)
+
     def gen_possible_unary_op(self, s):
         '''Add a unary or binary op to the token list.'''
         self.clean('blank')
@@ -692,6 +685,13 @@ class CoffeeScriptTokenizer:
         assert s and g.isString(s), repr(s)
         self.gen_blank()
         self.add_token('unary-op', s)
+
+    def gen_self(self):
+        if self.in_def_line:
+            self.after_self = True
+        else:
+            self.gen_blank_op('@')
+            self.after_self = True
 
     def gen_star_op(self):
         '''Put a '*' op, with special cases for *args.'''
