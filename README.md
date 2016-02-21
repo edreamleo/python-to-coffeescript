@@ -1,11 +1,11 @@
 
 This is the readme file for python_to_coffeescript.py. It explains what
-the script does, why I created it, how to use the script. A last section explains why the code is as it is and how it may evolve. Full source code for the script is in its [github repository](). This script is offered under the terms of the [MIT License]().
+the script does, why I created it, how to use the script. A last section explains why the code is as it is and how it may evolve. Full source code for the script is in its [github repository](https://github.com/edreamleo/python-to-coffeescript). This script is offered under the terms of [Leo's MIT License](http://leoeditor.com/license.html).
 
 
 ### Overview
 
-This script makes a [coffeescript]() (.coffee) file in the output directory for each source file listed on the command line (wildcard file names are supported). This script never creates directories automatically, nor does it overwrite .coffee files unless the --overwrite command-line option is in effect.
+This script makes a [coffeescript](http://coffeescript.org/) (.coffee) file in the output directory for each source file listed on the command line (wildcard file names are supported). This script never creates directories automatically, nor does it overwrite .coffee files unless the --overwrite command-line option is in effect.
 
 This script merely converts python syntax to the roughly equivalent coffeescript syntax. It knows nothing about coffeescript semantics. It is intended *only* to help start creating coffeescript code from an existing python code base.
 
@@ -15,9 +15,9 @@ This script already does much of the grunt work of converting python to coffeesc
 
 This script is a *one day prototype*, intended only as a proof of concept. In that sense, it has already succeeded.
 
-The proximate cause for this script was the notes from a [DropBox sprint]. It is apparent that coffeescript is successful, while numerous python-to-javascript systems are in an uncertain state at best. Imo, none are likely to gain traction.
+The proximate cause for this script was the notes from a [DropBox sprint](https://blogs.dropbox.com/tech/2012/09/dropbox-dives-into-coffeescript/). Coffeescript is obviously successful. Numerous python-to-javascript systems seem unlikely ever to gain traction.
 
-Googling 'python to javascript' or 'python to coffeescript' yields no similar tools, despite many similar searches. This script will be useful to me, which is all that really matters ;-)
+Googling 'python to javascript' or 'python to coffeescript' yields no similar tools, despite many similar searches. This script will be useful to me.
 
 
 ### Quick Start
@@ -28,24 +28,23 @@ Googling 'python to javascript' or 'python to coffeescript' yields no similar to
 
         cd myDirectory
     
-3. Generate foo.coffee from foo.pyi:
+3. Generate foo.coffee from foo.py:
 
         python_to_coffeescript foo.py
 
-4. Look at foo.coffee to see the generated coffeescript code.
+4. Look at foo.coffee to see the generated coffeescript code:
+
+        edit foo.coffee
 
 5. (Optional) Run coffeescript itself on the code:
 
         coffee foo.coffee
 
-6. Regenerate foo.pyi with more verbose output:
+6. Regenerate foo.coffee, overwriting the previous .coffee file:
 
-        python_to_coffeescript.py foo.py -o -v
-
-   The -o (--overwrite) option allows the script to overwrite foo.pyi.  
-   The -v (--verbose) options generates return comments for all stubs in foo.pyi.
+        python_to_coffeescript.py foo.py -o
    
-7. (Optional) Specify a configuration file containing default
+7. (Optional) Specify a configuration file containing defaults:
 
         python_to_coffeescript.py -c myConfigFile.cfg -o
 
@@ -67,15 +66,17 @@ Options:
 
 The present code is based on Leo's token-based beautifier command, with substantial modifications brought about by having to parse the code. Using tokens is reasonable. This approach preserves line breaks, comments and the spelling of strings. On the minus side, it requires ad-hoc parsing of Python, which becomes increasingly difficult as more complex syntactic transformations are attempted.
 
-The initial version of this script was based on ast trees. It is in the attic (the Unused Code section of the python_to_coffeescript.leo). The great disadvantage of parse trees is that it is *extremely* difficult to associate tokens with parse nodes. See [this discussion]() and [this proposed solution](). Imo, the solution is not good enough.
+The initial version of this script was based on ast trees. It is in the attic (the Unused Code section of the python_to_coffeescript.leo). The great disadvantage of parse trees is that it is *extremely* difficult to associate tokens with parse nodes. See [this discussion](http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node) and [this proposed solution](https://bitbucket.org/plas/thonny/src/3b71fda7ac0b66d5c475f7a668ffbdc7ae48c2b5/thonny/common.py?at=master). Imo, the solution is not good enough.
 
-My present plan is to experiment with using *both* parse-trees and tokens. The idea will be for the ast visitors to **synch** tokens with keywords and strings. This will allow the accumulation of properly-formatted comments preceding keywords, and will allow the perfect reconstruction of strings, something that appears difficult or impossible with a purely parse-tree-oriented approach.
+**Important**: Even if there were no holes in the ast api, it would still be tricky to associate tokens with parse trees. My present plan is to experiment with using *both* parse-trees and tokens. The idea will be for the ast visitors to **sync** tokens with keywords and strings. This will allow the accumulation of properly-formatted comments preceding keywords, and will allow the perfect reconstruction of strings, something that appears difficult or impossible with a purely parse-tree-oriented approach.
 
 Finally, note that no matter how the code list is generated, it would be possible to use a real peephole pass on it if required.
 
 ### Summary
 
-This has been a success proof of concept. It is surely useful as is. Further work will focus on the interplay between token-oriented views of code and parse-tree-oriented views. Only experience will show how the interplay between the two different views will work out.
+This has been a success proof of concept. It is surely useful as is.
+
+I have years of experience working with tokens and parse trees. I literally write this code in my sleep. I awake with new code fresh at hand. Despite this deep knowledge, it remains unclear whether tokens or parse trees will come to dominate the code. Only further work will reveal the best way.
 
 Edward K. Ream
-February 20 - 21, 2016
+February 21, 2016
