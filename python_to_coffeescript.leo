@@ -2668,8 +2668,6 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-* Announce
-
 ***** Experiment with synching tokens from a traverser.
 - This may be the most flexible approach.
 

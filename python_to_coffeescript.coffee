@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sun 21 Feb 2016 at 04:46:59
+# python_to_coffeescript: Sun 21 Feb 2016 at 08:38:19
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -433,8 +433,9 @@ class CoffeeScriptTokenizer
                 @in_class_line = False
         else
             pass
-            ### Some colons are correct.
-            ### self.gen_op_blank(val)
+            # TODO
+            # Some colons are correct.
+            # self.gen_op_blank(val)
 
     gen_comma: () ->
 
