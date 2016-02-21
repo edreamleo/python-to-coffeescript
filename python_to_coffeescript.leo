@@ -256,7 +256,7 @@
 @wrap
 
 This is the readme file for python_to_coffeescript.py. It explains what
-the script does, why I created it, how to use the script. A last section explains why the code is as it is and how it may evolve. Full source code for the script is in its [github repository](https://github.com/edreamleo/python-to-coffeescript). This script is offered under the terms of [Leo's MIT License](http://leoeditor.com/license.html).
+the script does, why I created it, and how to use the script. A last section explains why the code is as it is and how it may evolve. Full source code for the script is in its [github repository](https://github.com/edreamleo/python-to-coffeescript). This script is offered under the terms of [Leo's MIT License](http://leoeditor.com/license.html).
 
 @others</t>
 <t tx="ekr.20160220050321.1">#!/usr/bin/env python
@@ -569,7 +569,6 @@ class CoffeeScriptTraverser(object):
         '''Ctor for CoffeeScriptFormatter class.'''
         self.controller = controller
         self.first_statement = False
-
     @others
 </t>
 <t tx="ekr.20160220050433.16">
@@ -2679,9 +2678,9 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-- Handle `elif`
+*** Add sync methods to the traverser.
 
-*** Experiment with synching tokens from a traverser.
+- Handle `elif`
 
 Later:
 - `###` means something (invalid) to coffeescript
@@ -2907,7 +2906,6 @@ def pop(self):
       -c FN, --config=FN  full path to configuration file
       -d DIR, --dir=DIR   full path to the output directory
       -o, --overwrite     overwrite existing .coffee files
-      -t, --test          run unit tests on startup
       -v, --verbose       verbose output
 
 *Note*: glob.glob wildcards can be used in file1, file2, ...

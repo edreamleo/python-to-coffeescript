@@ -1,6 +1,6 @@
 
 This is the readme file for python_to_coffeescript.py. It explains what
-the script does, why I created it, how to use the script. A last section explains why the code is as it is and how it may evolve. Full source code for the script is in its [github repository](https://github.com/edreamleo/python-to-coffeescript). This script is offered under the terms of [Leo's MIT License](http://leoeditor.com/license.html).
+the script does, why I created it, and how to use the script. A last section explains why the code is as it is and how it may evolve. Full source code for the script is in its [github repository](https://github.com/edreamleo/python-to-coffeescript). This script is offered under the terms of [Leo's MIT License](http://leoeditor.com/license.html).
 
 
 ### Overview
@@ -57,7 +57,6 @@ Googling 'python to javascript' or 'python to coffeescript' yields no similar to
       -c FN, --config=FN  full path to configuration file
       -d DIR, --dir=DIR   full path to the output directory
       -o, --overwrite     overwrite existing .coffee files
-      -t, --test          run unit tests on startup
       -v, --verbose       verbose output
 
 *Note*: glob.glob wildcards can be used in file1, file2, ...

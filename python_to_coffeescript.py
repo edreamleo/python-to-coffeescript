@@ -756,7 +756,6 @@ class CoffeeScriptTraverser(object):
         self.controller = controller
         self.first_statement = False
 
-
     def format(self, node, tokens):
         '''Format the node (or list of nodes) and its descendants.'''
         self.level = 0
