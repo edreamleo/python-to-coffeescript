@@ -59,6 +59,9 @@ def main():
     controller.scan_options()
     controller.run()
     print('done')
+#
+# Utility functions...
+#
 
 def dump(title, s=None):
     if s:
@@ -209,10 +212,7 @@ class CoffeeScriptTokenizer:
         self.tab_width = 4
 
     def format(self, tokens):
-        '''
-        The main line of PythonTokenBeautifier class.
-        Called by prettPrintNode & test_beautifier.
-        '''
+        '''The main line of CoffeeScriptTokenizer class.'''
 
         def oops():
             g.trace('unknown kind', self.kind)
@@ -249,6 +249,9 @@ class CoffeeScriptTokenizer:
             func()
         self.gen_file_end()
         return ''.join([z.to_string() for z in self.code_list])
+    #
+    # Input token handlers...
+    #
 
     def do_comment(self):
         '''Handle a comment token.'''
@@ -491,6 +494,9 @@ class CoffeeScriptTokenizer:
             self.backslash_seen = False
             # This *does* retain the string's spelling.
         self.gen_blank()
+    #
+    # Output token generators and helpers...
+    #
 
     def add_token(self, kind, value=''):
         '''Add a token to the code list.'''
@@ -1174,10 +1180,7 @@ class MakeCoffeeScriptController(object):
 
 
 class TestClass(object):
-    '''
-    A class containing constructs that have caused difficulties.
-    This is in the make_stub_files directory, not the test directory.
-    '''
+    '''A class containing constructs that have caused difficulties.'''
     # pylint: disable=no-member
     # pylint: disable=undefined-variable
     # pylint: disable=no-self-argument

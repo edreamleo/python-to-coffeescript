@@ -600,10 +600,7 @@ def visit(self, node):
 <t tx="ekr.20160220050433.188">
 
 class TestClass(object):
-    '''
-    A class containing constructs that have caused difficulties.
-    This is in the make_stub_files directory, not the test directory.
-    '''
+    '''A class containing constructs that have caused difficulties.'''
     # pylint: disable=no-member
     # pylint: disable=undefined-variable
     # pylint: disable=no-self-argument
@@ -1141,7 +1138,9 @@ def get_import_names(self, node):
         result.append(data)
     return result
 </t>
-<t tx="ekr.20160220050433.7"></t>
+<t tx="ekr.20160220050433.7">#
+# Utility functions...
+#</t>
 <t tx="ekr.20160220050433.70">
 def do_ImportFrom(self, node):
     names = []
@@ -2146,7 +2145,9 @@ def do_string(self):
         # This *does* retain the string's spelling.
     self.gen_blank()
 </t>
-<t tx="ekr.20160220103223.19"></t>
+<t tx="ekr.20160220103223.19">#
+# Output token generators and helpers...
+#</t>
 <t tx="ekr.20160220103223.2">
 
 class OutputToken(object):
@@ -2506,10 +2507,7 @@ def push(self, kind, value=None):
 </t>
 <t tx="ekr.20160220103223.7">
 def format(self, tokens):
-    '''
-    The main line of PythonTokenBeautifier class.
-    Called by prettPrintNode &amp; test_beautifier.
-    '''
+    '''The main line of CoffeeScriptTokenizer class.'''
 
     def oops():
         g.trace('unknown kind', self.kind)
@@ -2547,7 +2545,9 @@ def format(self, tokens):
     self.gen_file_end()
     return ''.join([z.to_string() for z in self.code_list])
 </t>
-<t tx="ekr.20160220103223.8"></t>
+<t tx="ekr.20160220103223.8">#
+# Input token handlers...
+#</t>
 <t tx="ekr.20160220103223.9">
 def do_comment(self):
     '''Handle a comment token.'''
