@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sun 21 Feb 2016 at 08:58:40
+# python_to_coffeescript: Sun 21 Feb 2016 at 09:06:38
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -60,6 +60,9 @@ main = ->
     controller.scan_options
     controller.run
     print('done')
+#
+# Utility functions...
+#
 
 dump = (title, s=None) ->
     if s
@@ -207,10 +210,7 @@ class CoffeeScriptTokenizer
         @tab_width = 4
 
     format: (tokens) ->
-        '''
-        The main line of PythonTokenBeautifier class.
-        Called by prettPrintNode & test_beautifier.
-        '''
+        '''The main line of CoffeeScriptTokenizer class.'''
 
         oops: ->
             g.trace('unknown kind', @kind)
@@ -247,6 +247,9 @@ class CoffeeScriptTokenizer
             func
         @gen_file_end
         return ''.join([z.to_string for z in @code_list])
+    #
+    # Input token handlers...
+    #
 
     do_comment: ->
         '''Handle a comment token.'''
@@ -489,6 +492,9 @@ class CoffeeScriptTokenizer
             @backslash_seen = False
             # This *does* retain the string's spelling.
         @gen_blank
+    #
+    # Output token generators and helpers...
+    #
 
     add_token: (kind, value='') ->
         '''Add a token to the code list.'''
@@ -1174,10 +1180,7 @@ class MakeCoffeeScriptController extends object
         return False
 
 class TestClass extends object
-    '''
-    A class containing constructs that have caused difficulties.
-    This is in the make_stub_files directory, not the test directory.
-    '''
+    '''A class containing constructs that have caused difficulties.'''
     # pylint: disable=no-member
     # pylint: disable=undefined-variable
     # pylint: disable=no-self-argument
