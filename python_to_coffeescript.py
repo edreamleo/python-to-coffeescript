@@ -1694,14 +1694,14 @@ class MakeCoffeeScriptController(object):
             help='full path to the output directory')
         add('-o', '--overwrite', action='store_true', default=False,
             help='overwrite existing .coffee files')
-        add('-t', '--test', action='store_true', default=False,
-            help='run unit tests on startup')
+        # add('-t', '--test', action='store_true', default=False,
+            # help='run unit tests on startup')
         add('-v', '--verbose', action='store_true', default=False,
             help='verbose output')
         # Parse the options
         options, args = parser.parse_args()
         # Handle the options...
-        self.enable_unit_tests = options.test
+        # self.enable_unit_tests = options.test
         self.overwrite = options.overwrite
         if options.fn:
             self.config_fn = options.fn
@@ -1930,6 +1930,9 @@ class TokenSync(object):
         # ws = ws or self.lws
         # if ws:
             # self.add_token('line-indent', ws)
+
+    def sync_word(self, s):
+        '''Advance tokens until the given keyword is found.'''
 
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":

@@ -245,6 +245,7 @@
 <v t="ekr.20160221124544.1"><vh>cv.advance</vh></v>
 <v t="ekr.20160221144446.1"><vh>cv.do_backslash (maybe)</vh></v>
 <v t="ekr.20160221143755.1"><vh>cv.do_line_indent (maybe)</vh></v>
+<v t="ekr.20160221145254.1"><vh>cv.sync_word</vh></v>
 </v>
 </v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
@@ -431,14 +432,14 @@ def scan_command_line(self):
         help='full path to the output directory')
     add('-o', '--overwrite', action='store_true', default=False,
         help='overwrite existing .coffee files')
-    add('-t', '--test', action='store_true', default=False,
-        help='run unit tests on startup')
+    # add('-t', '--test', action='store_true', default=False,
+        # help='run unit tests on startup')
     add('-v', '--verbose', action='store_true', default=False,
         help='verbose output')
     # Parse the options
     options, args = parser.parse_args()
     # Handle the options...
-    self.enable_unit_tests = options.test
+    # self.enable_unit_tests = options.test
     self.overwrite = options.overwrite
     if options.fn:
         self.config_fn = options.fn
@@ -3018,5 +3019,8 @@ def do_line_indent(self, ws=None):
 <t tx="ekr.20160221144446.1">
 def do_backslash(self):
     '''Handle a backslash-newline.'''</t>
+<t tx="ekr.20160221145254.1">
+def sync_word(self, s):
+    '''Advance tokens until the given keyword is found.'''</t>
 </tnodes>
 </leo_file>
