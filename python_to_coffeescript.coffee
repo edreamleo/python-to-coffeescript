@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sun 21 Feb 2016 at 03:54:24
+# python_to_coffeescript: Sun 21 Feb 2016 at 04:17:46
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -39,7 +39,7 @@ try:
     pass # import StringIO as io # Python 2
 except ImportError:
     pass # import io # Python 3
-isPython3 = sys.version_info >= (3, 0, 0)
+isPython3 = sys.version_info >= [3, 0, 0]
 
 main = () ->
     '''
@@ -55,7 +55,7 @@ main = () ->
 
 dump = (title, s=None) ->
     if s:
-        print('===== %s...\n%s\n' % (title, s.rstrip()))
+        print('===== %s...\n%s\n' % [title, s.rstrip()])
     else:
         print('===== %s...\n' % title)
 
@@ -63,7 +63,7 @@ dump_dict = (title, d) ->
     '''Dump a dictionary with a header.'''
     dump(title)
     for z in sorted(d):
-        print('%30s %s' % (z, d.get(z)))
+        print('%30s %s' % [z, d.get(z)])
     print('')
 
 dump_list = (title, aList) ->
@@ -99,9 +99,9 @@ class CoffeeScriptTokenizer
         __repr__: () ->
             if @kind == 'line-indent':
                 assert not @value.strip(' ')
-                return '%15s %s' % (@kind, len(@value))
+                return '%15s %s' % [@kind, len(@value)]
             else:
-                return '%15s %r' % (@kind, @value)
+                return '%15s %r' % [@kind, @value]
 
         __str__ = __repr__
 
@@ -140,13 +140,14 @@ class CoffeeScriptTokenizer
 
         push: (kind, value=None) ->
             '''Append a state to the state stack.'''
+            trace = False
             @stack.append(ParseState(kind, value))
-            if kind == 'tuple':
+            if trace and kind == 'tuple':
                 g.trace(kind, value, g.callers(2))
 
         remove: (kind) ->
             '''Remove the last state on the stack of the given kind.'''
-            trace = True
+            trace = False
             n = len(@stack)
             i = n - 1
             found = None
@@ -155,7 +156,7 @@ class CoffeeScriptTokenizer
                 if state.kind == kind:
                     found = state
                     @stack = @stack[: i] + @stack[i + 1:]
-                    assert len(@stack) == n - 1, (len(@stack), n - 1)
+                    assert len(@stack) == n - 1, [len(@stack), n - 1]
                     break
                 i -= 1
             if trace and kind == 'tuple':
@@ -189,14 +190,11 @@ class CoffeeScriptTokenizer
             # Typically ' '*self.tab_width*self.level,
             # but may be changed for continued lines.
         @output_paren_level = 0 # Number of unmatched left parens in output.
+        @prev_sig_token = None # Previous non-whitespace token.
         @stack = None # Stack of ParseState objects, set in format.
         # Settings...
         @delete_blank_lines = False
         @tab_width = 4
-
-         # Undo vars
-        @changed = False
-        @dirtyVnodeList = []
 
     format: (tokens) ->
         '''
@@ -234,7 +232,7 @@ class CoffeeScriptTokenizer
                     @gen_line_indent(ws=' ' * n)
                         # Do not set self.lws here!
                 @last_line_number = srow
-            if trace: g.trace('%10s %r' % (@kind, @val))
+            if trace: g.trace('%10s %r' % [@kind, @val])
             func = getattr(@'do_' + @kind, oops)
             func()
         @gen_file_end()
@@ -271,7 +269,7 @@ class CoffeeScriptTokenizer
         @gen_line_start()
         # End all classes & defs.
         for state in @stack.stack:
-            if state.kind in ('class', 'def'):
+            if state.kind in ['class', 'def']:
                 if state.value >= @level:
                     # g.trace(self.level, 'end', state.kind)
                     @stack.remove(state.kind)
@@ -287,9 +285,9 @@ class CoffeeScriptTokenizer
     do_name: () ->
         '''Handle a name token.'''
         name = @val
-        if name in ('class', 'def'):
+        if name in ['class', 'def']:
             @gen_class_or_def(name)
-        elif name in ('from', 'import'):
+        elif name in ['from', 'import']:
             @gen_import(name)
         elif name == 'self':
             @gen_self()
@@ -302,7 +300,7 @@ class CoffeeScriptTokenizer
             else:
                 @gen_op('=')
             @def_name_seen = True
-        elif name in ('and', 'in', 'not', 'not in', 'or'):
+        elif name in ['and', 'in', 'not', 'not in', 'or']:
             @gen_word_op(name)
         elif name == 'default':
             # Hard to know where to put a warning comment.
@@ -456,17 +454,10 @@ class CoffeeScriptTokenizer
         val = @val
         assert val == ')', val
         @input_paren_level -= 1
-        ### prev = self.code_list[-1]
         if @in_class_line:
             @in_class_line = False
         else:
             @gen_rt(val)
-        ###
-        # elif prev.kind == 'lt' and prev.value == '(':
-            # self.clean('lt')
-            # self.output_paren_level -= 1
-        # else:
-            # self.gen_rt(val)
         @after_self = False
 
     gen_period: () ->
@@ -488,10 +479,16 @@ class CoffeeScriptTokenizer
 
     add_token: (kind, value='') ->
         '''Add a token to the code list.'''
-        # if kind in ('line-indent','line-start','line-end'):
-            # g.trace(kind,repr(value),g.callers())
-        tok = @OutputToken(kind, value)
-        @code_list.append(tok)
+        token = @OutputToken(kind, value)
+        @code_list.append(token)
+        if kind not in [
+            'backslash',
+            'blank', 'blank-lines',
+            'file-start',
+            'line-end', 'line-indent'
+        ]:
+            # g.trace(token,g.callers())
+            @prev_sig_token = token
 
     clean: (kind) ->
         '''Remove the last item of token list if it has the given kind.'''
@@ -501,7 +498,7 @@ class CoffeeScriptTokenizer
 
     clean_blank_lines: () ->
         '''Remove all vestiges of previous lines.'''
-        table = ('blank-lines', 'line-end', 'line-indent')
+        table = ['blank-lines', 'line-end', 'line-indent']
         while @code_list[-1].kind in table:
             @code_list.pop()
 
@@ -515,12 +512,12 @@ class CoffeeScriptTokenizer
     gen_blank: () ->
         '''Add a blank request on the code list.'''
         prev = @code_list[-1]
-        if not prev.kind in (
+        if not prev.kind in [
             'blank', 'blank-lines', 'blank-op',
             'file-start',
             'line-end', 'line-indent',
             'lt', 'op-no-blanks', 'unary-op',
-        ):
+        ]:
             @add_token('blank', ' ')
 
     gen_blank_lines: (n) ->
@@ -587,24 +584,19 @@ class CoffeeScriptTokenizer
         @output_paren_level += 1
         @clean('blank')
         prev = @code_list[-1]
-        ####
-        # if prev.kind in ('op', 'word-op'):
-            # self.gen_blank()
-            # self.add_token('lt', s)
         if @in_def_line:
             @gen_blank()
             @add_token('lt', s)
-        elif prev.kind in ('op', 'word-op'):
+        elif prev.kind in ['op', 'word-op']:
             @gen_blank()
-            ###
-            # if s == '(':
-                # s = '['
-                # self.stack.push('tuple', self.output_paren_level)
-                # g.trace('line', self.last_line_number, self.output_paren_level)
+            if s == '(':
+                # g.trace(self.prev_sig_token)
+                s = '['
+                @stack.push('tuple', @output_paren_level)
             @add_token('lt', s)
         elif prev.kind == 'word':
             # Only suppress blanks before '(' or '[' for non-keyworks.
-            if s == '{' or prev.value in ('if', 'else', 'return'):
+            if s == '{' or prev.value in ['if', 'else', 'return']:
                 @gen_blank()
             @add_token('lt', s)
         elif prev.kind == 'op':
@@ -625,9 +617,9 @@ class CoffeeScriptTokenizer
         else:
             @clean('blank')
         if @stack.has('tuple'):
-            g.trace('line', @last_line_number, @output_paren_level)
+            # g.trace('line', self.last_line_number, self.output_paren_level + 1)
             state = @stack.get('tuple')
-            if state.value == @output_paren_level:
+            if state.value == @output_paren_level + 1:
                 @add_token('rt', ']')
                 @stack.remove('tuple')
             else:
@@ -663,9 +655,9 @@ class CoffeeScriptTokenizer
         '''Add a unary or binary op to the token list.'''
         @clean('blank')
         prev = @code_list[-1]
-        if prev.kind in ('lt', 'op', 'op-no-blanks', 'word-op'):
+        if prev.kind in ['lt', 'op', 'op-no-blanks', 'word-op']:
             @gen_unary_op(s)
-        elif prev.kind == 'word' and prev.value in ('elif', 'if', 'return', 'while'):
+        elif prev.kind == 'word' and prev.value in ['elif', 'if', 'return', 'while']:
             @gen_unary_op(s)
         else:
             @gen_op(s)
@@ -732,7 +724,7 @@ class ParseState extends object:
         @value = value
 
     __repr__: () ->
-        return 'State: %10s %s' % (@kind, repr(@value))
+        return 'State: %10s %s' % [@kind, repr(@value)]
 
     __str__ = __repr__
 
@@ -789,10 +781,10 @@ class LeoGlobals extends object:
             code1 = f1.f_code # The code object
             name = code1.co_name
             if name == '__init__':
-                name = '__init__(%s,line %s)' % (
-                    @shortFileName(code1.co_filename), code1.co_firstlineno)
+                name = '__init__(%s,line %s)' % [
+                    @shortFileName(code1.co_filename), code1.co_firstlineno]
             if files:
-                return '%s:%s' % (@shortFileName(code1.co_filename), name)
+                return '%s:%s' % [@shortFileName(code1.co_filename), name]
             else:
                 return name # The code name
         except ValueError:
@@ -838,7 +830,7 @@ class LeoGlobals extends object:
         elif tab_width > 1:
             tabs = int(width / tab_width)
             blanks = int(width % tab_width)
-            return ('\t' * tabs) + (' ' * blanks)
+            return ('\t' * tabs) + [' ' * blanks]
         else: # Negative tab width always gets converted to blanks.
             return (' ' * width)
 
@@ -849,7 +841,7 @@ class LeoGlobals extends object:
             if ch == ' ':
                 w += 1
             elif ch == '\t':
-                w += (abs(tab_width) - (w % abs(tab_width)))
+                w += [abs(tab_width) - [w % abs(tab_width)]]
             else:
                 break
         return w
@@ -902,8 +894,8 @@ class LeoGlobals extends object:
             s = s.decode(encoding, 'replace')
             if trace or reportErrors:
                 g.trace(g.callers())
-                print("toUnicode: Error converting %s... from %s encoding to unicode" % (
-                    s[: 200], encoding))
+                print("toUnicode: Error converting %s... from %s encoding to unicode" % [
+                    s[: 200], encoding])
         except AttributeError:
             if trace:
                 print('toUnicode: AttributeError!: %s' % s)
@@ -946,7 +938,7 @@ class MakeCoffeeScriptController extends object:
         @config_fn = None
         @enable_unit_tests = False
         @files = [] # May also be set in the config file.
-        @section_names = ('Global',)
+        @section_names = ['Global',]
         # Ivars set in the config file...
         @output_directory = @finalize('.')
         @overwrite = False

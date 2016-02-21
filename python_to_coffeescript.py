@@ -142,13 +142,14 @@ class CoffeeScriptTokenizer:
 
         def push(self, kind, value=None):
             '''Append a state to the state stack.'''
+            trace = False
             self.stack.append(ParseState(kind, value))
-            if kind == 'tuple':
+            if trace and kind == 'tuple':
                 g.trace(kind, value, g.callers(2))
 
         def remove(self, kind):
             '''Remove the last state on the stack of the given kind.'''
-            trace = True
+            trace = False
             n = len(self.stack)
             i = n - 1
             found = None
@@ -191,14 +192,11 @@ class CoffeeScriptTokenizer:
             # Typically ' '*self.tab_width*self.level,
             # but may be changed for continued lines.
         self.output_paren_level = 0 # Number of unmatched left parens in output.
+        self.prev_sig_token = None # Previous non-whitespace token.
         self.stack = None # Stack of ParseState objects, set in format.
         # Settings...
         self.delete_blank_lines = False
         self.tab_width = 4
-        
-         # Undo vars
-        self.changed = False
-        self.dirtyVnodeList = []
 
     def format(self, tokens):
         '''
@@ -458,17 +456,10 @@ class CoffeeScriptTokenizer:
         val = self.val
         assert val == ')', val
         self.input_paren_level -= 1
-        ### prev = self.code_list[-1]
         if self.in_class_line:
             self.in_class_line = False
         else:
             self.gen_rt(val)
-        ###
-        # elif prev.kind == 'lt' and prev.value == '(':
-            # self.clean('lt')
-            # self.output_paren_level -= 1
-        # else:
-            # self.gen_rt(val)
         self.after_self = False
 
     def gen_period(self):
@@ -490,10 +481,16 @@ class CoffeeScriptTokenizer:
 
     def add_token(self, kind, value=''):
         '''Add a token to the code list.'''
-        # if kind in ('line-indent','line-start','line-end'):
-            # g.trace(kind,repr(value),g.callers())
-        tok = self.OutputToken(kind, value)
-        self.code_list.append(tok)
+        token = self.OutputToken(kind, value)
+        self.code_list.append(token)
+        if kind not in (
+            'backslash',
+            'blank', 'blank-lines',
+            'file-start',
+            'line-end', 'line-indent'
+        ):
+            # g.trace(token,g.callers())
+            self.prev_sig_token = token
 
     def clean(self, kind):
         '''Remove the last item of token list if it has the given kind.'''
@@ -589,20 +586,15 @@ class CoffeeScriptTokenizer:
         self.output_paren_level += 1
         self.clean('blank')
         prev = self.code_list[-1]
-        ####
-        # if prev.kind in ('op', 'word-op'):
-            # self.gen_blank()
-            # self.add_token('lt', s)
         if self.in_def_line:
             self.gen_blank()
             self.add_token('lt', s)
         elif prev.kind in ('op', 'word-op'):
             self.gen_blank()
-            ###
-            # if s == '(':
-                # s = '['
-                # self.stack.push('tuple', self.output_paren_level)
-                # g.trace('line', self.last_line_number, self.output_paren_level)
+            if s == '(':
+                # g.trace(self.prev_sig_token)
+                s = '['
+                self.stack.push('tuple', self.output_paren_level)
             self.add_token('lt', s)
         elif prev.kind == 'word':
             # Only suppress blanks before '(' or '[' for non-keyworks.
@@ -627,9 +619,9 @@ class CoffeeScriptTokenizer:
         else:
             self.clean('blank')
         if self.stack.has('tuple'):
-            g.trace('line', self.last_line_number, self.output_paren_level)
+            # g.trace('line', self.last_line_number, self.output_paren_level + 1)
             state = self.stack.get('tuple')
-            if state.value == self.output_paren_level:
+            if state.value == self.output_paren_level + 1:
                 self.add_token('rt', ']')
                 self.stack.remove('tuple')
             else:

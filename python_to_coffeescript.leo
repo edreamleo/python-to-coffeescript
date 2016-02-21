@@ -134,25 +134,6 @@
 </v>
 <v t="ekr.20160220050053.2"><vh>@clean README.md</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160221033645.1"><vh>recent</vh>
-<v t="ekr.20160220103223.4"><vh> cst.ctor</vh></v>
-<v t="ekr.20160220103223.13"><vh>cst.do_name &amp; helpers</vh>
-<v t="ekr.20160220143251.1"><vh>cst.gen_class_or_def</vh></v>
-<v t="ekr.20160220144848.1"><vh>cst.gen_import</vh></v>
-<v t="ekr.20160220151729.1"><vh>cst.gen_self</vh></v>
-</v>
-<v t="ekr.20160220103223.17"><vh>cst.do_op &amp; helpers</vh>
-<v t="ekr.20160220152030.1"><vh>cst.gen_at</vh></v>
-<v t="ekr.20160220143629.1"><vh>cst.gen_colon</vh></v>
-<v t="ekr.20160220160809.1"><vh>cst.gen_comma</vh></v>
-<v t="ekr.20160220143842.1"><vh>cst.gen_open_paren</vh></v>
-<v t="ekr.20160220143853.1"><vh>cst.gen_close_paren</vh></v>
-<v t="ekr.20160220151922.1"><vh>cst.gen_period</vh></v>
-</v>
-<v t="ekr.20160220103223.12"><vh>cst.do_indent &amp; do_dedent</vh></v>
-<v t="ekr.20160220103223.30"><vh>cst.gen_lt &amp; gen_rt</vh></v>
-<v t="ekr.20160220143251.1"></v>
-</v>
 <v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
 <v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
@@ -173,18 +154,29 @@
 <v t="ekr.20160220103223.40"><vh>ss.push</vh></v>
 <v t="ekr.20160220174952.1"><vh>ss.remove</vh></v>
 </v>
-<v t="ekr.20160220103223.4"></v>
+<v t="ekr.20160220103223.4"><vh> cst.ctor</vh></v>
 <v t="ekr.20160220103223.7"><vh> cst.format</vh></v>
 <v t="ekr.20160220103223.8"><vh>cst.Input token Handlers</vh>
 <v t="ekr.20160220103223.9"><vh>cst.do_comment</vh></v>
 <v t="ekr.20160220103223.10"><vh>cst.do_endmarker</vh></v>
 <v t="ekr.20160220103223.11"><vh>cst.do_errortoken</vh></v>
-<v t="ekr.20160220103223.12"></v>
-<v t="ekr.20160220103223.13"></v>
+<v t="ekr.20160220103223.12"><vh>cst.do_indent &amp; do_dedent</vh></v>
+<v t="ekr.20160220103223.13"><vh>cst.do_name &amp; helpers</vh>
+<v t="ekr.20160220143251.1"><vh>cst.gen_class_or_def</vh></v>
+<v t="ekr.20160220144848.1"><vh>cst.gen_import</vh></v>
+<v t="ekr.20160220151729.1"><vh>cst.gen_self</vh></v>
+</v>
 <v t="ekr.20160220103223.14"><vh>cst.do_newline</vh></v>
 <v t="ekr.20160220103223.15"><vh>cst.do_nl</vh></v>
 <v t="ekr.20160220103223.16"><vh>cst.do_number</vh></v>
-<v t="ekr.20160220103223.17"></v>
+<v t="ekr.20160220103223.17"><vh>cst.do_op &amp; helpers</vh>
+<v t="ekr.20160220152030.1"><vh>cst.gen_at</vh></v>
+<v t="ekr.20160220143629.1"><vh>cst.gen_colon</vh></v>
+<v t="ekr.20160220160809.1"><vh>cst.gen_comma</vh></v>
+<v t="ekr.20160220143842.1"><vh>cst.gen_open_paren</vh></v>
+<v t="ekr.20160220143853.1"><vh>cst.gen_close_paren</vh></v>
+<v t="ekr.20160220151922.1"><vh>cst.gen_period</vh></v>
+</v>
 <v t="ekr.20160220103223.18"><vh>cst.do_string</vh></v>
 </v>
 <v t="ekr.20160220103223.19"><vh>cst.Output token generators</vh>
@@ -197,7 +189,7 @@
 <v t="ekr.20160220103223.27"><vh>cst.gen_file_start &amp; gen_file_end</vh></v>
 <v t="ekr.20160220103223.28"><vh>cst.gen_line_indent</vh></v>
 <v t="ekr.20160220103223.29"><vh>cst.gen_line_start &amp; gen_line_end</vh></v>
-<v t="ekr.20160220103223.30"></v>
+<v t="ekr.20160220103223.30"><vh>cst.gen_lt &amp; gen_rt</vh></v>
 <v t="ekr.20160220103223.31"><vh>cst.gen_op*</vh></v>
 <v t="ekr.20160220103223.32"><vh>cst.gen_possible_unary_op &amp; gen_unary_op</vh></v>
 <v t="ekr.20160220103223.33"><vh>cst.gen_star_op</vh></v>
@@ -245,7 +237,11 @@
 <v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
 </v>
 </v>
-<v t="ekr.20160220103223.19"></v>
+<v t="ekr.20160220103223.4"></v>
+<v t="ekr.20160220103223.20"></v>
+<v t="ekr.20160220103223.30"></v>
+<v t="ekr.20160220143853.1"></v>
+<v t="ekr.20160220143842.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -2163,10 +2159,16 @@ class OutputToken(object):
 <t tx="ekr.20160220103223.20">
 def add_token(self, kind, value=''):
     '''Add a token to the code list.'''
-    # if kind in ('line-indent','line-start','line-end'):
-        # g.trace(kind,repr(value),g.callers())
-    tok = self.OutputToken(kind, value)
-    self.code_list.append(tok)
+    token = self.OutputToken(kind, value)
+    self.code_list.append(token)
+    if kind not in (
+        'backslash',
+        'blank', 'blank-lines',
+        'file-start',
+        'line-end', 'line-indent'
+    ):
+        # g.trace(token,g.callers())
+        self.prev_sig_token = token
 </t>
 <t tx="ekr.20160220103223.21">
 # def gen_arg_end(self):
@@ -2294,20 +2296,15 @@ def gen_lt(self, s):
     self.output_paren_level += 1
     self.clean('blank')
     prev = self.code_list[-1]
-    ####
-    # if prev.kind in ('op', 'word-op'):
-        # self.gen_blank()
-        # self.add_token('lt', s)
     if self.in_def_line:
         self.gen_blank()
         self.add_token('lt', s)
     elif prev.kind in ('op', 'word-op'):
         self.gen_blank()
-        ###
-        # if s == '(':
-            # s = '['
-            # self.stack.push('tuple', self.output_paren_level)
-            # g.trace('line', self.last_line_number, self.output_paren_level)
+        if s == '(':
+            # g.trace(self.prev_sig_token)
+            s = '['
+            self.stack.push('tuple', self.output_paren_level)
         self.add_token('lt', s)
     elif prev.kind == 'word':
         # Only suppress blanks before '(' or '[' for non-keyworks.
@@ -2332,9 +2329,9 @@ def gen_rt(self, s):
     else:
         self.clean('blank')
     if self.stack.has('tuple'):
-        g.trace('line', self.last_line_number, self.output_paren_level)
+        # g.trace('line', self.last_line_number, self.output_paren_level + 1)
         state = self.stack.get('tuple')
-        if state.value == self.output_paren_level:
+        if state.value == self.output_paren_level + 1:
             self.add_token('rt', ']')
             self.stack.remove('tuple')
         else:
@@ -2476,20 +2473,18 @@ def __init__(self, controller):
         # Typically ' '*self.tab_width*self.level,
         # but may be changed for continued lines.
     self.output_paren_level = 0 # Number of unmatched left parens in output.
+    self.prev_sig_token = None # Previous non-whitespace token.
     self.stack = None # Stack of ParseState objects, set in format.
     # Settings...
     self.delete_blank_lines = False
     self.tab_width = 4
-    
-     # Undo vars
-    self.changed = False
-    self.dirtyVnodeList = []
 </t>
 <t tx="ekr.20160220103223.40">
 def push(self, kind, value=None):
     '''Append a state to the state stack.'''
+    trace = False
     self.stack.append(ParseState(kind, value))
-    if kind == 'tuple':
+    if trace and kind == 'tuple':
         g.trace(kind, value, g.callers(2))
 </t>
 <t tx="ekr.20160220103223.7">
@@ -2660,9 +2655,12 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
+* Announce: inspired by DropBox sprint.
+
+* self.prev_significant_token
+
 - Check results by running through coffeescript.
-- Rename all output methods gen_* ?
-- Replace tuples by lists.
+    - Replace tuples by lists.
 
 Later:
 - Remove type hints from arg lists.
@@ -2729,17 +2727,10 @@ def gen_close_paren(self):
     val = self.val
     assert val == ')', val
     self.input_paren_level -= 1
-    ### prev = self.code_list[-1]
     if self.in_class_line:
         self.in_class_line = False
     else:
         self.gen_rt(val)
-    ###
-    # elif prev.kind == 'lt' and prev.value == '(':
-        # self.clean('lt')
-        # self.output_paren_level -= 1
-    # else:
-        # self.gen_rt(val)
     self.after_self = False
 </t>
 <t tx="ekr.20160220144848.1">
@@ -2795,7 +2786,7 @@ def gen_comma(self):
 <t tx="ekr.20160220174952.1">
 def remove(self, kind):
     '''Remove the last state on the stack of the given kind.'''
-    trace = True
+    trace = False
     n = len(self.stack)
     i = n - 1
     found = None
@@ -2851,6 +2842,5 @@ def pop(self):
     self.beautify_time = 0.0
     self.check_time = 0.0
     self.total_time = 0.0</t>
-<t tx="ekr.20160221033645.1"></t>
 </tnodes>
 </leo_file>
