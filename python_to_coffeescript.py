@@ -594,7 +594,7 @@ class CoffeeScriptTokenizer:
         self.gen_line_indent()
 
     def gen_lt(self, s):
-        '''Add a left paren request to the code list.'''
+        '''Add a left paren to the code list.'''
         assert s in '([{', repr(s)
         self.output_paren_level += 1
         self.clean('blank')
@@ -620,7 +620,7 @@ class CoffeeScriptTokenizer:
             self.gen_op_no_blanks(s)
 
     def gen_rt(self, s):
-        '''Add a right paren request to the code list.'''
+        '''Add a right paren to the code list.'''
         assert s in ')]}', repr(s)
         self.output_paren_level -= 1
         prev = self.code_list[-1]
@@ -631,6 +631,7 @@ class CoffeeScriptTokenizer:
             self.code_list.append(prev)
         else:
             self.clean('blank')
+            prev = self.code_list[-1]
         if self.stack.has('tuple'):
             # g.trace('line', self.last_line_number, self.output_paren_level + 1)
             state = self.stack.get('tuple')
@@ -639,6 +640,9 @@ class CoffeeScriptTokenizer:
                 self.stack.remove('tuple')
             else:
                 self.add_token('rt', s)
+        elif s == ')' and prev and prev.kind == 'lt' and prev.value == '(':
+            # Remove ()
+            self.code_list.pop()
         else:
             self.add_token('rt', s)
 
