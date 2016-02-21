@@ -64,7 +64,6 @@
 <v t="ekr.20160221071408.1"><vh>Code notes</vh></v>
 <v t="ekr.20160221071735.1"><vh>Summary</vh></v>
 </v>
-<v t="ekr.20160220131008.1"><vh>** To do</vh></v>
 <v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
 <v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
@@ -85,121 +84,121 @@
 <v t="ekr.20160220103223.40"><vh>ss.push</vh></v>
 <v t="ekr.20160220174952.1"><vh>ss.remove</vh></v>
 </v>
-<v t="ekr.20160220103223.4"><vh> cst.ctor</vh></v>
-<v t="ekr.20160220103223.7"><vh> cst.format</vh></v>
-<v t="ekr.20160220103223.8"><vh>cst.Input token Handlers</vh>
-<v t="ekr.20160220103223.9"><vh>cst.do_comment</vh></v>
-<v t="ekr.20160220103223.10"><vh>cst.do_endmarker</vh></v>
-<v t="ekr.20160220103223.11"><vh>cst.do_errortoken</vh></v>
-<v t="ekr.20160220103223.12"><vh>cst.do_indent &amp; do_dedent</vh></v>
-<v t="ekr.20160220103223.13"><vh>cst.do_name &amp; helpers</vh></v>
-<v t="ekr.20160220103223.14"><vh>cst.do_newline</vh></v>
-<v t="ekr.20160220103223.15"><vh>cst.do_nl</vh></v>
-<v t="ekr.20160220103223.16"><vh>cst.do_number</vh></v>
-<v t="ekr.20160220103223.17"><vh>cst.do_op</vh></v>
-<v t="ekr.20160220103223.18"><vh>cst.do_string</vh></v>
+<v t="ekr.20160220103223.4"><vh> ct.ctor</vh></v>
+<v t="ekr.20160220103223.7"><vh> ct.format</vh></v>
+<v t="ekr.20160220103223.8"><vh>ct.Input token Handlers</vh>
+<v t="ekr.20160220103223.9"><vh>ct.do_comment</vh></v>
+<v t="ekr.20160220103223.10"><vh>ct.do_endmarker</vh></v>
+<v t="ekr.20160220103223.11"><vh>ct.do_errortoken</vh></v>
+<v t="ekr.20160220103223.12"><vh>ct.do_indent &amp; do_dedent</vh></v>
+<v t="ekr.20160220103223.13"><vh>ct.do_name &amp; helpers</vh></v>
+<v t="ekr.20160220103223.14"><vh>ct.do_newline</vh></v>
+<v t="ekr.20160220103223.15"><vh>ct.do_nl</vh></v>
+<v t="ekr.20160220103223.16"><vh>ct.do_number</vh></v>
+<v t="ekr.20160220103223.17"><vh>ct.do_op</vh></v>
+<v t="ekr.20160220103223.18"><vh>ct.do_string</vh></v>
 </v>
-<v t="ekr.20160220103223.19"><vh>cst.Output token generators</vh>
-<v t="ekr.20160220103223.20"><vh>cst.add_token</vh></v>
-<v t="ekr.20160220103223.25"><vh>cst.clean</vh></v>
-<v t="ekr.20160220103223.26"><vh>cst.clean_blank_lines</vh></v>
-<v t="ekr.20160220152030.1"><vh>cst.gen_at</vh></v>
-<v t="ekr.20160220103223.22"><vh>cst.gen_backslash</vh></v>
-<v t="ekr.20160220103223.23"><vh>cst.gen_blank</vh></v>
-<v t="ekr.20160220103223.24"><vh>cst.gen_blank_lines</vh></v>
-<v t="ekr.20160220143251.1"><vh>cst.gen_class_or_def</vh></v>
-<v t="ekr.20160220143853.1"><vh>cst.gen_close_paren</vh></v>
-<v t="ekr.20160220143629.1"><vh>cst.gen_colon</vh></v>
-<v t="ekr.20160220160809.1"><vh>cst.gen_comma</vh></v>
-<v t="ekr.20160220103223.27"><vh>cst.gen_file_start &amp; gen_file_end</vh></v>
-<v t="ekr.20160220144848.1"><vh>cst.gen_import</vh></v>
-<v t="ekr.20160220103223.28"><vh>cst.gen_line_indent</vh></v>
-<v t="ekr.20160220103223.29"><vh>cst.gen_line_start &amp; gen_line_end</vh></v>
-<v t="ekr.20160220103223.30"><vh>cst.gen_lt &amp; gen_rt</vh></v>
-<v t="ekr.20160220103223.31"><vh>cst.gen_op*</vh></v>
-<v t="ekr.20160220143842.1"><vh>cst.gen_open_paren</vh></v>
-<v t="ekr.20160220151922.1"><vh>cst.gen_period</vh></v>
-<v t="ekr.20160220103223.32"><vh>cst.gen_possible_unary_op &amp; gen_unary_op</vh></v>
-<v t="ekr.20160220151729.1"><vh>cst.gen_self</vh></v>
-<v t="ekr.20160220103223.33"><vh>cst.gen_star_op</vh></v>
-<v t="ekr.20160220103223.34"><vh>cst.gen_star_star_op</vh></v>
-<v t="ekr.20160220103223.35"><vh>cst.gen_word &amp; gen_word_op</vh></v>
+<v t="ekr.20160220103223.19"><vh>ct.Output token generators</vh>
+<v t="ekr.20160220103223.20"><vh>ct.add_token</vh></v>
+<v t="ekr.20160220103223.25"><vh>ct.clean</vh></v>
+<v t="ekr.20160220103223.26"><vh>ct.clean_blank_lines</vh></v>
+<v t="ekr.20160220152030.1"><vh>ct.gen_at</vh></v>
+<v t="ekr.20160220103223.22"><vh>ct.gen_backslash</vh></v>
+<v t="ekr.20160220103223.23"><vh>ct.gen_blank</vh></v>
+<v t="ekr.20160220103223.24"><vh>ct.gen_blank_lines</vh></v>
+<v t="ekr.20160220143251.1"><vh>ct.gen_class_or_def</vh></v>
+<v t="ekr.20160220143853.1"><vh>ct.gen_close_paren</vh></v>
+<v t="ekr.20160220143629.1"><vh>ct.gen_colon</vh></v>
+<v t="ekr.20160220160809.1"><vh>ct.gen_comma</vh></v>
+<v t="ekr.20160220103223.27"><vh>ct.gen_file_start &amp; gen_file_end</vh></v>
+<v t="ekr.20160220144848.1"><vh>ct.gen_import</vh></v>
+<v t="ekr.20160220103223.28"><vh>ct.gen_line_indent</vh></v>
+<v t="ekr.20160220103223.29"><vh>ct.gen_line_start &amp; gen_line_end</vh></v>
+<v t="ekr.20160220103223.30"><vh>ct.gen_lt &amp; gen_rt</vh></v>
+<v t="ekr.20160220103223.31"><vh>ct.gen_op*</vh></v>
+<v t="ekr.20160220143842.1"><vh>ct.gen_open_paren</vh></v>
+<v t="ekr.20160220151922.1"><vh>ct.gen_period</vh></v>
+<v t="ekr.20160220103223.32"><vh>ct.gen_possible_unary_op &amp; gen_unary_op</vh></v>
+<v t="ekr.20160220151729.1"><vh>ct.gen_self</vh></v>
+<v t="ekr.20160220103223.33"><vh>ct.gen_star_op</vh></v>
+<v t="ekr.20160220103223.34"><vh>ct.gen_star_star_op</vh></v>
+<v t="ekr.20160220103223.35"><vh>ct.gen_word &amp; gen_word_op</vh></v>
 </v>
 </v>
 <v t="ekr.20160220050433.14"><vh>class CoffeeScriptTraverser</vh>
-<v t="ekr.20160220050433.16"><vh> cf.format</vh></v>
-<v t="ekr.20160220050433.82"><vh> cf.indent</vh></v>
-<v t="ekr.20160220050433.17"><vh> cf.visit</vh></v>
-<v t="ekr.20160220050433.18"><vh>cf.Contexts</vh>
-<v t="ekr.20160220050433.19"><vh>cf.ClassDef</vh></v>
-<v t="ekr.20160220050433.20"><vh>cf.FunctionDef</vh></v>
-<v t="ekr.20160220050433.21"><vh>cf.Interactive</vh></v>
-<v t="ekr.20160220050433.22"><vh>cf.Module</vh></v>
-<v t="ekr.20160220050433.23"><vh>cf.Lambda</vh></v>
+<v t="ekr.20160220050433.16"><vh> cv.format</vh></v>
+<v t="ekr.20160220050433.82"><vh> cv.indent</vh></v>
+<v t="ekr.20160220050433.17"><vh> cv.visit</vh></v>
+<v t="ekr.20160220050433.18"><vh>cv.Contexts</vh>
+<v t="ekr.20160220050433.19"><vh>cv.ClassDef</vh></v>
+<v t="ekr.20160220050433.20"><vh>cv.FunctionDef</vh></v>
+<v t="ekr.20160220050433.21"><vh>cv.Interactive</vh></v>
+<v t="ekr.20160220050433.22"><vh>cv.Module</vh></v>
+<v t="ekr.20160220050433.23"><vh>cv.Lambda</vh></v>
 </v>
-<v t="ekr.20160220050433.24"><vh>cf.Expressions</vh>
-<v t="ekr.20160220050433.25"><vh>cf.Expr</vh></v>
-<v t="ekr.20160220050433.26"><vh>cf.Expression</vh></v>
-<v t="ekr.20160220050433.27"><vh>cf.GeneratorExp</vh></v>
-<v t="ekr.20160220050433.28"><vh>cf.ctx nodes</vh></v>
+<v t="ekr.20160220050433.24"><vh>cv.Expressions</vh>
+<v t="ekr.20160220050433.25"><vh>cv.Expr</vh></v>
+<v t="ekr.20160220050433.26"><vh>cv.Expression</vh></v>
+<v t="ekr.20160220050433.27"><vh>cv.GeneratorExp</vh></v>
+<v t="ekr.20160220050433.28"><vh>cv.ctx nodes</vh></v>
 </v>
-<v t="ekr.20160220050433.29"><vh>cf.Operands</vh>
-<v t="ekr.20160220050433.30"><vh>cf.arguments</vh></v>
-<v t="ekr.20160220050433.31"><vh>cf.arg (Python3 only)</vh></v>
-<v t="ekr.20160220050433.32"><vh>cf.Attribute</vh></v>
-<v t="ekr.20160220050433.33"><vh>cf.Bytes</vh></v>
-<v t="ekr.20160220050433.34"><vh>cf.Call &amp; cf.keyword</vh>
-<v t="ekr.20160220050433.35"><vh>cf.keyword</vh></v>
+<v t="ekr.20160220050433.29"><vh>cv.Operands</vh>
+<v t="ekr.20160220050433.30"><vh>cv.arguments</vh></v>
+<v t="ekr.20160220050433.31"><vh>cv.arg (Python3 only)</vh></v>
+<v t="ekr.20160220050433.32"><vh>cv.Attribute</vh></v>
+<v t="ekr.20160220050433.33"><vh>cv.Bytes</vh></v>
+<v t="ekr.20160220050433.34"><vh>cv.Call &amp; cv.keyword</vh>
+<v t="ekr.20160220050433.35"><vh>cv.keyword</vh></v>
 </v>
-<v t="ekr.20160220050433.36"><vh>cf.comprehension</vh></v>
-<v t="ekr.20160220050433.37"><vh>cf.Dict</vh></v>
-<v t="ekr.20160220050433.38"><vh>cf.Ellipsis</vh></v>
-<v t="ekr.20160220050433.39"><vh>cf.ExtSlice</vh></v>
-<v t="ekr.20160220050433.40"><vh>cf.Index</vh></v>
-<v t="ekr.20160220050433.41"><vh>cf.List</vh></v>
-<v t="ekr.20160220050433.42"><vh>cf.ListComp</vh></v>
-<v t="ekr.20160220050433.43"><vh>cf.Name &amp; cf.NameConstant</vh></v>
-<v t="ekr.20160220050433.44"><vh>cf.Num</vh></v>
-<v t="ekr.20160220050433.45"><vh>cf.Repr</vh></v>
-<v t="ekr.20160220050433.46"><vh>cf.Slice</vh></v>
-<v t="ekr.20160220050433.47"><vh>cf.Str</vh></v>
-<v t="ekr.20160220050433.48"><vh>cf.Subscript</vh></v>
-<v t="ekr.20160220050433.49"><vh>cf.Tuple</vh></v>
+<v t="ekr.20160220050433.36"><vh>cv.comprehension</vh></v>
+<v t="ekr.20160220050433.37"><vh>cv.Dict</vh></v>
+<v t="ekr.20160220050433.38"><vh>cv.Ellipsis</vh></v>
+<v t="ekr.20160220050433.39"><vh>cv.ExtSlice</vh></v>
+<v t="ekr.20160220050433.40"><vh>cv.Index</vh></v>
+<v t="ekr.20160220050433.41"><vh>cv.List</vh></v>
+<v t="ekr.20160220050433.42"><vh>cv.ListComp</vh></v>
+<v t="ekr.20160220050433.43"><vh>cv.Name &amp; cv.NameConstant</vh></v>
+<v t="ekr.20160220050433.44"><vh>cv.Num</vh></v>
+<v t="ekr.20160220050433.45"><vh>cv.Repr</vh></v>
+<v t="ekr.20160220050433.46"><vh>cv.Slice</vh></v>
+<v t="ekr.20160220050433.47"><vh>cv.Str</vh></v>
+<v t="ekr.20160220050433.48"><vh>cv.Subscript</vh></v>
+<v t="ekr.20160220050433.49"><vh>cv.Tuple</vh></v>
 </v>
-<v t="ekr.20160220050433.50"><vh>cf.Operators</vh>
-<v t="ekr.20160220050433.83"><vh> cf.op_name</vh></v>
-<v t="ekr.20160220050433.51"><vh>cf.BinOp</vh></v>
-<v t="ekr.20160220050433.52"><vh>cf.BoolOp</vh></v>
-<v t="ekr.20160220050433.53"><vh>cf.Compare</vh></v>
-<v t="ekr.20160220050433.55"><vh>cf.ifExp (ternary operator)</vh></v>
-<v t="ekr.20160220050433.54"><vh>cf.UnaryOp</vh></v>
+<v t="ekr.20160220050433.50"><vh>cv.Operators</vh>
+<v t="ekr.20160220050433.83"><vh> cv.op_name</vh></v>
+<v t="ekr.20160220050433.51"><vh>cv.BinOp</vh></v>
+<v t="ekr.20160220050433.52"><vh>cv.BoolOp</vh></v>
+<v t="ekr.20160220050433.53"><vh>cv.Compare</vh></v>
+<v t="ekr.20160220050433.55"><vh>cv.ifExp (ternary operator)</vh></v>
+<v t="ekr.20160220050433.54"><vh>cv.UnaryOp</vh></v>
 </v>
-<v t="ekr.20160220050433.56"><vh>cf.Statements</vh>
-<v t="ekr.20160220050433.57"><vh>cf.Assert</vh></v>
-<v t="ekr.20160220050433.58"><vh>cf.Assign</vh></v>
-<v t="ekr.20160220050433.59"><vh>cf.AugAssign</vh></v>
-<v t="ekr.20160220050433.60"><vh>cf.Break</vh></v>
-<v t="ekr.20160220050433.61"><vh>cf.Continue</vh></v>
-<v t="ekr.20160220050433.62"><vh>cf.Delete</vh></v>
-<v t="ekr.20160220050433.63"><vh>cf.ExceptHandler</vh></v>
-<v t="ekr.20160220050433.64"><vh>cf.Exec</vh></v>
-<v t="ekr.20160220050433.65"><vh>cf.For</vh></v>
-<v t="ekr.20160220050433.66"><vh>cf.Global</vh></v>
-<v t="ekr.20160220050433.67"><vh>cf.If</vh></v>
-<v t="ekr.20160220050433.68"><vh>cf.Import &amp; helper</vh>
-<v t="ekr.20160220050433.69"><vh>cf.get_import_names</vh></v>
+<v t="ekr.20160220050433.56"><vh>cv.Statements</vh>
+<v t="ekr.20160220050433.57"><vh>cv.Assert</vh></v>
+<v t="ekr.20160220050433.58"><vh>cv.Assign</vh></v>
+<v t="ekr.20160220050433.59"><vh>cv.AugAssign</vh></v>
+<v t="ekr.20160220050433.60"><vh>cv.Break</vh></v>
+<v t="ekr.20160220050433.61"><vh>cv.Continue</vh></v>
+<v t="ekr.20160220050433.62"><vh>cv.Delete</vh></v>
+<v t="ekr.20160220050433.63"><vh>cv.ExceptHandler</vh></v>
+<v t="ekr.20160220050433.64"><vh>cv.Exec</vh></v>
+<v t="ekr.20160220050433.65"><vh>cv.For</vh></v>
+<v t="ekr.20160220050433.66"><vh>cv.Global</vh></v>
+<v t="ekr.20160220050433.67"><vh>cv.If</vh></v>
+<v t="ekr.20160220050433.68"><vh>cv.Import &amp; helper</vh>
+<v t="ekr.20160220050433.69"><vh>cv.get_import_names</vh></v>
 </v>
-<v t="ekr.20160220050433.70"><vh>cf.ImportFrom</vh></v>
-<v t="ekr.20160220050433.71"><vh>cf.Pass</vh></v>
-<v t="ekr.20160220050433.72"><vh>cf.Print</vh></v>
-<v t="ekr.20160220050433.73"><vh>cf.Raise</vh></v>
-<v t="ekr.20160220050433.74"><vh>cf.Return</vh></v>
-<v t="ekr.20160220094909.1"><vh>cf.Try</vh></v>
-<v t="ekr.20160220050433.75"><vh>cf.TryExcept</vh></v>
-<v t="ekr.20160220050433.76"><vh>cf.TryFinally</vh></v>
-<v t="ekr.20160220050433.77"><vh>cf.While</vh></v>
-<v t="ekr.20160220050433.78"><vh>cf.With</vh></v>
-<v t="ekr.20160220050433.79"><vh>cf.Yield</vh></v>
+<v t="ekr.20160220050433.70"><vh>cv.ImportFrom</vh></v>
+<v t="ekr.20160220050433.71"><vh>cv.Pass</vh></v>
+<v t="ekr.20160220050433.72"><vh>cv.Print</vh></v>
+<v t="ekr.20160220050433.73"><vh>cv.Raise</vh></v>
+<v t="ekr.20160220050433.74"><vh>cv.Return</vh></v>
+<v t="ekr.20160220094909.1"><vh>cv.Try</vh></v>
+<v t="ekr.20160220050433.75"><vh>cv.TryExcept</vh></v>
+<v t="ekr.20160220050433.76"><vh>cv.TryFinally</vh></v>
+<v t="ekr.20160220050433.77"><vh>cv.While</vh></v>
+<v t="ekr.20160220050433.78"><vh>cv.With</vh></v>
+<v t="ekr.20160220050433.79"><vh>cv.Yield</vh></v>
 </v>
 </v>
 <v t="ekr.20160220050433.86"><vh>class LeoGlobals</vh>
@@ -241,7 +240,14 @@
 <v t="ekr.20160220050433.192"><vh>return_list</vh></v>
 <v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
 </v>
+<v t="ekr.20160221143000.1"><vh>class TokenSync</vh>
+<v t="ekr.20160221143402.1"><vh> cv.ctor</vh></v>
+<v t="ekr.20160221124544.1"><vh>cv.advance</vh></v>
+<v t="ekr.20160221144446.1"><vh>cv.do_backslash (maybe)</vh></v>
+<v t="ekr.20160221143755.1"><vh>cv.do_line_indent (maybe)</vh></v>
 </v>
+</v>
+<v t="ekr.20160220131008.1"><vh>** To do</vh></v>
 <v t="ekr.20160221042509.1"><vh>recent</vh>
 <v t="ekr.20160220103223.4"></v>
 <v t="ekr.20160220103223.20"></v>
@@ -250,6 +256,9 @@
 <v t="ekr.20160220143842.1"></v>
 <v t="ekr.20160220050433.121"></v>
 </v>
+<v t="ekr.20160220103223.1"></v>
+<v t="ekr.20160220050433.14"></v>
+<v t="ekr.20160221143000.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -2513,10 +2522,6 @@ def push(self, kind, value=None):
 <t tx="ekr.20160220103223.7">
 def format(self, tokens):
     '''The main line of CoffeeScriptTokenizer class.'''
-
-    def oops():
-        g.trace('unknown kind', self.kind)
-
     trace = False
     self.code_list = []
     self.stack = self.StateStack()
@@ -2545,8 +2550,8 @@ def format(self, tokens):
                     # Do not set self.lws here!
             self.last_line_number = srow
         if trace: g.trace('%10s %r'% (self.kind,self.val))
-        func = getattr(self, 'do_' + self.kind, oops)
-        func()
+        func = getattr(self, 'do_' + self.kind, None)
+        if func: func()
     self.gen_file_end()
     return ''.join([z.to_string() for z in self.code_list])
 </t>
@@ -2678,8 +2683,8 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-*** Add sync methods to the traverser.
-
+One more day for the prototype:
+- Test TokenSync class on *python* output.
 - Handle `elif`
 
 Later:
@@ -2950,5 +2955,68 @@ I have years of experience working with tokens and parse trees. Nevertheless, it
 Edward K. Ream  
 February 21, 2016
 </t>
+<t tx="ekr.20160221124544.1">
+def advance(self):
+    '''Advance one token. Update ivars.'''
+    trace = False
+    if not self.tokens:
+        return
+    token5tuple = self.tokens.pop(0)
+    t1, t2, t3, t4, t5 = token5tuple
+    srow, scol = t3
+    kind = token.tok_name[t1].lower()
+    val = g.toUnicode(t2)
+    raw_val = g.toUnicode(t5).rstrip()
+    if srow != self.last_line_number:
+        # Handle a previous backslash.
+        if self.backslash_seen:
+            self.do_backslash()
+        # Start a new row.
+        self.backslash_seen = raw_val.endswith('\\')
+        if self.output_paren_level &gt; 0:
+            s = raw_val
+            n = g.computeLeadingWhitespaceWidth(s, self.tab_width)
+            # This n will be one-too-many if formatting has
+            # changed: foo (
+            # to:      foo(
+            self.do_line_indent(ws=' ' * n)
+                # Do not set self.lws here!
+        self.last_line_number = srow
+    if trace: g.trace('%10s %r'% (kind,val))
+</t>
+<t tx="ekr.20160221143000.1">
+
+class TokenSync(object):
+    '''A class to sync and remember tokens.'''
+    @others</t>
+<t tx="ekr.20160221143402.1">
+def __init__(self, tokens):
+    '''Ctor for TokenSync class.'''
+    self.tab_width = 4
+    self.tokens = tokens
+    # Accumulation ivars...
+    # self.lws = 0
+    self.returns = []
+    self.ws = []
+    # State ivars...
+    self.backslash_seen = False
+    self.last_line_number = None
+    self.output_paren_level = 0
+    # TODO (maybe)...
+    # self.kind = None
+    # self.raw_val = None
+    # self.val = = None
+</t>
+<t tx="ekr.20160221143755.1">
+def do_line_indent(self, ws=None):
+    '''Handle line indentation.'''
+    # self.clean('line-indent')
+    # ws = ws or self.lws
+    # if ws:
+        # self.add_token('line-indent', ws)
+</t>
+<t tx="ekr.20160221144446.1">
+def do_backslash(self):
+    '''Handle a backslash-newline.'''</t>
 </tnodes>
 </leo_file>

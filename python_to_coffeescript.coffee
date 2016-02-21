@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sun 21 Feb 2016 at 12:04:47
+# python_to_coffeescript: Sun 21 Feb 2016 at 14:51:45
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -214,10 +214,6 @@ class CoffeeScriptTokenizer
 
     format: (tokens) ->
         '''The main line of CoffeeScriptTokenizer class.'''
-
-        oops: ->
-            g.trace('unknown kind', @kind)
-
         trace = False
         @code_list = []
         @stack = @StateStack
@@ -246,8 +242,8 @@ class CoffeeScriptTokenizer
                         # Do not set self.lws here!
                 @last_line_number = srow
             if trace g.trace('%10s %r' % [@kind, @val])
-            func = getattr(@'do_' + @kind, oops)
-            func
+            func = getattr(@'do_' + @kind, None)
+            if func func
         @gen_file_end
         return ''.join([z.to_string for z in @code_list])
 
@@ -1873,6 +1869,64 @@ class TestClass extends object
             return aList
         else
             return list(@regex.finditer(s))
+
+class TokenSync extends object
+    '''A class to sync and remember tokens.'''
+
+    constructor: (tokens) ->
+        '''Ctor for TokenSync class.'''
+        @tab_width = 4
+        @tokens = tokens
+        # Accumulation ivars...
+        # self.lws = 0
+        @returns = []
+        @ws = []
+        # State ivars...
+        @backslash_seen = False
+        @last_line_number = None
+        @output_paren_level = 0
+        # TODO (maybe)...
+        # self.kind = None
+        # self.raw_val = None
+        # self.val = = None
+
+    advance: ->
+        '''Advance one token. Update ivars.'''
+        trace = False
+        if not @tokens
+            return
+        token5tuple = @tokens.pop(0)
+        t1, t2, t3, t4, t5 = token5tuple
+        srow, scol = t3
+        kind = token.tok_name[t1].lower
+        val = g.toUnicode(t2)
+        raw_val = g.toUnicode(t5).rstrip
+        if srow != @last_line_number
+            # Handle a previous backslash.
+            if @backslash_seen
+                @do_backslash
+            # Start a new row.
+            @backslash_seen = raw_val.endswith('\\')
+            if @output_paren_level > 0
+                s = raw_val
+                n = g.computeLeadingWhitespaceWidth(s, @tab_width)
+                # This n will be one-too-many if formatting has
+                # changed: foo (
+                # to:      foo(
+                @do_line_indent(ws=' ' * n)
+                    # Do not set self.lws here!
+            @last_line_number = srow
+        if trace g.trace('%10s %r' % [kind, val])
+
+    do_backslash: ->
+        '''Handle a backslash-newline.'''
+
+    do_line_indent: (ws=None) ->
+        '''Handle line indentation.'''
+        # self.clean('line-indent')
+        # ws = ws or self.lws
+        # if ws:
+            # self.add_token('line-indent', ws)
 
 g = LeoGlobals # For ekr.
 if __name__ == "__main__"

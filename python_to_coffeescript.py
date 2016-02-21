@@ -216,10 +216,6 @@ class CoffeeScriptTokenizer:
 
     def format(self, tokens):
         '''The main line of CoffeeScriptTokenizer class.'''
-
-        def oops():
-            g.trace('unknown kind', self.kind)
-
         trace = False
         self.code_list = []
         self.stack = self.StateStack()
@@ -248,8 +244,8 @@ class CoffeeScriptTokenizer:
                         # Do not set self.lws here!
                 self.last_line_number = srow
             if trace: g.trace('%10s %r'% (self.kind,self.val))
-            func = getattr(self, 'do_' + self.kind, oops)
-            func()
+            func = getattr(self, 'do_' + self.kind, None)
+            if func: func()
         self.gen_file_end()
         return ''.join([z.to_string() for z in self.code_list])
 
@@ -1875,6 +1871,65 @@ class TestClass(object):
             return aList
         else:
             return list(self.regex.finditer(s))
+
+
+class TokenSync(object):
+    '''A class to sync and remember tokens.'''
+
+    def __init__(self, tokens):
+        '''Ctor for TokenSync class.'''
+        self.tab_width = 4
+        self.tokens = tokens
+        # Accumulation ivars...
+        # self.lws = 0
+        self.returns = []
+        self.ws = []
+        # State ivars...
+        self.backslash_seen = False
+        self.last_line_number = None
+        self.output_paren_level = 0
+        # TODO (maybe)...
+        # self.kind = None
+        # self.raw_val = None
+        # self.val = = None
+
+    def advance(self):
+        '''Advance one token. Update ivars.'''
+        trace = False
+        if not self.tokens:
+            return
+        token5tuple = self.tokens.pop(0)
+        t1, t2, t3, t4, t5 = token5tuple
+        srow, scol = t3
+        kind = token.tok_name[t1].lower()
+        val = g.toUnicode(t2)
+        raw_val = g.toUnicode(t5).rstrip()
+        if srow != self.last_line_number:
+            # Handle a previous backslash.
+            if self.backslash_seen:
+                self.do_backslash()
+            # Start a new row.
+            self.backslash_seen = raw_val.endswith('\\')
+            if self.output_paren_level > 0:
+                s = raw_val
+                n = g.computeLeadingWhitespaceWidth(s, self.tab_width)
+                # This n will be one-too-many if formatting has
+                # changed: foo (
+                # to:      foo(
+                self.do_line_indent(ws=' ' * n)
+                    # Do not set self.lws here!
+            self.last_line_number = srow
+        if trace: g.trace('%10s %r'% (kind,val))
+
+    def do_backslash(self):
+        '''Handle a backslash-newline.'''
+
+    def do_line_indent(self, ws=None):
+        '''Handle line indentation.'''
+        # self.clean('line-indent')
+        # ws = ws or self.lws
+        # if ws:
+            # self.add_token('line-indent', ws)
 
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
