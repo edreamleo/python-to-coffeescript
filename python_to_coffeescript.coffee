@@ -1,4 +1,4 @@
-# python_to_coffeescript: Sun 21 Feb 2016 at 03:34:06
+# python_to_coffeescript: Sun 21 Feb 2016 at 03:54:24
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -210,7 +210,7 @@ class CoffeeScriptTokenizer
         trace = False
         @code_list = []
         @stack = @StateStack()
-        @file_start()
+        @gen_file_start()
         for token5tuple in tokens:
             t1, t2, t3, t4, t5 = token5tuple
             srow, scol = t3
@@ -220,7 +220,7 @@ class CoffeeScriptTokenizer
             if srow != @last_line_number:
                 # Handle a previous backslash.
                 if @backslash_seen:
-                    @backslash()
+                    @gen_backslash()
                 # Start a new row.
                 raw_val = @raw_val.rstrip()
                 @backslash_seen = raw_val.endswith('\\')
@@ -231,13 +231,13 @@ class CoffeeScriptTokenizer
                     # This n will be one-too-many if formatting has
                     # changed: foo (
                     # to:      foo(
-                    @line_indent(ws=' ' * n)
+                    @gen_line_indent(ws=' ' * n)
                         # Do not set self.lws here!
                 @last_line_number = srow
             if trace: g.trace('%10s %r' % (@kind, @val))
             func = getattr(@'do_' + @kind, oops)
             func()
-        @file_end()
+        @gen_file_end()
         return ''.join([z.to_string() for z in @code_list])
 
     do_comment: () ->
@@ -251,7 +251,7 @@ class CoffeeScriptTokenizer
             @clean('line-indent')
             @add_token('comment', raw_val)
         else:
-            @blank()
+            @gen_blank()
             @add_token('comment', val)
 
     do_endmarker: () ->
@@ -262,13 +262,13 @@ class CoffeeScriptTokenizer
         '''Handle an errortoken token.'''
         # This code is executed for versions of Python earlier than 2.4
         if @val == '@':
-            @op(@val)
+            @gen_op(@val)
 
     do_dedent: () ->
         '''Handle dedent token.'''
         @level -= 1
         @lws = @level * @tab_width * ' '
-        @line_start()
+        @gen_line_start()
         # End all classes & defs.
         for state in @stack.stack:
             if state.kind in ('class', 'def'):
@@ -282,7 +282,7 @@ class CoffeeScriptTokenizer
         '''Handle indent token.'''
         @level += 1
         @lws = @val
-        @line_start()
+        @gen_line_start()
 
     do_name: () ->
         '''Handle a name token.'''
@@ -296,19 +296,19 @@ class CoffeeScriptTokenizer
         elif @in_def_line and not @def_name_seen:
             if name == '__init__':
                 name = 'constructor'
-            @word(name)
+            @gen_word(name)
             if @stack.has('class'):
-                @op_blank(':')
+                @gen_op_blank(':')
             else:
-                @op('=')
+                @gen_op('=')
             @def_name_seen = True
         elif name in ('and', 'in', 'not', 'not in', 'or'):
-            @word_op(name)
+            @gen_word_op(name)
         elif name == 'default':
             # Hard to know where to put a warning comment.
-            @word(name + '_')
+            @gen_word(name + '_')
         else:
-            @word(name)
+            @gen_word(name)
 
     gen_class_or_def: (name) ->
 
@@ -317,9 +317,9 @@ class CoffeeScriptTokenizer
         if @stack.has('decorator'):
             @stack.remove('decorator')
             @clean_blank_lines()
-            @line_end()
+            @gen_line_end()
         else:
-            @blank_lines(1)
+            @gen_blank_lines(1)
         @stack.push(name, @level)
             # name is 'class' or 'def'
             # do_dedent pops these entries.
@@ -330,27 +330,27 @@ class CoffeeScriptTokenizer
         else:
             @extends_flag = False
             @in_class_line = True
-            @word(name)
+            @gen_word(name)
 
     gen_import: (name) ->
         '''Convert an import to something that looks like a call.'''
-        @word('pass')
+        @gen_word('pass')
         @add_token('comment', '# ' + name)
 
     gen_self: () ->
         if @in_def_line:
             @after_self = True
         else:
-            @blank_op('@')
+            @gen_blank_op('@')
             @after_self = True
 
     do_newline: () ->
         '''Handle a regular newline.'''
-        @line_end()
+        @gen_line_end()
 
     do_nl: () ->
         '''Handle a continuation line.'''
-        @line_end()
+        @gen_line_end()
 
     do_number: () ->
         '''Handle a number token.'''
@@ -374,42 +374,42 @@ class CoffeeScriptTokenizer
         elif val == ';':
             # Pep 8: Avoid extraneous whitespace immediately before
             # comma, semicolon, or colon.
-            @op_blank(val)
+            @gen_op_blank(val)
         elif val in '[{':
             # Pep 8: Avoid extraneous whitespace immediately inside
             # parentheses, brackets or braces.
-            @lt(val)
+            @gen_lt(val)
         elif val in ']}':
-            @rt(val)
+            @gen_rt(val)
         elif val == '=':
             # Pep 8: Don't use spaces around the = sign when used to indicate
             # a keyword argument or a default parameter value.
             if @output_paren_level:
-                @op_no_blanks(val)
+                @gen_op_no_blanks(val)
             else:
-                @op(val)
+                @gen_op(val)
         elif val in '~+-':
-            @possible_unary_op(val)
+            @gen_possible_unary_op(val)
         elif val == '*':
-            @star_op()
+            @gen_star_op()
         elif val == '**':
-            @star_star_op()
+            @gen_star_star_op()
         else:
             # Pep 8: always surround binary operators with a single space.
             # '==','+=','-=','*=','**=','/=','//=','%=','!=','<=','>=','<','>',
             # '^','~','*','**','&','|','/','//',
             # Pep 8: If operators with different priorities are used,
             # consider adding whitespace around the operators with the lowest priority(ies).
-            @op(val)
+            @gen_op(val)
 
     gen_at: () ->
 
         val = @val
         assert val == '@', val
         if not @decorator_seen:
-            @blank_lines(1)
+            @gen_blank_lines(1)
             @decorator_seen = True
-        @op_no_blanks(val)
+        @gen_op_no_blanks(val)
         @stack.push('decorator')
 
     gen_colon: () ->
@@ -419,12 +419,12 @@ class CoffeeScriptTokenizer
         if @in_def_line:
             if @input_paren_level == 0:
                 @in_def_line = False
-                @op('->')
+                @gen_op('->')
         elif @in_class_line:
             if @input_paren_level == 0:
                 @in_class_line = False
         else:
-            @op_blank(val)
+            @gen_op_blank(val)
 
     gen_comma: () ->
 
@@ -435,7 +435,7 @@ class CoffeeScriptTokenizer
         else:
             # Pep 8: Avoid extraneous whitespace immediately before
             # comma, semicolon, or colon.
-            @op_blank(val)
+            @gen_op_blank(val)
 
     gen_open_paren: () ->
 
@@ -444,11 +444,11 @@ class CoffeeScriptTokenizer
         @input_paren_level += 1
         if @in_class_line:
             if not @extends_flag:
-                @word('extends')
+                @gen_word('extends')
                 @extends_flag = True
         else:
             # Generate a function call or a list.
-            @lt(val)
+            @gen_lt(val)
         @after_self = False
 
     gen_close_paren: () ->
@@ -460,13 +460,13 @@ class CoffeeScriptTokenizer
         if @in_class_line:
             @in_class_line = False
         else:
-            @rt(val)
+            @gen_rt(val)
         ###
         # elif prev.kind == 'lt' and prev.value == '(':
             # self.clean('lt')
             # self.output_paren_level -= 1
         # else:
-            # self.rt(val)
+            # self.gen_rt(val)
         @after_self = False
 
     gen_period: () ->
@@ -476,7 +476,7 @@ class CoffeeScriptTokenizer
         if @after_self:
             @after_self = False
         else:
-            @op_no_blanks(val)
+            @gen_op_no_blanks(val)
 
     do_string: () ->
         '''Handle a 'string' token.'''
@@ -484,7 +484,7 @@ class CoffeeScriptTokenizer
         if @val.find('\\\n'):
             @backslash_seen = False
             # This *does* retain the string's spelling.
-        @blank()
+        @gen_blank()
 
     add_token: (kind, value='') ->
         '''Add a token to the code list.'''
@@ -492,48 +492,6 @@ class CoffeeScriptTokenizer
             # g.trace(kind,repr(value),g.callers())
         tok = @OutputToken(kind, value)
         @code_list.append(tok)
-
-    # def arg_end(self):
-        # '''Add a token indicating the end of an argument list.'''
-        # self.add_token('arg-end')
-
-    # def arg_start(self):
-        # '''Add a token indicating the start of an argument list.'''
-        # self.add_token('arg-start')
-
-    backslash: () ->
-        '''Add a backslash token and clear .backslash_seen'''
-        @add_token('backslash', '\\')
-        @add_token('line-end', '\n')
-        @line_indent()
-        @backslash_seen = False
-
-    blank: () ->
-        '''Add a blank request on the code list.'''
-        prev = @code_list[-1]
-        if not prev.kind in (
-            'blank', 'blank-lines', 'blank-op',
-            'file-start',
-            'line-end', 'line-indent',
-            'lt', 'op-no-blanks', 'unary-op',
-        ):
-            @add_token('blank', ' ')
-
-    blank_lines: (n) ->
-        '''
-        Add a request for n blank lines to the code list.
-        Multiple blank-lines request yield at least the maximum of all requests.
-        '''
-        @clean_blank_lines()
-        kind = @code_list[-1].kind
-        if kind == 'file-start':
-            @add_token('blank-lines', n)
-        else:
-            for i in range(0, n + 1):
-                @add_token('line-end', '\n')
-            # Retain the token (intention) for debugging.
-            @add_token('blank-lines', n)
-            @line_indent()
 
     clean: (kind) ->
         '''Remove the last item of token list if it has the given kind.'''
@@ -547,7 +505,41 @@ class CoffeeScriptTokenizer
         while @code_list[-1].kind in table:
             @code_list.pop()
 
-    file_end: () ->
+    gen_backslash: () ->
+        '''Add a backslash token and clear .backslash_seen'''
+        @add_token('backslash', '\\')
+        @add_token('line-end', '\n')
+        @gen_line_indent()
+        @backslash_seen = False
+
+    gen_blank: () ->
+        '''Add a blank request on the code list.'''
+        prev = @code_list[-1]
+        if not prev.kind in (
+            'blank', 'blank-lines', 'blank-op',
+            'file-start',
+            'line-end', 'line-indent',
+            'lt', 'op-no-blanks', 'unary-op',
+        ):
+            @add_token('blank', ' ')
+
+    gen_blank_lines: (n) ->
+        '''
+        Add a request for n blank lines to the code list.
+        Multiple blank-lines request yield at least the maximum of all requests.
+        '''
+        @clean_blank_lines()
+        kind = @code_list[-1].kind
+        if kind == 'file-start':
+            @add_token('blank-lines', n)
+        else:
+            for i in range(0, n + 1):
+                @add_token('line-end', '\n')
+            # Retain the token (intention) for debugging.
+            @add_token('blank-lines', n)
+            @gen_line_indent()
+
+    gen_file_end: () ->
         '''
         Add a file-end token to the code list.
         Retain exactly one line-end token.
@@ -557,19 +549,19 @@ class CoffeeScriptTokenizer
         @add_token('line-end', '\n')
         @add_token('file-end')
 
-    file_start: () ->
+    gen_file_start: () ->
         '''Add a file-start token to the code list and the state stack.'''
         @add_token('file-start')
         @stack.push('file-start')
 
-    line_indent: (ws=None) ->
+    gen_line_indent: (ws=None) ->
         '''Add a line-indent token if indentation is non-empty.'''
         @clean('line-indent')
         ws = ws or @lws
         if ws:
             @add_token('line-indent', ws)
 
-    line_end: () ->
+    gen_line_end: () ->
         '''Add a line-end request to the code list.'''
         prev = @code_list[-1]
         if prev.kind == 'file-start':
@@ -579,17 +571,17 @@ class CoffeeScriptTokenizer
             @clean_blank_lines()
         @clean('line-indent')
         if @backslash_seen:
-            @backslash()
+            @gen_backslash()
         @add_token('line-end', '\n')
-        @line_indent()
+        @gen_line_indent()
             # Add the indentation for all lines
             # until the next indent or unindent token.
 
-    line_start: () ->
+    gen_line_start: () ->
         '''Add a line-start request to the code list.'''
-        @line_indent()
+        @gen_line_indent()
 
-    lt: (s) ->
+    gen_lt: (s) ->
         '''Add a left paren request to the code list.'''
         assert s in '([{', repr(s)
         @output_paren_level += 1
@@ -597,13 +589,13 @@ class CoffeeScriptTokenizer
         prev = @code_list[-1]
         ####
         # if prev.kind in ('op', 'word-op'):
-            # self.blank()
+            # self.gen_blank()
             # self.add_token('lt', s)
         if @in_def_line:
-            @blank()
+            @gen_blank()
             @add_token('lt', s)
         elif prev.kind in ('op', 'word-op'):
-            @blank()
+            @gen_blank()
             ###
             # if s == '(':
                 # s = '['
@@ -613,14 +605,14 @@ class CoffeeScriptTokenizer
         elif prev.kind == 'word':
             # Only suppress blanks before '(' or '[' for non-keyworks.
             if s == '{' or prev.value in ('if', 'else', 'return'):
-                @blank()
+                @gen_blank()
             @add_token('lt', s)
         elif prev.kind == 'op':
-            @op(s)
+            @gen_op(s)
         else:
-            @op_no_blanks(s)
+            @gen_op_no_blanks(s)
 
-    rt: (s) ->
+    gen_rt: (s) ->
         '''Add a right paren request to the code list.'''
         assert s in ')]}', repr(s)
         @output_paren_level -= 1
@@ -643,48 +635,48 @@ class CoffeeScriptTokenizer
         else:
             @add_token('rt', s)
 
-    op: (s) ->
+    gen_op: (s) ->
         '''Add op token to code list.'''
         assert s and g.isString(s), repr(s)
-        @blank()
+        @gen_blank()
         @add_token('op', s)
-        @blank()
+        @gen_blank()
 
-    op_blank: (s) ->
+    gen_op_blank: (s) ->
         '''Remove a preceding blank token, then add op and blank tokens.'''
         assert s and g.isString(s), repr(s)
         @clean('blank')
         @add_token('op', s)
-        @blank()
+        @gen_blank()
 
-    op_no_blanks: (s) ->
+    gen_op_no_blanks: (s) ->
         '''Add an operator *not* surrounded by blanks.'''
         @clean('blank')
         @add_token('op-no-blanks', s)
 
-    blank_op: (s) ->
+    gen_blank_op: (s) ->
         '''Add an operator possibly with a preceding blank.'''
-        @blank()
+        @gen_blank()
         @add_token('blank-op', s)
 
-    possible_unary_op: (s) ->
+    gen_possible_unary_op: (s) ->
         '''Add a unary or binary op to the token list.'''
         @clean('blank')
         prev = @code_list[-1]
         if prev.kind in ('lt', 'op', 'op-no-blanks', 'word-op'):
-            @unary_op(s)
+            @gen_unary_op(s)
         elif prev.kind == 'word' and prev.value in ('elif', 'if', 'return', 'while'):
-            @unary_op(s)
+            @gen_unary_op(s)
         else:
-            @op(s)
+            @gen_op(s)
 
-    unary_op: (s) ->
+    gen_unary_op: (s) ->
         '''Add an operator request to the code list.'''
         assert s and g.isString(s), repr(s)
-        @blank()
+        @gen_blank()
         @add_token('unary-op', s)
 
-    star_op: () ->
+    gen_star_op: () ->
         '''Put a '*' op, with special cases for *args.'''
         val = '*'
         if @output_paren_level:
@@ -693,16 +685,16 @@ class CoffeeScriptTokenizer
                 i -= 1
             token = @code_list[i]
             if token.kind == 'lt':
-                @op_no_blanks(val)
+                @gen_op_no_blanks(val)
             elif token.value == ',':
-                @blank()
+                @gen_blank()
                 @add_token('op-no-blanks', val)
             else:
-                @op(val)
+                @gen_op(val)
         else:
-            @op(val)
+            @gen_op(val)
 
-    star_star_op: () ->
+    gen_star_star_op: () ->
         '''Put a ** operator, with a special case for **kwargs.'''
         val = '**'
         if @output_paren_level:
@@ -711,26 +703,26 @@ class CoffeeScriptTokenizer
                 i -= 1
             token = @code_list[i]
             if token.value == ',':
-                @blank()
+                @gen_blank()
                 @add_token('op-no-blanks', val)
             else:
-                @op(val)
+                @gen_op(val)
         else:
-            @op(val)
+            @gen_op(val)
 
-    word: (s) ->
+    gen_word: (s) ->
         '''Add a word request to the code list.'''
         assert s and g.isString(s), repr(s)
-        @blank()
+        @gen_blank()
         @add_token('word', s)
-        @blank()
+        @gen_blank()
 
-    word_op: (s) ->
+    gen_word_op: (s) ->
         '''Add a word-op request to the code list.'''
         assert s and g.isString(s), repr(s)
-        @blank()
+        @gen_blank()
         @add_token('word-op', s)
-        @blank()
+        @gen_blank()
 
 class ParseState extends object:
     '''A class representing items parse state stack.'''

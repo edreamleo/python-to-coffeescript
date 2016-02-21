@@ -128,10 +128,31 @@
 </v>
 </v>
 <v t="ekr.20160221033247.1"><vh>stat vars</vh></v>
-<v t="ekr.20160220103223.39"><vh> cst.print_stats</vh></v>
+<v t="ekr.20160220103223.39"><vh>cst.print_stats</vh></v>
+<v t="ekr.20160220103223.21"><vh>cst.gen_arg_start &amp; gen_arg_end (not used)</vh></v>
 </v>
 </v>
 <v t="ekr.20160220050053.2"><vh>@clean README.md</vh></v>
+<v t="ekr.20160220131008.1"><vh>** To do</vh></v>
+<v t="ekr.20160221033645.1"><vh>recent</vh>
+<v t="ekr.20160220103223.4"><vh> cst.ctor</vh></v>
+<v t="ekr.20160220103223.13"><vh>cst.do_name &amp; helpers</vh>
+<v t="ekr.20160220143251.1"><vh>cst.gen_class_or_def</vh></v>
+<v t="ekr.20160220144848.1"><vh>cst.gen_import</vh></v>
+<v t="ekr.20160220151729.1"><vh>cst.gen_self</vh></v>
+</v>
+<v t="ekr.20160220103223.17"><vh>cst.do_op &amp; helpers</vh>
+<v t="ekr.20160220152030.1"><vh>cst.gen_at</vh></v>
+<v t="ekr.20160220143629.1"><vh>cst.gen_colon</vh></v>
+<v t="ekr.20160220160809.1"><vh>cst.gen_comma</vh></v>
+<v t="ekr.20160220143842.1"><vh>cst.gen_open_paren</vh></v>
+<v t="ekr.20160220143853.1"><vh>cst.gen_close_paren</vh></v>
+<v t="ekr.20160220151922.1"><vh>cst.gen_period</vh></v>
+</v>
+<v t="ekr.20160220103223.12"><vh>cst.do_indent &amp; do_dedent</vh></v>
+<v t="ekr.20160220103223.30"><vh>cst.gen_lt &amp; gen_rt</vh></v>
+<v t="ekr.20160220143251.1"></v>
+</v>
 <v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
 <v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
@@ -152,48 +173,36 @@
 <v t="ekr.20160220103223.40"><vh>ss.push</vh></v>
 <v t="ekr.20160220174952.1"><vh>ss.remove</vh></v>
 </v>
-<v t="ekr.20160220103223.4"><vh> cst.ctor</vh></v>
+<v t="ekr.20160220103223.4"></v>
 <v t="ekr.20160220103223.7"><vh> cst.format</vh></v>
 <v t="ekr.20160220103223.8"><vh>cst.Input token Handlers</vh>
 <v t="ekr.20160220103223.9"><vh>cst.do_comment</vh></v>
 <v t="ekr.20160220103223.10"><vh>cst.do_endmarker</vh></v>
 <v t="ekr.20160220103223.11"><vh>cst.do_errortoken</vh></v>
-<v t="ekr.20160220103223.12"><vh>cst.do_indent &amp; do_dedent</vh></v>
-<v t="ekr.20160220103223.13"><vh>cst.do_name &amp; helpers</vh>
-<v t="ekr.20160220143251.1"><vh>cst.gen_class_or_def</vh></v>
-<v t="ekr.20160220144848.1"><vh>cst.gen_import</vh></v>
-<v t="ekr.20160220151729.1"><vh>cst.gen_self</vh></v>
-</v>
+<v t="ekr.20160220103223.12"></v>
+<v t="ekr.20160220103223.13"></v>
 <v t="ekr.20160220103223.14"><vh>cst.do_newline</vh></v>
 <v t="ekr.20160220103223.15"><vh>cst.do_nl</vh></v>
 <v t="ekr.20160220103223.16"><vh>cst.do_number</vh></v>
-<v t="ekr.20160220103223.17"><vh>cst.do_op &amp; helpers</vh>
-<v t="ekr.20160220152030.1"><vh>cst.gen_at</vh></v>
-<v t="ekr.20160220143629.1"><vh>cst.gen_colon</vh></v>
-<v t="ekr.20160220160809.1"><vh>cst.gen_comma</vh></v>
-<v t="ekr.20160220143842.1"><vh>cst.gen_open_paren</vh></v>
-<v t="ekr.20160220143853.1"><vh>cst.gen_close_paren</vh></v>
-<v t="ekr.20160220151922.1"><vh>cst.gen_period</vh></v>
-</v>
+<v t="ekr.20160220103223.17"></v>
 <v t="ekr.20160220103223.18"><vh>cst.do_string</vh></v>
 </v>
 <v t="ekr.20160220103223.19"><vh>cst.Output token generators</vh>
 <v t="ekr.20160220103223.20"><vh>cst.add_token</vh></v>
-<v t="ekr.20160220103223.21"><vh>cst.arg_start &amp; arg_end (not used)</vh></v>
-<v t="ekr.20160220103223.22"><vh>cst.backslash</vh></v>
-<v t="ekr.20160220103223.23"><vh>cst.blank</vh></v>
-<v t="ekr.20160220103223.24"><vh>cst.blank_lines</vh></v>
 <v t="ekr.20160220103223.25"><vh>cst.clean</vh></v>
 <v t="ekr.20160220103223.26"><vh>cst.clean_blank_lines</vh></v>
-<v t="ekr.20160220103223.27"><vh>cst.file_start &amp; file_end</vh></v>
-<v t="ekr.20160220103223.28"><vh>cst.line_indent</vh></v>
-<v t="ekr.20160220103223.29"><vh>cst.line_start &amp; line_end</vh></v>
-<v t="ekr.20160220103223.30"><vh>cst.lt &amp; rt</vh></v>
-<v t="ekr.20160220103223.31"><vh>cst.op*</vh></v>
-<v t="ekr.20160220103223.32"><vh>cst.possible_unary_op &amp; unary_op</vh></v>
-<v t="ekr.20160220103223.33"><vh>cst.star_op</vh></v>
-<v t="ekr.20160220103223.34"><vh>cst.star_star_op</vh></v>
-<v t="ekr.20160220103223.35"><vh>cst.word &amp; word_op</vh></v>
+<v t="ekr.20160220103223.22"><vh>cst.gen_backslash</vh></v>
+<v t="ekr.20160220103223.23"><vh>cst.gen_blank</vh></v>
+<v t="ekr.20160220103223.24"><vh>cst.gen_blank_lines</vh></v>
+<v t="ekr.20160220103223.27"><vh>cst.gen_file_start &amp; gen_file_end</vh></v>
+<v t="ekr.20160220103223.28"><vh>cst.gen_line_indent</vh></v>
+<v t="ekr.20160220103223.29"><vh>cst.gen_line_start &amp; gen_line_end</vh></v>
+<v t="ekr.20160220103223.30"></v>
+<v t="ekr.20160220103223.31"><vh>cst.gen_op*</vh></v>
+<v t="ekr.20160220103223.32"><vh>cst.gen_possible_unary_op &amp; gen_unary_op</vh></v>
+<v t="ekr.20160220103223.33"><vh>cst.gen_star_op</vh></v>
+<v t="ekr.20160220103223.34"><vh>cst.gen_star_star_op</vh></v>
+<v t="ekr.20160220103223.35"><vh>cst.gen_word &amp; gen_word_op</vh></v>
 </v>
 </v>
 <v t="ekr.20160220103223.3"><vh>class ParseState</vh></v>
@@ -236,14 +245,7 @@
 <v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
 </v>
 </v>
-<v t="ekr.20160220103223.1"></v>
-<v t="ekr.20160220103223.4"></v>
-<v t="ekr.20160220103223.13"></v>
-<v t="ekr.20160220103223.17"></v>
-<v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160220103223.12"></v>
-<v t="ekr.20160220103223.30"></v>
-<v t="ekr.20160220143251.1"></v>
+<v t="ekr.20160220103223.19"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -2014,14 +2016,14 @@ def do_errortoken(self):
     '''Handle an errortoken token.'''
     # This code is executed for versions of Python earlier than 2.4
     if self.val == '@':
-        self.op(self.val)
+        self.gen_op(self.val)
 </t>
 <t tx="ekr.20160220103223.12">
 def do_dedent(self):
     '''Handle dedent token.'''
     self.level -= 1
     self.lws = self.level * self.tab_width * ' '
-    self.line_start()
+    self.gen_line_start()
     # End all classes &amp; defs.
     for state in self.stack.stack:
         if state.kind in ('class', 'def'):
@@ -2035,7 +2037,7 @@ def do_indent(self):
     '''Handle indent token.'''
     self.level += 1
     self.lws = self.val
-    self.line_start()
+    self.gen_line_start()
 </t>
 <t tx="ekr.20160220103223.13">
 def do_name(self):
@@ -2050,29 +2052,29 @@ def do_name(self):
     elif self.in_def_line and not self.def_name_seen:
         if name == '__init__':
             name = 'constructor'
-        self.word(name)
+        self.gen_word(name)
         if self.stack.has('class'):
-            self.op_blank(':')
+            self.gen_op_blank(':')
         else:
-            self.op('=')
+            self.gen_op('=')
         self.def_name_seen = True
     elif name in ('and', 'in', 'not', 'not in', 'or'):
-        self.word_op(name)
+        self.gen_word_op(name)
     elif name == 'default':
         # Hard to know where to put a warning comment.
-        self.word(name+'_')
+        self.gen_word(name+'_')
     else:
-        self.word(name)
+        self.gen_word(name)
 </t>
 <t tx="ekr.20160220103223.14">
 def do_newline(self):
     '''Handle a regular newline.'''
-    self.line_end()
+    self.gen_line_end()
 </t>
 <t tx="ekr.20160220103223.15">
 def do_nl(self):
     '''Handle a continuation line.'''
-    self.line_end()
+    self.gen_line_end()
 </t>
 <t tx="ekr.20160220103223.16">
 def do_number(self):
@@ -2098,33 +2100,33 @@ def do_op(self):
     elif val == ';':
         # Pep 8: Avoid extraneous whitespace immediately before
         # comma, semicolon, or colon.
-        self.op_blank(val)
+        self.gen_op_blank(val)
     elif val in '[{':
         # Pep 8: Avoid extraneous whitespace immediately inside
         # parentheses, brackets or braces.
-        self.lt(val)
+        self.gen_lt(val)
     elif val in ']}':
-        self.rt(val)
+        self.gen_rt(val)
     elif val == '=':
         # Pep 8: Don't use spaces around the = sign when used to indicate
         # a keyword argument or a default parameter value.
         if self.output_paren_level:
-            self.op_no_blanks(val)
+            self.gen_op_no_blanks(val)
         else:
-            self.op(val)
+            self.gen_op(val)
     elif val in '~+-':
-        self.possible_unary_op(val)
+        self.gen_possible_unary_op(val)
     elif val == '*':
-        self.star_op()
+        self.gen_star_op()
     elif val == '**':
-        self.star_star_op()
+        self.gen_star_star_op()
     else:
         # Pep 8: always surround binary operators with a single space.
         # '==','+=','-=','*=','**=','/=','//=','%=','!=','&lt;=','&gt;=','&lt;','&gt;',
         # '^','~','*','**','&amp;','|','/','//',
         # Pep 8: If operators with different priorities are used,
         # consider adding whitespace around the operators with the lowest priority(ies).
-        self.op(val)
+        self.gen_op(val)
 </t>
 <t tx="ekr.20160220103223.18">
 def do_string(self):
@@ -2133,7 +2135,7 @@ def do_string(self):
     if self.val.find('\\\n'):
         self.backslash_seen = False
         # This *does* retain the string's spelling.
-    self.blank()
+    self.gen_blank()
 </t>
 <t tx="ekr.20160220103223.19"></t>
 <t tx="ekr.20160220103223.2">
@@ -2167,24 +2169,24 @@ def add_token(self, kind, value=''):
     self.code_list.append(tok)
 </t>
 <t tx="ekr.20160220103223.21">
-# def arg_end(self):
+# def gen_arg_end(self):
     # '''Add a token indicating the end of an argument list.'''
     # self.add_token('arg-end')
 
-# def arg_start(self):
+# def gent_arg_start(self):
     # '''Add a token indicating the start of an argument list.'''
     # self.add_token('arg-start')
 </t>
 <t tx="ekr.20160220103223.22">
-def backslash(self):
+def gen_backslash(self):
     '''Add a backslash token and clear .backslash_seen'''
     self.add_token('backslash', '\\')
     self.add_token('line-end', '\n')
-    self.line_indent()
+    self.gen_line_indent()
     self.backslash_seen = False
 </t>
 <t tx="ekr.20160220103223.23">
-def blank(self):
+def gen_blank(self):
     '''Add a blank request on the code list.'''
     prev = self.code_list[-1]
     if not prev.kind in (
@@ -2196,7 +2198,7 @@ def blank(self):
         self.add_token('blank', ' ')
 </t>
 <t tx="ekr.20160220103223.24">
-def blank_lines(self, n):
+def gen_blank_lines(self, n):
     '''
     Add a request for n blank lines to the code list.
     Multiple blank-lines request yield at least the maximum of all requests.
@@ -2210,7 +2212,7 @@ def blank_lines(self, n):
             self.add_token('line-end', '\n')
         # Retain the token (intention) for debugging.
         self.add_token('blank-lines', n)
-        self.line_indent()
+        self.gen_line_indent()
 </t>
 <t tx="ekr.20160220103223.25">
 def clean(self, kind):
@@ -2227,7 +2229,7 @@ def clean_blank_lines(self):
         self.code_list.pop()
 </t>
 <t tx="ekr.20160220103223.27">
-def file_end(self):
+def gen_file_end(self):
     '''
     Add a file-end token to the code list.
     Retain exactly one line-end token.
@@ -2237,13 +2239,13 @@ def file_end(self):
     self.add_token('line-end', '\n')
     self.add_token('file-end')
 
-def file_start(self):
+def gen_file_start(self):
     '''Add a file-start token to the code list and the state stack.'''
     self.add_token('file-start')
     self.stack.push('file-start')
 </t>
 <t tx="ekr.20160220103223.28">
-def line_indent(self, ws=None):
+def gen_line_indent(self, ws=None):
     '''Add a line-indent token if indentation is non-empty.'''
     self.clean('line-indent')
     ws = ws or self.lws
@@ -2251,7 +2253,7 @@ def line_indent(self, ws=None):
         self.add_token('line-indent', ws)
 </t>
 <t tx="ekr.20160220103223.29">
-def line_end(self):
+def gen_line_end(self):
     '''Add a line-end request to the code list.'''
     prev = self.code_list[-1]
     if prev.kind == 'file-start':
@@ -2261,15 +2263,15 @@ def line_end(self):
         self.clean_blank_lines()
     self.clean('line-indent')
     if self.backslash_seen:
-        self.backslash()
+        self.gen_backslash()
     self.add_token('line-end', '\n')
-    self.line_indent()
+    self.gen_line_indent()
         # Add the indentation for all lines
         # until the next indent or unindent token.
 
-def line_start(self):
+def gen_line_start(self):
     '''Add a line-start request to the code list.'''
-    self.line_indent()
+    self.gen_line_indent()
 </t>
 <t tx="ekr.20160220103223.3">
 
@@ -2286,7 +2288,7 @@ class ParseState(object):
     __str__ = __repr__
 </t>
 <t tx="ekr.20160220103223.30">
-def lt(self, s):
+def gen_lt(self, s):
     '''Add a left paren request to the code list.'''
     assert s in '([{', repr(s)
     self.output_paren_level += 1
@@ -2294,13 +2296,13 @@ def lt(self, s):
     prev = self.code_list[-1]
     ####
     # if prev.kind in ('op', 'word-op'):
-        # self.blank()
+        # self.gen_blank()
         # self.add_token('lt', s)
     if self.in_def_line:
-        self.blank()
+        self.gen_blank()
         self.add_token('lt', s)
     elif prev.kind in ('op', 'word-op'):
-        self.blank()
+        self.gen_blank()
         ###
         # if s == '(':
             # s = '['
@@ -2310,14 +2312,14 @@ def lt(self, s):
     elif prev.kind == 'word':
         # Only suppress blanks before '(' or '[' for non-keyworks.
         if s == '{' or prev.value in ('if', 'else', 'return'):
-            self.blank()
+            self.gen_blank()
         self.add_token('lt', s)
     elif prev.kind == 'op':
-        self.op(s)
+        self.gen_op(s)
     else:
-        self.op_no_blanks(s)
+        self.gen_op_no_blanks(s)
 
-def rt(self, s):
+def gen_rt(self, s):
     '''Add a right paren request to the code list.'''
     assert s in ')]}', repr(s)
     self.output_paren_level -= 1
@@ -2341,50 +2343,50 @@ def rt(self, s):
         self.add_token('rt', s)
 </t>
 <t tx="ekr.20160220103223.31">
-def op(self, s):
+def gen_op(self, s):
     '''Add op token to code list.'''
     assert s and g.isString(s), repr(s)
-    self.blank()
+    self.gen_blank()
     self.add_token('op', s)
-    self.blank()
+    self.gen_blank()
 
-def op_blank(self, s):
+def gen_op_blank(self, s):
     '''Remove a preceding blank token, then add op and blank tokens.'''
     assert s and g.isString(s), repr(s)
     self.clean('blank')
     self.add_token('op', s)
-    self.blank()
+    self.gen_blank()
 
-def op_no_blanks(self, s):
+def gen_op_no_blanks(self, s):
     '''Add an operator *not* surrounded by blanks.'''
     self.clean('blank')
     self.add_token('op-no-blanks', s)
     
-def blank_op(self, s):
+def gen_blank_op(self, s):
     '''Add an operator possibly with a preceding blank.'''
-    self.blank()
+    self.gen_blank()
     self.add_token('blank-op', s)
 </t>
 <t tx="ekr.20160220103223.32">
-def possible_unary_op(self, s):
+def gen_possible_unary_op(self, s):
     '''Add a unary or binary op to the token list.'''
     self.clean('blank')
     prev = self.code_list[-1]
     if prev.kind in ('lt', 'op', 'op-no-blanks', 'word-op'):
-        self.unary_op(s)
+        self.gen_unary_op(s)
     elif prev.kind == 'word' and prev.value in ('elif', 'if', 'return', 'while'):
-        self.unary_op(s)
+        self.gen_unary_op(s)
     else:
-        self.op(s)
+        self.gen_op(s)
 
-def unary_op(self, s):
+def gen_unary_op(self, s):
     '''Add an operator request to the code list.'''
     assert s and g.isString(s), repr(s)
-    self.blank()
+    self.gen_blank()
     self.add_token('unary-op', s)
 </t>
 <t tx="ekr.20160220103223.33">
-def star_op(self):
+def gen_star_op(self):
     '''Put a '*' op, with special cases for *args.'''
     val = '*'
     if self.output_paren_level:
@@ -2393,17 +2395,17 @@ def star_op(self):
             i -= 1
         token = self.code_list[i]
         if token.kind == 'lt':
-            self.op_no_blanks(val)
+            self.gen_op_no_blanks(val)
         elif token.value == ',':
-            self.blank()
+            self.gen_blank()
             self.add_token('op-no-blanks', val)
         else:
-            self.op(val)
+            self.gen_op(val)
     else:
-        self.op(val)
+        self.gen_op(val)
 </t>
 <t tx="ekr.20160220103223.34">
-def star_star_op(self):
+def gen_star_star_op(self):
     '''Put a ** operator, with a special case for **kwargs.'''
     val = '**'
     if self.output_paren_level:
@@ -2412,27 +2414,27 @@ def star_star_op(self):
             i -= 1
         token = self.code_list[i]
         if token.value == ',':
-            self.blank()
+            self.gen_blank()
             self.add_token('op-no-blanks', val)
         else:
-            self.op(val)
+            self.gen_op(val)
     else:
-        self.op(val)
+        self.gen_op(val)
 </t>
 <t tx="ekr.20160220103223.35">
-def word(self, s):
+def gen_word(self, s):
     '''Add a word request to the code list.'''
     assert s and g.isString(s), repr(s)
-    self.blank()
+    self.gen_blank()
     self.add_token('word', s)
-    self.blank()
+    self.gen_blank()
 
-def word_op(self, s):
+def gen_word_op(self, s):
     '''Add a word-op request to the code list.'''
     assert s and g.isString(s), repr(s)
-    self.blank()
+    self.gen_blank()
     self.add_token('word-op', s)
-    self.blank()
+    self.gen_blank()
 </t>
 <t tx="ekr.20160220103223.39">
 def print_stats(self):
@@ -2503,7 +2505,7 @@ def format(self, tokens):
     trace = False
     self.code_list = []
     self.stack = self.StateStack()
-    self.file_start()
+    self.gen_file_start()
     for token5tuple in tokens:
         t1, t2, t3, t4, t5 = token5tuple
         srow, scol = t3
@@ -2513,7 +2515,7 @@ def format(self, tokens):
         if srow != self.last_line_number:
             # Handle a previous backslash.
             if self.backslash_seen:
-                self.backslash()
+                self.gen_backslash()
             # Start a new row.
             raw_val = self.raw_val.rstrip()
             self.backslash_seen = raw_val.endswith('\\')
@@ -2524,13 +2526,13 @@ def format(self, tokens):
                 # This n will be one-too-many if formatting has
                 # changed: foo (
                 # to:      foo(
-                self.line_indent(ws=' ' * n)
+                self.gen_line_indent(ws=' ' * n)
                     # Do not set self.lws here!
             self.last_line_number = srow
         if trace: g.trace('%10s %r'% (self.kind,self.val))
         func = getattr(self, 'do_' + self.kind, oops)
         func()
-    self.file_end()
+    self.gen_file_end()
     return ''.join([z.to_string() for z in self.code_list])
 </t>
 <t tx="ekr.20160220103223.8"></t>
@@ -2546,7 +2548,7 @@ def do_comment(self):
         self.clean('line-indent')
         self.add_token('comment', raw_val)
     else:
-        self.blank()
+        self.gen_blank()
         self.add_token('comment', val)
 </t>
 <t tx="ekr.20160220104209.1">
@@ -2677,9 +2679,9 @@ def gen_class_or_def(self, name):
     if self.stack.has('decorator'):
         self.stack.remove('decorator')
         self.clean_blank_lines()
-        self.line_end()
+        self.gen_line_end()
     else:
-        self.blank_lines(1)
+        self.gen_blank_lines(1)
     self.stack.push(name, self.level)
         # name is 'class' or 'def'
         # do_dedent pops these entries.
@@ -2690,7 +2692,7 @@ def gen_class_or_def(self, name):
     else:
         self.extends_flag = False
         self.in_class_line = True
-        self.word(name)</t>
+        self.gen_word(name)</t>
 <t tx="ekr.20160220143629.1">
 def gen_colon(self):
     
@@ -2699,12 +2701,12 @@ def gen_colon(self):
     if self.in_def_line:
         if self.input_paren_level == 0:
             self.in_def_line = False
-            self.op('-&gt;')
+            self.gen_op('-&gt;')
     elif self.in_class_line:
         if self.input_paren_level == 0:
             self.in_class_line = False
     else:
-        self.op_blank(val)
+        self.gen_op_blank(val)
 </t>
 <t tx="ekr.20160220143842.1">
 def gen_open_paren(self):
@@ -2714,11 +2716,11 @@ def gen_open_paren(self):
     self.input_paren_level += 1
     if self.in_class_line:
         if not self.extends_flag:
-            self.word('extends')
+            self.gen_word('extends')
             self.extends_flag = True
     else:
         # Generate a function call or a list.
-        self.lt(val)
+        self.gen_lt(val)
     self.after_self = False
 </t>
 <t tx="ekr.20160220143853.1">
@@ -2731,19 +2733,19 @@ def gen_close_paren(self):
     if self.in_class_line:
         self.in_class_line = False
     else:
-        self.rt(val)
+        self.gen_rt(val)
     ###
     # elif prev.kind == 'lt' and prev.value == '(':
         # self.clean('lt')
         # self.output_paren_level -= 1
     # else:
-        # self.rt(val)
+        # self.gen_rt(val)
     self.after_self = False
 </t>
 <t tx="ekr.20160220144848.1">
 def gen_import(self, name):
     '''Convert an import to something that looks like a call.'''
-    self.word('pass')
+    self.gen_word('pass')
     self.add_token('comment', '# ' + name)
 </t>
 <t tx="ekr.20160220151109.1">
@@ -2755,7 +2757,7 @@ def gen_self(self):
     if self.in_def_line:
         self.after_self = True
     else:
-        self.blank_op('@')
+        self.gen_blank_op('@')
         self.after_self = True
 </t>
 <t tx="ekr.20160220151922.1">
@@ -2766,7 +2768,7 @@ def gen_period(self):
     if self.after_self:
         self.after_self = False
     else:
-        self.op_no_blanks(val)
+        self.gen_op_no_blanks(val)
 </t>
 <t tx="ekr.20160220152030.1">
 def gen_at(self):
@@ -2774,9 +2776,9 @@ def gen_at(self):
     val = self.val
     assert val == '@', val
     if not self.decorator_seen:
-        self.blank_lines(1)
+        self.gen_blank_lines(1)
         self.decorator_seen = True
-    self.op_no_blanks(val)
+    self.gen_op_no_blanks(val)
     self.stack.push('decorator')</t>
 <t tx="ekr.20160220160809.1">
 def gen_comma(self):
@@ -2788,7 +2790,7 @@ def gen_comma(self):
     else:
         # Pep 8: Avoid extraneous whitespace immediately before
         # comma, semicolon, or colon.
-        self.op_blank(val)
+        self.gen_op_blank(val)
 </t>
 <t tx="ekr.20160220174952.1">
 def remove(self, kind):
@@ -2849,5 +2851,6 @@ def pop(self):
     self.beautify_time = 0.0
     self.check_time = 0.0
     self.total_time = 0.0</t>
+<t tx="ekr.20160221033645.1"></t>
 </tnodes>
 </leo_file>
