@@ -1,21 +1,24 @@
-# python_to_coffeescript: Mon 22 Feb 2016 at 02:37:00
-'Test file illustrating difficulties of tokenizing.'
-a=1
+# python_to_coffeescript: Mon 22 Feb 2016 at 04:15:10
+'''Test file illustrating difficulties of tokenizing.'''
+# lineno: line number of source text (first line is line 1).
+# col_offset: the UTF-8 byte offset of the first token that generated the node.
+# http://joao.npimentel.net/2015/07/23/python-2-vs-python-3-ast-differences/
 
-def spam():
-    b=2
+a = 1
 
+spam = ->
+    b = 2
 
-class TestClass:
+class TestClass
 
+    class InnerClass
 
-    class InnerClass:
-
-        def __init__(self):
+        constructor: ->
             pass
 
-    def test1():
+    test1: ->
         pass
 
-def eggs():
+eggs = ->
     pass
+
