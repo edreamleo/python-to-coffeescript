@@ -33,24 +33,6 @@
 <v t="ekr.20160220051417.14"><vh>@button check-leading-lines</vh></v>
 </v>
 <v t="ekr.20160220051105.1"><vh>Unused</vh>
-<v t="ekr.20160220081725.1"><vh>ast_utils.py</vh>
-<v t="ekr.20160220081959.1"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
-<v t="ekr.20160220093908.1"><vh>class Bunch (Python Cookbook)</vh></v>
-<v t="ekr.20160220081959.9"><vh>mark_text_ranges &amp; helpers</vh>
-<v t="ekr.20160220084232.1"><vh>&lt;&lt; mark_text_ranges helpers &gt;&gt;</vh>
-<v t="ekr.20160220084252.1"><vh>_extract_tokens</vh></v>
-<v t="ekr.20160220084252.2"><vh>_mark_text_ranges_rec</vh></v>
-<v t="ekr.20160220084252.3"><vh>_strip_trailing_junk_from_expressions</vh></v>
-<v t="ekr.20160220084252.4"><vh>_strip_trailing_extra_closers</vh></v>
-<v t="ekr.20160220084252.5"><vh>_strip_unclosed_brackets</vh></v>
-<v t="ekr.20160220084252.6"><vh>_mark_end_and_return_child_tokens</vh></v>
-</v>
-<v t="ekr.20160220081959.14"><vh>_get_ordered_child_nodes</vh></v>
-<v t="ekr.20160220081959.15"><vh>_tokens_text</vh></v>
-<v t="ekr.20160220081959.11"><vh>fix_ast_problems</vh></v>
-<v t="ekr.20160220081959.12"><vh>compare_node_positions</vh></v>
-</v>
-</v>
 <v t="ekr.20160221033247.1"><vh>stat vars</vh></v>
 <v t="ekr.20160220103223.39"><vh>cst.print_stats</vh></v>
 <v t="ekr.20160220103223.21"><vh>cst.gen_arg_start &amp; gen_arg_end (not used)</vh></v>
@@ -61,6 +43,10 @@
 <v t="ekr.20160220050433.192"><vh>return_list</vh></v>
 <v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
 </v>
+<v t="ekr.20160221163955.1"><vh>ts.dump_queue &amp; enqueue (to be removed)</vh>
+<v t="ekr.20160222130021.1"><vh>queue-related</vh></v>
+</v>
+<v t="ekr.20160221124544.1"><vh>ts.advance (to be removed)</vh></v>
 </v>
 </v>
 <v t="ekr.20160222041249.1"><vh>Docs</vh>
@@ -138,6 +124,7 @@
 </v>
 </v>
 <v t="ekr.20160220050433.14"><vh>class CoffeeScriptTraverser</vh>
+<v t="ekr.20160222091458.1"><vh> cv.ctor</vh></v>
 <v t="ekr.20160220050433.16"><vh> cv.format</vh></v>
 <v t="ekr.20160220050433.82"><vh> cv.indent</vh></v>
 <v t="ekr.20160220050433.17"><vh> cv.visit</vh></v>
@@ -246,36 +233,30 @@
 </v>
 <v t="ekr.20160220103223.3"><vh>class ParseState</vh></v>
 <v t="ekr.20160221143000.1"><vh>class TokenSync</vh>
-<v t="ekr.20160221143402.1"><vh> cv.ctor</vh></v>
-<v t="ekr.20160221124544.1"><vh>cv.advance (test)</vh></v>
-<v t="ekr.20160221144446.1"><vh>cv.do_backslash (maybe)</vh></v>
-<v t="ekr.20160221143755.1"><vh>cv.do_line_indent (maybe)</vh></v>
-<v t="ekr.20160221163955.1"><vh>cv.dump_queue &amp; enqueue</vh></v>
-<v t="ekr.20160221151640.1"><vh>cv.sync_op</vh></v>
-<v t="ekr.20160221145254.1"><vh>cv.sync_word</vh></v>
+<v t="ekr.20160221143402.1"><vh> ts.ctor &amp; helpers</vh>
+<v t="ekr.20160222130449.1"><vh>ts.make_comment_lines</vh></v>
+<v t="ekr.20160222084258.1"><vh>ts.make_line_tokens</vh></v>
+<v t="ekr.20160222084401.1"><vh>ts.make_string_tokens</vh></v>
+</v>
+<v t="ekr.20160222130731.1"><vh>ts.is_line_comment</vh></v>
+<v t="ekr.20160222081027.1"><vh>ts.line_at</vh></v>
+<v t="ekr.20160222132448.1"><vh>ts.show_comments</vh></v>
+<v t="ekr.20160221151640.1"><vh>ts.sync_op</vh></v>
+<v t="ekr.20160222091644.1"><vh>ts.sync_string</vh></v>
+<v t="ekr.20160221145254.1"><vh>ts.sync_word</vh></v>
+<v t="ekr.20160222124401.1"><vh>ts.token_type/raw_val/val</vh></v>
 </v>
 </v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160221042509.1"><vh>recent</vh>
-<v t="ekr.20160220103223.4"></v>
-<v t="ekr.20160220103223.20"></v>
-<v t="ekr.20160220103223.30"></v>
-<v t="ekr.20160220143853.1"></v>
-<v t="ekr.20160220143842.1"></v>
-<v t="ekr.20160220050433.121"></v>
-</v>
-<v t="ekr.20160222023712.1"><vh>recent2</vh>
-<v t="ekr.20160220103223.1"></v>
-<v t="ekr.20160220050433.14"></v>
-<v t="ekr.20160221143000.1"></v>
-<v t="ekr.20160220050433.18"></v>
-<v t="ekr.20160220050433.56"></v>
-<v t="ekr.20160221124544.1"></v>
-<v t="ekr.20160220050433.34"></v>
-<v t="ekr.20160220050433.19"></v>
+<v t="ekr.20160222141140.1"><vh>recent</vh>
 <v t="ekr.20160220050433.20"></v>
+<v t="ekr.20160220050433.19"></v>
+<v t="ekr.20160220050433.47"></v>
+<v t="ekr.20160220050433.17"></v>
 </v>
+<v t="ekr.20160221143000.1"></v>
+<v t="ekr.20160222141147.1"><vh>checkin log</vh></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -298,7 +279,7 @@ Written by Edward K. Ream.
 '''
 &lt;&lt; license &gt;&gt;
 &lt;&lt; imports &gt;&gt;
-use_tree = False
+use_tree = True
 @others
 
 g = LeoGlobals() # For ekr.
@@ -393,7 +374,7 @@ def make_coffeescript_file(self, fn):
         tokens = list(tokenize.generate_tokens(readlines))
         if use_tree:
             node = ast.parse(s, filename=fn, mode='exec')
-            s = CoffeeScriptTraverser(controller=self).format(node, tokens)
+            s = CoffeeScriptTraverser(controller=self).format(node, s, tokens)
         else:
             s = CoffeeScriptTokenizer(controller=self).format(tokens)
         f = open(out_fn, 'w')
@@ -590,39 +571,35 @@ def is_section_name(self, s):
 class CoffeeScriptTraverser(object):
     '''A class to convert python sources to coffeescript sources.'''
     # pylint: disable=consider-using-enumerate
-    
-    def __init__(self, controller):
-        '''Ctor for CoffeeScriptFormatter class.'''
-        self.controller = controller
-        self.sync_op = None
-        self.sync_word = None
     @others
 </t>
 <t tx="ekr.20160220050433.16">
-def format(self, node, tokens):
+def format(self, node, s, tokens):
     '''Format the node (or list of nodes) and its descendants.'''
     self.level = 0
-    ts = TokenSync(tokens)
-    self.sync_op = ts.sync_op
-    self.sync_word = ts.sync_word
+    sync = TokenSync(s, tokens)
+    self.sync_op = sync.sync_op
+    self.sync_string = sync.sync_string
+    self.sync_word = sync.sync_word
     val = self.visit(node)
     return val or ''
 </t>
 <t tx="ekr.20160220050433.17">
 def visit(self, node):
     '''Return the formatted version of an Ast node, or list of Ast nodes.'''
-    # g.trace(node.__class__.__name__)
+    name = node.__class__.__name__
     if isinstance(node, (list, tuple)):
         return ', '.join([self.visit(z) for z in node])
     elif node is None:
         return 'None'
     else:
-        assert isinstance(node, ast.AST), node.__class__.__name__
-        method_name = 'do_' + node.__class__.__name__
-        method = getattr(self, method_name)
+        assert isinstance(node, ast.AST), name
+        method = getattr(self, 'do_' + name)
         s = method(node)
-        # pylint: disable=unidiomatic-typecheck
-        assert type(s) == type('abc'), (node, type(s))
+        if isPython3:
+            assert isinstance(s, str)
+        else:
+            assert isinstance(s, (str, unicode))
         return s
 </t>
 <t tx="ekr.20160220050433.18">
@@ -659,7 +636,7 @@ def parse_group(group):
 
 def do_ClassDef(self, node):
     
-    self.sync_word('class')
+    comments = self.sync_word(node, 'class')
     result = []
     name = node.name # Only a plain string is valid.
     bases = [self.visit(z) for z in node.bases] if node.bases else []
@@ -673,8 +650,8 @@ def do_ClassDef(self, node):
         # self.first_statement = i == 0
         result.append(self.visit(z))
         self.level -= 1
-    s = ''.join(result)
-    g.trace(result[2].rstrip())
+    s = ''.join(comments + result)
+    # g.trace(result[2].rstrip())
     return s
 </t>
 <t tx="ekr.20160220050433.190">
@@ -708,7 +685,7 @@ import os
 # import re
 import sys
 import time
-import token
+import token as token_module
 import tokenize
 import types
 isPython3 = sys.version_info &gt;= (3, 0, 0)
@@ -733,7 +710,7 @@ else:
 
 def do_FunctionDef(self, node):
     '''Format a FunctionDef node.'''
-    self.sync_word('def')
+    self.sync_word(node, 'def')
     result = []
     if node.decorator_list:
         for z in node.decorator_list:
@@ -748,7 +725,7 @@ def do_FunctionDef(self, node):
         result.append(self.visit(z))
         self.level -= 1
     s = ''.join(result)
-    g.trace(result[1].rstrip())
+    # g.trace(result[1].rstrip())
     return s
 </t>
 <t tx="ekr.20160220050433.21">
@@ -875,7 +852,6 @@ def do_Call(self, node):
         args.append('**%s' % (self.visit(node.kwargs)))
     args = [z for z in args if z] # Kludge: Defensive coding.
     s = '%s(%s)' % (func, ','.join(args))
-    g.trace(s)
     return s
 </t>
 <t tx="ekr.20160220050433.35">
@@ -980,22 +956,13 @@ def do_Slice(self, node):
 <t tx="ekr.20160220050433.47">
 def do_Str(self, node):
     '''A string constant, including docstrings.'''
-    # A pretty spectacular hack.
-    # We assume docstrings are the first expr following a class or def.
-    return repr(node.s)
-    # TODO: remove all this.
-    # docstring = False
-    # if self.first_statement:
-        # callers = ''.join([z for z in g.callers(2).split(',') if z != 'visit'])
-        # docstring = callers.endswith('do_Expr')
-    # if docstring:
-        # s = repr(node.s).replace('\\n','\n')
-        # if s.startswith('"'):
-            # return '""%s""' % s
-        # else:
-            # return "''%s''" % s
-    # else:
-        # return repr(node.s)
+    
+    def clean(s):
+        return s.replace('"','').replace("'",'')
+
+    s = self.sync_string(node)
+    assert clean(s) == clean(node.s), (clean(s), clean(node.s))
+    return s
 </t>
 <t tx="ekr.20160220050433.48">
 # Subscript(expr value, slice slice, expr_context ctx)
@@ -1061,7 +1028,7 @@ def do_IfExp(self, node):
 <t tx="ekr.20160220050433.57">
 def do_Assert(self, node):
     
-    self.sync_word('assert')
+    self.sync_word(node, 'assert')
     test = self.visit(node.test)
     if getattr(node, 'msg', None) is not None:
         message = self.visit(node.msg)
@@ -1074,18 +1041,17 @@ def do_Assert(self, node):
 <t tx="ekr.20160220050433.58">
 def do_Assign(self, node):
     
-    self.sync_op('=')
+    self.sync_op(node, '=')
     s = self.indent('%s=%s\n' % (
                     '='.join([self.visit(z) for z in node.targets]),
                     self.visit(node.value)))
-    g.trace(s)
     return s
 </t>
 <t tx="ekr.20160220050433.59">
 def do_AugAssign(self, node):
     
     op = self.op_name(node.op)
-    self.sync_op(op)
+    self.sync_op(node, op)
     s = self.indent('%s%s=%s\n' % (
         self.visit(node.target),
         op,
@@ -1096,26 +1062,26 @@ def do_AugAssign(self, node):
 <t tx="ekr.20160220050433.60">
 def do_Break(self, node):
     
-    self.sync_word('break')
+    self.sync_word(node, 'break')
     return self.indent('break\n')
 </t>
 <t tx="ekr.20160220050433.61">
 def do_Continue(self, node):
     
-    self.sync_word('continue')
+    self.sync_word(node, 'continue')
     return self.indent('continue\n')
 </t>
 <t tx="ekr.20160220050433.62">
 def do_Delete(self, node):
     
-    self.sync_word('del')
+    self.sync_word(node, 'del')
     targets = [self.visit(z) for z in node.targets]
     return self.indent('del %s\n' % ','.join(targets))
 </t>
 <t tx="ekr.20160220050433.63">
 def do_ExceptHandler(self, node):
     
-    self.sync_word('except')
+    self.sync_word(node, 'except')
     result = []
     result.append(self.indent('except'))
     if getattr(node, 'type', None):
@@ -1137,7 +1103,7 @@ def do_ExceptHandler(self, node):
 
 def do_Exec(self, node):
     
-    self.sync_word('exec')
+    self.sync_word(node, 'exec')
     body = self.visit(node.body)
     args = [] # Globals before locals.
     if getattr(node, 'globals', None):
@@ -1153,7 +1119,7 @@ def do_Exec(self, node):
 <t tx="ekr.20160220050433.65">
 def do_For(self, node):
     
-    self.sync_word('for')
+    self.sync_word(node, 'for')
     result = []
     result.append(self.indent('for %s in %s:\n' % (
         self.visit(node.target),
@@ -1173,14 +1139,14 @@ def do_For(self, node):
 <t tx="ekr.20160220050433.66">
 def do_Global(self, node):
     
-    self.sync_word('global')
+    self.sync_word(node, 'global')
     return self.indent('global %s\n' % (
         ','.join(node.names)))
 </t>
 <t tx="ekr.20160220050433.67">
 def do_If(self, node):
     
-    self.sync_word('if')
+    self.sync_word(node, 'if')
     result = []
     result.append(self.indent('if %s:\n' % (
         self.visit(node.test))))
@@ -1189,7 +1155,7 @@ def do_If(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        self.sync_word('else')
+        self.sync_word(node, 'else')
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
@@ -1200,7 +1166,7 @@ def do_If(self, node):
 <t tx="ekr.20160220050433.68">
 def do_Import(self, node):
     
-    self.sync_word('import')
+    self.sync_word(node, 'import')
     names = []
     for fn, asname in self.get_import_names(node):
         if asname:
@@ -1235,8 +1201,8 @@ def do_ImportFrom(self, node):
             names.append('%s as %s' % (fn, asname))
         else:
             names.append(fn)
-    self.sync_word('from')
-    self.sync_word('import')
+    self.sync_word(node, 'from')
+    self.sync_word(node, 'import')
     s = self.indent('from %s import %s\n' % (
                     node.module,
                     ','.join(names)))
@@ -1246,7 +1212,7 @@ def do_ImportFrom(self, node):
 <t tx="ekr.20160220050433.71">
 def do_Pass(self, node):
     
-    self.sync_word('pass')
+    self.sync_word(node, 'pass')
     return self.indent('pass\n')
 </t>
 <t tx="ekr.20160220050433.72">
@@ -1254,7 +1220,7 @@ def do_Pass(self, node):
 
 def do_Print(self, node):
     
-    self.sync_word('print')
+    self.sync_word(node, 'print')
     vals = []
     for z in node.values:
         vals.append(self.visit(z))
@@ -1269,7 +1235,7 @@ def do_Print(self, node):
 <t tx="ekr.20160220050433.73">
 def do_Raise(self, node):
     
-    self.sync_word('raise')
+    self.sync_word(node, 'raise')
     args = []
     for attr in ('type', 'inst', 'tback'):
         if getattr(node, attr, None) is not None:
@@ -1283,7 +1249,7 @@ def do_Raise(self, node):
 <t tx="ekr.20160220050433.74">
 def do_Return(self, node):
     
-    self.sync_word('return')
+    self.sync_word(node, 'return')
     if node.value:
         return self.indent('return %s\n' % (
             self.visit(node.value).strip()))
@@ -1293,7 +1259,7 @@ def do_Return(self, node):
 <t tx="ekr.20160220050433.75">
 def do_TryExcept(self, node):
     
-    self.sync_word('try')
+    self.sync_word(node, 'try')
     result = []
     result.append(self.indent('try:\n'))
     for z in node.body:
@@ -1314,14 +1280,14 @@ def do_TryExcept(self, node):
 <t tx="ekr.20160220050433.76">
 def do_TryFinally(self, node):
     
-    self.sync_word('try')
+    self.sync_word(node, 'try')
     result = []
     result.append(self.indent('try:\n'))
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
         self.level -= 1
-    self.sync_word('finally')
+    self.sync_word(node, 'finally')
     result.append(self.indent('finally:\n'))
     for z in node.finalbody:
         self.level += 1
@@ -1332,7 +1298,7 @@ def do_TryFinally(self, node):
 <t tx="ekr.20160220050433.77">
 def do_While(self, node):
     
-    self.sync_word('while')
+    self.sync_word(node, 'while')
     result = []
     result.append(self.indent('while %s:\n' % (
         self.visit(node.test))))
@@ -1350,8 +1316,8 @@ def do_While(self, node):
 </t>
 <t tx="ekr.20160220050433.78">
 def do_With(self, node):
-    
-    self.sync_word('with')
+
+    self.sync_word(node, 'with')
     result = []
     result.append(self.indent('with '))
     if hasattr(node, 'context_expression'):
@@ -1375,7 +1341,7 @@ def do_With(self, node):
 <t tx="ekr.20160220050433.79">
 def do_Yield(self, node):
     
-    self.sync_word('yield')
+    self.sync_word(node, 'yield')
     if getattr(node, 'value', None):
         return self.indent('yield %s\n' % (
             self.visit(node.value)))
@@ -1770,332 +1736,12 @@ def output_time_stamp(self, f):
     f.write('# python_to_coffeescript: %s\n' %
         time.strftime("%a %d %b %Y at %H:%M:%S"))
 </t>
-<t tx="ekr.20160220081725.1"># -*- coding: utf-8 -*-
-# https://bitbucket.org/plas/thonny/src/3b71fda7ac0b66d5c475f7a668ffbdc7ae48c2b5/thonny/ast_utils.py?at=master
-&lt;&lt; imports &gt;&gt;
-# pylint: disable=deprecated-lambda
-isPython3 = sys.version_info &gt;= (3, 0, 0)
-@others
-</t>
-<t tx="ekr.20160220081959.1">import ast
-import _ast
-import io
-import sys
-import token
-import tokenize
-# from thonny.common import TextRange
-import traceback
-</t>
-<t tx="ekr.20160220081959.11">def fix_ast_problems(tree, source_lines, tokens):
-
-    # Problem 1:
-    # Python parser gives col_offset as offset to its internal UTF-8 byte array
-    # I need offsets to chars
-    utf8_byte_lines = list(map(lambda line: line.encode("UTF-8"), source_lines))
-
-    # Problem 2:
-    # triple-quoted strings have just plain wrong positions: http://bugs.python.org/issue18370
-    # Fortunately lexer gives them correct positions
-    string_tokens = list(filter(lambda tok: tok.type == token.STRING, tokens))
-
-    # Problem 3:
-    # Binary operations have wrong positions: http://bugs.python.org/issue18374
-    # Problem 4:
-    # Function calls have wrong positions in Python 3.4: http://bugs.python.org/issue21295
-    # similar problem is with Attributes and Subscripts
-
-    def fix_node(node):
-        for child in _get_ordered_child_nodes(node):
-        #for child in ast.iter_child_nodes(node):
-            fix_node(child)
-        if isinstance(node, ast.Str):
-            # fix triple-quote problem
-            # get position from tokens
-            token = string_tokens.pop(0)
-            node.lineno, node.col_offset = token.start
-        elif((isinstance(node, ast.Expr) or isinstance(node, ast.Attribute))
-            and isinstance(node.value, ast.Str)):
-            # they share the wrong offset of their triple-quoted child
-            # get position from already fixed child
-            # TODO: try whether this works when child is in parentheses
-            node.lineno = node.value.lineno
-            node.col_offset = node.value.col_offset
-        elif(isinstance(node, ast.BinOp)
-            and compare_node_positions(node, node.left) &gt; 0):
-            # fix binop problem
-            # get position from an already fixed child
-            node.lineno = node.left.lineno
-            node.col_offset = node.left.col_offset
-        elif(isinstance(node, ast.Call)
-            and compare_node_positions(node, node.func) &gt; 0):
-            # Python 3.4 call problem
-            # get position from an already fixed child
-            node.lineno = node.func.lineno
-            node.col_offset = node.func.col_offset
-        elif(isinstance(node, ast.Attribute)
-            and compare_node_positions(node, node.value) &gt; 0):
-            # Python 3.4 attribute problem ...
-            node.lineno = node.value.lineno
-            node.col_offset = node.value.col_offset
-        elif(isinstance(node, ast.Subscript)
-            and compare_node_positions(node, node.value) &gt; 0):
-            # Python 3.4 Subscript problem ...
-            node.lineno = node.value.lineno
-            node.col_offset = node.value.col_offset
-        else:
-            # Let's hope this node has correct lineno, and byte-based col_offset
-            # Now compute char-based col_offset
-            if hasattr(node, "lineno"):
-                byte_line = utf8_byte_lines[node.lineno - 1]
-                char_col_offset = len(byte_line[: node.col_offset].decode("UTF-8"))
-                node.col_offset = char_col_offset
-
-    fix_node(tree)
-</t>
-<t tx="ekr.20160220081959.12">def compare_node_positions(n1, n2):
-    if n1.lineno &gt; n2.lineno:
-        return 1
-    elif n1.lineno &lt; n2.lineno:
-        return -1
-    elif n1.col_offset &gt; n2.col_offset:
-        return 1
-    elif n2.col_offset &lt; n2.col_offset:
-        return -1
-    else:
-        return 0
-</t>
-<t tx="ekr.20160220081959.14">def _get_ordered_child_nodes(node):
-    if isinstance(node, ast.Dict):
-        children = []
-        for i in range(len(node.keys)):
-            children.append(node.keys[i])
-            children.append(node.values[i])
-        return children
-    elif isinstance(node, ast.Call):
-        children = [node.func] + node.args
-        for kw in node.keywords:
-            children.append(kw.value)
-        # TODO: take care of Python 3.5 updates (eg. args=[Starred] and keywords)
-        if hasattr(node, "starargs") and node.starargs is not None:
-            children.append(node.starargs)
-        if hasattr(node, "kwargs") and node.kwargs is not None:
-            children.append(node.kwargs)
-        children.sort(key=lambda x: (x.lineno, x.col_offset))
-        return children
-    else:
-        return ast.iter_child_nodes(node)
-</t>
-<t tx="ekr.20160220081959.15">def _tokens_text(tokens):
-    return "".join([t.string for t in tokens])
-</t>
-<t tx="ekr.20160220081959.9">def mark_text_ranges(node, source):
-    """
-    Node is an AST, source is corresponding source as string.
-    Function adds recursively attributes end_lineno and end_col_offset to each node
-    which has attributes lineno and col_offset.
-    """
-    &lt;&lt; mark_text_ranges helpers &gt;&gt;
-    ### all_tokens = list(tokenize.tokenize(io.BytesIO(source.encode('utf-8')).readline))
-    readline = io.BytesIO(source.encode('utf-8')).readline
-    if isPython3:
-        all_tokens = list(tokenize.tokenize(readline))
-    else:
-        all_tokens = []
-        def token_eater(t1, t2, t3, t4, t5):
-            all_tokens.append(
-                Bunch(type=t1, start=(t2, t3), end=(t3, t4), string=t5))
-        tokenize.tokenize(readline, token_eater)
-    source_lines = source.splitlines(True)
-    fix_ast_problems(node, source_lines, all_tokens)
-    prelim_end_lineno = len(source_lines)
-    prelim_end_col_offset = len(source_lines[len(source_lines) - 1])
-    _mark_text_ranges_rec(node, all_tokens, prelim_end_lineno, prelim_end_col_offset)
-</t>
-<t tx="ekr.20160220084232.1">@others
-</t>
-<t tx="ekr.20160220084252.1">
-def _extract_tokens(tokens, lineno, col_offset, end_lineno, end_col_offset):
-    return list(filter((lambda tok: tok.start[0] &gt;= lineno
-                               and (tok.start[1] &gt;= col_offset or tok.start[0] &gt; lineno)
-                               and tok.end[0] &lt;= end_lineno
-                               and (tok.end[1] &lt;= end_col_offset or tok.end[0] &lt; end_lineno)
-                               and tok.string != ''),
-                       tokens))
-
-</t>
-<t tx="ekr.20160220084252.2">
-def _mark_text_ranges_rec(node, tokens, prelim_end_lineno, prelim_end_col_offset):
-    """
-    Returns the earliest starting position found in given tree, 
-    this is convenient for internal handling of the siblings
-    """
-    # set end markers to this node
-    if "lineno" in node._attributes and "col_offset" in node._attributes:
-        tokens = _extract_tokens(tokens, node.lineno, node.col_offset, prelim_end_lineno, prelim_end_col_offset)
-        try:
-            tokens = _mark_end_and_return_child_tokens(node, tokens, prelim_end_lineno, prelim_end_col_offset)
-        except:
-            traceback.print_exc() # TODO: log it somewhere
-            # fallback to incorrect marking instead of exception
-            node.end_lineno = node.lineno
-            node.end_col_offset = node.col_offset + 1
-    # mark its children, starting from last one
-    # NB! need to sort children because eg. in dict literal all keys come first and then all values
-    children = list(_get_ordered_child_nodes(node))
-    for child in reversed(children):
-        (prelim_end_lineno, prelim_end_col_offset) = \
-        _mark_text_ranges_rec(child, tokens, prelim_end_lineno, prelim_end_col_offset)
-    if "lineno" in node._attributes and "col_offset" in node._attributes:
-        # new "front" is beginning of this node
-        prelim_end_lineno = node.lineno
-        prelim_end_col_offset = node.col_offset
-    return (prelim_end_lineno, prelim_end_col_offset)
-</t>
-<t tx="ekr.20160220084252.3">
-def _strip_trailing_junk_from_expressions(tokens):
-    # pylint: disable=no-member
-    # the code below works if token.ELLIPSIS does not exist.
-    while(tokens[-1].type not in (token.RBRACE, token.RPAR, token.RSQB,
-                                  token.NAME, token.NUMBER, token.STRING)
-                and not (hasattr(token, "ELLIPSIS") and tokens[-1].type == token.ELLIPSIS)
-                and tokens[-1].string not in ")}]"
-                or tokens[-1].string in ['and', 'as', 'assert', 'class', 'def', 'del',
-                                          'elif', 'else', 'except', 'exec', 'finally',
-                                          'for', 'from', 'global', 'if', 'import', 'in',
-                                          'is', 'lambda', 'not', 'or', 'try',
-                                          'while', 'with', 'yield']):
-        del tokens[-1]
-</t>
-<t tx="ekr.20160220084252.4">def _strip_trailing_extra_closers(tokens, remove_naked_comma):
-    level = 0
-    for i in range(len(tokens)):
-        if tokens[i].string in "({[":
-            level += 1
-        elif tokens[i].string in ")}]":
-            level -= 1
-        if level == 0 and tokens[i].string == "," and remove_naked_comma:
-            tokens[:] = tokens[0: i]
-            return
-        if level &lt; 0:
-            tokens[:] = tokens[0: i]
-            return
-</t>
-<t tx="ekr.20160220084252.5">def _strip_unclosed_brackets(tokens):
-    level = 0
-    for i in range(len(tokens) - 1, -1, -1):
-        if tokens[i].string in "({[":
-            level -= 1
-        elif tokens[i].string in ")}]":
-            level += 1
-        if level &lt; 0:
-            tokens[:] = tokens[0: i]
-            level = 0 # keep going, there may be more unclosed brackets
-</t>
-<t tx="ekr.20160220084252.6">def _mark_end_and_return_child_tokens(node, tokens, prelim_end_lineno, prelim_end_col_offset):
-    """
-    # shortcut
-    node.end_lineno = prelim_end_lineno
-    node.end_col_offset = prelim_end_col_offset
-    return tokens
-    """
-    # prelim_end_lineno and prelim_end_col_offset are the start of
-    # next positioned node or end of source, ie. the suffix of given
-    # range may contain keywords, commas and other stuff not belonging to current node
-    # Function returns the list of tokens which cover all its children
-    if isinstance(node, _ast.stmt):
-        # remove empty trailing lines
-        while(tokens[-1].type in (tokenize.NL, tokenize.COMMENT, token.NEWLINE, token.INDENT)
-               or tokens[-1].string in (":", "else", "elif", "finally", "except")):
-            del tokens[-1]
-    else:
-        _strip_trailing_extra_closers(tokens, not isinstance(node, ast.Tuple))
-        _strip_trailing_junk_from_expressions(tokens)
-        _strip_unclosed_brackets(tokens)
-    # set the end markers of this node
-    node.end_lineno = tokens[-1].end[0]
-    node.end_col_offset = tokens[-1].end[1]
-    # Peel off some trailing tokens which can't be part any
-    # positioned child node.
-    # TODO: maybe cleaning from parent side is better than
-    # _strip_trailing_junk_from_expressions
-    # Remove trailing empty parens from no-arg call
-    if (isinstance(node, ast.Call)
-        and _tokens_text(tokens[-2:]) == "()"):
-        del tokens[-2:]
-    # Remove trailing full slice
-    elif isinstance(node, ast.Subscript):
-        if _tokens_text(tokens[-3:]) == "[:]":
-            del tokens[-3:]
-        elif _tokens_text(tokens[-4:]) == "[::]":
-            del tokens[-4:]
-    # Attribute name would confuse the "value" of Attribute
-    elif isinstance(node, ast.Attribute):
-        assert tokens[-1].type == token.NAME
-        del tokens[-1]
-        _strip_trailing_junk_from_expressions(tokens)
-    return tokens
-</t>
-<t tx="ekr.20160220093908.1">@ From The Python Cookbook: Often we want to just collect a bunch of
-stuff together, naming each item of the bunch; a dictionary's OK for
-that, but a small do-nothing class is even handier, and prettier to
-use.
-
-Create a Bunch whenever you want to group a few variables:
-
-    point = Bunch(datum=y, squared=y*y, coord=x)
-
-You can read/write the named attributes you just created, add others,
-del some of them, etc:
-    if point.squared &gt; threshold:
-        point.isok = True
-@c
-
-class Bunch(object):
-    """A class that represents a colection of things.
-
-    Especially useful for representing a collection of related variables."""
-
-    def __init__(self, **keywords):
-        self.__dict__.update(keywords)
-
-    def __repr__(self):
-        return self.toString()
-
-    def ivars(self):
-        return sorted(self.__dict__)
-
-    def keys(self):
-        return sorted(self.__dict__)
-
-    def toString(self):
-        tag = self.__dict__.get('tag')
-        entries = ["%s: %s" % (key, str(self.__dict__.get(key)))
-            for key in self.ivars() if key != 'tag']
-        if tag:
-            return "Bunch(tag=%s)...\n%s\n" % (tag, '\n'.join(entries))
-        else:
-            return "Bunch...\n%s\n" % '\n'.join(entries)
-    # Used by new undo code.
-
-    def __setitem__(self, key, value):
-        '''Support aBunch[key] = val'''
-        return operator.setitem(self.__dict__, key, value)
-
-    def __getitem__(self, key):
-        '''Support aBunch[key]'''
-        return operator.getitem(self.__dict__, key)
-
-    def get(self, key, theDefault=None):
-        return self.__dict__.get(key, theDefault)
-
-bunch = Bunch
-</t>
 <t tx="ekr.20160220094909.1">
 # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
 def do_Try(self, node): # Python 3
 
-    self.sync_word('try')
+    self.sync_word(node, 'try')
     result = []
     result.append(self.indent('try:\n'))
     for z in node.body:
@@ -2106,14 +1752,14 @@ def do_Try(self, node): # Python 3
         for z in node.handlers:
             result.append(self.visit(z))
     if node.orelse:
-        self.sync_word('else')
+        self.sync_word(node, 'else')
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
             self.level -= 1
     if node.finalbody:
-        self.sync_word('finally')
+        self.sync_word(node, 'finally')
         result.append(self.indent('finally:\n'))
         for z in node.finalbody:
             self.level += 1
@@ -2629,7 +2275,7 @@ def format(self, tokens):
     for token5tuple in tokens:
         t1, t2, t3, t4, t5 = token5tuple
         srow, scol = t3
-        self.kind = token.tok_name[t1].lower()
+        self.kind = token_module.tok_name[t1].lower()
         self.val = g.toUnicode(t2)
         self.raw_val = g.toUnicode(t5)
         if srow != self.last_line_number:
@@ -2783,15 +2429,18 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-* Implement new design. Test on test.py.
+- All statements (including assignments) should output leading comments.
+- Output trailing comments.
+- Check that ts.comment_lines is empty at the end of the traversal.
+- Node visitors should output coffeescript instead of python.
 
 Later:
-- Handle `elif`
 - `###` means something (invalid) to coffeescript
 - Remove type hints from arg lists.
 - Change `is not` to `isnt`
-- Revise TestClass.
 - Peephole: last return of def.
+- Move TokenSync class into leoAst.py.
+
 </t>
 <t tx="ekr.20160220143251.1">
 def gen_class_or_def(self, name):
@@ -2969,7 +2618,6 @@ def pop(self):
     self.beautify_time = 0.0
     self.check_time = 0.0
     self.total_time = 0.0</t>
-<t tx="ekr.20160221042509.1"></t>
 <t tx="ekr.20160221070924.1">
 ### Quick Start
 
@@ -3056,104 +2704,56 @@ February 21, 2016
 <t tx="ekr.20160221124544.1">
 def advance(self):
     '''Advance one token. Update ivars.'''
-    trace = True ; verbose = False
+    trace = False ; verbose = False
     if not self.tokens:
         return None, None
     token5tuple = self.tokens.pop(0)
     t1, t2, t3, t4, t5 = token5tuple
     srow, scol = t3
-    kind = token.tok_name[t1].lower()
+    kind = token_module.tok_name[t1].lower()
     val = g.toUnicode(t2)
     raw_val = g.toUnicode(t5).rstrip()
-    if srow != self.last_line_number:
-        if trace:
-            caller = g.callers(2).split(',')[0].strip()
-            g.trace('%16s ===== %s' % (caller, raw_val.rstrip()))
-        # Handle a previous backslash.
-        if self.backslash_seen:
-            self.do_backslash()
-        # Start a new row.
-        self.backslash_seen = raw_val.endswith('\\')
-        if self.output_paren_level &gt; 0:
-            s = raw_val
-            n = g.computeLeadingWhitespaceWidth(s, self.tab_width)
-            # This n will be one-too-many if formatting has
-            # changed: foo (
-            # to:      foo(
-            self.do_line_indent(ws=' ' * n)
-                # Do not set self.lws here!
-        self.last_line_number = srow
-    if trace and verbose and kind == 'name': g.trace(val)
-        # g.trace('%10s %s'% (kind,val))
+    if trace and srow != self.last_line_number:
+        caller = g.callers(2).split(',')[0].strip()
+        g.trace('%16s ===== %s' % (caller, raw_val.rstrip()))
+    if trace and verbose and kind == 'name':
+        g.trace(val)
     return kind, val
 </t>
 <t tx="ekr.20160221143000.1">
 
 class TokenSync(object):
     '''A class to sync and remember tokens.'''
-    @others</t>
+    # To do: handle comments, line breaks...
+    @others
+</t>
 <t tx="ekr.20160221143402.1">
-def __init__(self, tokens):
+def __init__(self, s, tokens):
     '''Ctor for TokenSync class.'''
-    self.tab_width = 4
-    self.tokens = tokens
-    # Accumulation ivars...
-    # self.lws = 0
-    self.queue = []
-        # self.ops = []
-        # self.returns = []
-        # self.words = []
-        # self.ws = []
-    # State ivars...
-    self.backslash_seen = False
+    assert isinstance(tokens, list) # Not a generator.
+    self.s = s
+    self.first_comment_line = None
+    self.lines = [z.rstrip() for z in g.splitLines(s)]
+    self.line_tokens = self.make_line_tokens(tokens)
+    self.string_tokens = self.make_string_tokens()
+    self.comment_lines = self.make_comment_lines()
+    # TODO: remove. Now used by advance.
     self.last_line_number = -1
-    self.output_paren_level = 0
-    # TODO (maybe)...
-    # self.kind = None
-    # self.raw_val = None
-    # self.val = = None
-</t>
-<t tx="ekr.20160221143755.1">
-def do_line_indent(self, ws=None):
-    '''Handle line indentation.'''
-    # self.clean('line-indent')
-    # ws = ws or self.lws
-    # if ws:
-        # self.add_token('line-indent', ws)
-</t>
-<t tx="ekr.20160221144446.1">
-def do_backslash(self):
-    '''Handle a backslash-newline.'''
+    self.queue = []
+    self.tokens = tokens
 </t>
 <t tx="ekr.20160221145254.1">
-def sync_word(self, name):
+def sync_word(self, node, name):
     '''Advance tokens until the given keyword is found.'''
-    trace = True
-    kind = 'start'
-    while kind:
-        kind, val = self.advance()
-        self.enqueue(kind, val)
-        if kind == 'name' and val == name:
-            s = self.dump_queue()
-            if trace: g.trace(g.callers(1), '=== FOUND:', s)
-            return
-    s = self.dump_queue()
-    if trace: g.trace(g.callers(1), '=== FAIL:', name, s)
+    comments = self.show_comments(node)
+    g.trace('%-12s %2s: %s' % (name, node.lineno, self.line_at(node)))
+    return comments
 </t>
 <t tx="ekr.20160221151640.1">
-def sync_op(self, op):
+def sync_op(self, node, op):
     '''Advance tokens until the given keyword is found.'''
-    trace = True
-    kind = 'start'
-    while kind:
-        kind, val = self.advance()
-        self.enqueue(kind, val)
-        if kind == 'op' and val == op:
-            s = self.dump_queue()
-            if trace: g.trace(g.callers(1), '=== FOUND:', s)
-            return
-    s = self.dump_queue()
-    if trace: g.trace(g.callers(1), '=== FAIL:', op, s)
+    self.show_comments(node)
+    g.trace('  %-12s %2s: %s' % (op, node.lineno, self.line_at(node)))
 </t>
 <t tx="ekr.20160221163955.1">
 def dump_queue(self):
@@ -3174,25 +2774,35 @@ def enqueue(self, kind, val):
 # col_offset: the UTF-8 byte offset of the first token that generated the node.
 # http://joao.npimentel.net/2015/07/23/python-2-vs-python-3-ast-differences/
 
-a = 1
+a = 1\
++2
 
 def spam():
     b = 2
     
+# Comment before TestClass.
 class TestClass:
     
+    # Comment before InnerClass.
+
     class InnerClass:
-        
+        # Comment.
         def __init__(self):
+            '''Ctor for InnerClass'''
             pass
-            
+        def inner1(self):
+            """inner1 docstring"""
     def test1():
+        pass # comment
+    def test2():
         pass
         
 def eggs():
     pass</t>
-<t tx="ekr.20160222023712.1"></t>
-<t tx="ekr.20160222030015.1">Lines can be continued using backslash-newlines. Here are the detailed rules from section `2.1.5. Explicit line joining` of the reference. (Same in Python 2 and 3).
+<t tx="ekr.20160222030015.1">@language rest
+@wrap
+
+Lines can be continued using backslash-newlines. Here are the detailed rules from section `2.1.5. Explicit line joining` of the reference. (Same in Python 2 and 3).
 
 Two or more physical lines may be joined into logical lines using backslash characters (\), as follows: when a physical line ends in a backslash that is not part of a string literal or comment, it is joined with the following forming a single logical line, deleting the backslash and the following end-of-line character...
 
@@ -3247,5 +2857,169 @@ This design is preliminary and experimental. Gotcha's may lurk. Another one-day 
 
 Edward</t>
 <t tx="ekr.20160222041249.1"></t>
+<t tx="ekr.20160222081027.1">
+def line_at(self, node, continued_lines=True):
+    '''Return the lines at the node, possibly including continuation lines.'''
+    n = getattr(node, 'lineno', None)
+    if n is None:
+        return '&lt;no line&gt; for %s' % node.__class__.__name__
+    elif continued_lines:
+        aList, n = [], n-1
+        while n &lt; len(self.lines):
+            s = self.lines[n]
+            if s.endswith('\\'):
+                aList.append(s[:-1])
+                n += 1
+            else:
+                aList.append(s)
+                break
+        return ''.join(aList)
+    else:
+        return self.lines[n-1]
+</t>
+<t tx="ekr.20160222084258.1">
+def make_line_tokens(self, tokens):
+    '''
+    Return a list of lists of tokens for each list in self.lines.
+    The strings in self.lines may end in a backslash, so care is needed.
+    '''
+
+    def readlines(s):
+        return g.ReadLinesClass(s).next
+
+    result = []
+    for s in self.lines:
+        result.append(list(tokenize.generate_tokens(readlines(s))))
+    assert len(self.lines) == len(result), len(result)
+    return result
+</t>
+<t tx="ekr.20160222084401.1">
+def make_string_tokens(self):
+    '''Return a copy of line_tokens containing only string tokens.'''
+    result = []
+    for aList in self.line_tokens:
+        # g.trace([self.token_type(z) for z in aList])
+        result.append([z for z in aList if self.token_type(z) == 'string'])
+    assert len(result) == len(self.line_tokens)
+    return result
+</t>
+<t tx="ekr.20160222091458.1">
+def __init__(self, controller):
+    '''Ctor for CoffeeScriptFormatter class.'''
+    self.controller = controller
+    self.sync_op = None
+    self.sync_string = None
+    self.sync_word = None</t>
+<t tx="ekr.20160222091644.1">
+def sync_string(self, node):
+    '''Return the spelling of the string at the given node.'''
+    g.trace('%-10s %2s: %s' % (' ', node.lineno, self.line_at(node)))
+    n = node.lineno
+    tokens = self.string_tokens[n-1]
+    if tokens:
+        token = tokens.pop(0)
+        self.string_tokens[n-1] = tokens
+        return self.token_val(token)
+    else:
+        return '&lt;can not happen: no lineno&gt;'
+</t>
+<t tx="ekr.20160222124401.1">
+def token_type(self, token):
+    '''Return the token's type.'''
+    t1, t2, t3, t4, t5 = token
+    return g.toUnicode(token_module.tok_name[t1].lower())
+
+def token_raw_val(self, token):
+    '''Return the value of the token.'''
+    t1, t2, t3, t4, t5 = token
+    return g.toUnicode(t5)
+    
+def token_val(self, token):
+    '''Return the raw value of the token.'''
+    t1, t2, t3, t4, t5 = token
+    return g.toUnicode(t2)
+</t>
+<t tx="ekr.20160222130021.1">
+# From sync_op
+
+    trace = True
+    kind = 'start'
+    while kind:
+        kind, val = self.advance()
+        self.enqueue(kind, val)
+        if kind == 'op' and val == op:
+            s = self.dump_queue()
+            if trace: g.trace(g.callers(1), '=== FOUND:', s)
+            return
+    s = self.dump_queue()
+    if trace: g.trace(g.callers(1), '=== FAIL:', op, s)
+
+# From sync_word
+
+    trace = True
+    kind = 'start'
+    while kind:
+        kind, val = self.advance()
+        self.enqueue(kind, val)
+        if kind == 'name' and val == name:
+            s = self.dump_queue()
+            if trace: g.trace(g.callers(1), '=== FOUND:', s)
+            return
+    s = self.dump_queue()
+    if trace: g.trace(g.callers(1), '=== FAIL:', name, s)
+    
+</t>
+<t tx="ekr.20160222130449.1">
+def make_comment_lines(self):
+    '''Return a copy of line_tokens containing only full-line comments.'''
+    result = []
+    for aList in self.line_tokens:
+        aList2 = [z for z in aList if self.is_line_comment(z)]
+        assert len(aList2) &lt; 2
+        result.append(aList2[0] if aList2 else None)
+    assert len(result) == len(self.line_tokens)
+    for i, aList in enumerate(result):
+        if aList:
+            self.first_comment_line = i
+            break
+    else:
+        self.first_comment_line = len(result)
+    return result
+</t>
+<t tx="ekr.20160222130731.1">
+def is_line_comment(self, token):
+    '''Return True if the token represents a full-line comment.'''
+    t1, t2, t3, t4, t5 = token
+    kind = token_module.tok_name[t1].lower()
+    raw_val = t5
+    return kind == 'comment' and raw_val.lstrip().startswith('#')
+</t>
+<t tx="ekr.20160222132448.1">
+def show_comments(self, node):
+    '''Show the comments preceding the node.'''
+    comments = []
+    i, n = self.first_comment_line, node.lineno
+    while i &lt; n:
+        token = self.comment_lines[i]
+        if token:
+            s = self.token_val(token).rstrip()
+            comments.append(s)
+            g.trace('%11s: %s' % (i, s))
+        i += 1
+    self.first_comment_line = i
+    return comments
+</t>
+<t tx="ekr.20160222141140.1"></t>
+<t tx="ekr.20160222141147.1">@language rest
+@wrap
+
+The TokenSync class is *already* a successful prototype! A big breakthrough.
+- It is straightforward for node visitors to handle full-line comments.
+- The do_Str visitor now recovers proper string spelling.
+- The TokenSync class is easy to use and remarkably simple.
+- Added ts.make_comment_lines, ts.is_line_comment
+- Added ts.token_type/raw_val/val
+- Added ts.show_comments, ts.sync_string.
+</t>
 </tnodes>
 </leo_file>
