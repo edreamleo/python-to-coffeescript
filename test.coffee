@@ -1,28 +1,33 @@
-# python_to_coffeescript: Mon 22 Feb 2016 at 14:08:26
+# python_to_coffeescript: Mon 22 Feb 2016 at 17:02:55
 '''Test file illustrating difficulties of tokenizing.'''
 a=1+2
 
-def spam():
+spam = ->
     b=2
 # Comment before TestClass.
 
-class TestClass:
-# Comment before InnerClass.
 
-    class InnerClass:
+class TestClass extends object
+    # Comment before InnerClass.
 
-        def __init__(self):
+
+    class InnerClass extends object, str
+        # Comment.
+
+        __init__: (a) ->
             '''Ctor for InnerClass'''
-            pass
+            @a=a
 
-        def inner1(self):
+        inner1: ->
             """inner1 docstring"""
 
-    def test1():
+    test1: (a) ->
+        # Comment1 before print statement.
+        # Comment2 before print statement.
+        print(a)
+
+    test2: ->
         pass
 
-    def test2():
-        pass
-
-def eggs():
+eggs = ->
     pass

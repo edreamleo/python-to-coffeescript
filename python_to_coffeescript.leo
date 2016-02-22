@@ -35,43 +35,12 @@
 <v t="ekr.20160220051105.1"><vh>Unused</vh>
 <v t="ekr.20160221033247.1"><vh>stat vars</vh></v>
 <v t="ekr.20160220103223.39"><vh>cst.print_stats</vh></v>
-<v t="ekr.20160220103223.21"><vh>cst.gen_arg_start &amp; gen_arg_end (not used)</vh></v>
 <v t="ekr.20160220050433.188"><vh>class TestClass</vh>
 <v t="ekr.20160220050433.189"><vh>parse_group (Guido)</vh></v>
 <v t="ekr.20160220050433.190"><vh>return_all</vh></v>
 <v t="ekr.20160220050433.191"><vh>return_array</vh></v>
 <v t="ekr.20160220050433.192"><vh>return_list</vh></v>
 <v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
-</v>
-<v t="ekr.20160221163955.1"><vh>ts.dump_queue &amp; enqueue (to be removed)</vh>
-<v t="ekr.20160222130021.1"><vh>queue-related</vh></v>
-</v>
-<v t="ekr.20160221124544.1"><vh>ts.advance (to be removed)</vh></v>
-</v>
-</v>
-<v t="ekr.20160222041249.1"><vh>Docs</vh>
-<v t="ekr.20160220050053.2"><vh>@clean README.md</vh>
-<v t="ekr.20160221071334.1"><vh>Overview</vh></v>
-<v t="ekr.20160221071354.1"><vh>Rationale</vh></v>
-<v t="ekr.20160221070924.1"><vh>Quick start</vh></v>
-<v t="ekr.20160221071222.1"><vh>Command-line arguments</vh></v>
-<v t="ekr.20160221071408.1"><vh>Code notes</vh></v>
-<v t="ekr.20160221071735.1"><vh>Summary</vh></v>
-</v>
-<v t="ekr.20160222040422.1"><vh>@clean design.md</vh></v>
-<v t="ekr.20160222030015.1"><vh>2.1.5 Explicit line joining</vh></v>
-<v t="ekr.20160222030107.1"><vh>ast differences</vh></v>
-</v>
-<v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
-<v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
-<v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
-<v t="ekr.20160220050433.11"><vh>  main</vh></v>
-<v t="ekr.20160220050433.7"><vh>  utility functions</vh>
-<v t="ekr.20160220050433.8"><vh>dump</vh></v>
-<v t="ekr.20160220050433.9"><vh>dump_dict</vh></v>
-<v t="ekr.20160220050433.10"><vh>dump_list</vh></v>
-<v t="ekr.20160220050433.12"><vh>pdb</vh></v>
-<v t="ekr.20160220050433.13"><vh>truncate</vh></v>
 </v>
 <v t="ekr.20160220103223.1"><vh>class CoffeeScriptTokenizer</vh>
 <v t="ekr.20160220103223.2"><vh>class OutputToken</vh></v>
@@ -122,6 +91,32 @@
 <v t="ekr.20160220103223.34"><vh>ct.gen_star_star_op</vh></v>
 <v t="ekr.20160220103223.35"><vh>ct.gen_word &amp; gen_word_op</vh></v>
 </v>
+</v>
+</v>
+</v>
+<v t="ekr.20160222041249.1"><vh>Docs</vh>
+<v t="ekr.20160220050053.2"><vh>@clean README.md</vh>
+<v t="ekr.20160221071334.1"><vh>Overview</vh></v>
+<v t="ekr.20160221071354.1"><vh>Rationale</vh></v>
+<v t="ekr.20160221070924.1"><vh>Quick start</vh></v>
+<v t="ekr.20160221071222.1"><vh>Command-line arguments</vh></v>
+<v t="ekr.20160221071408.1"><vh>Code notes</vh></v>
+<v t="ekr.20160221071735.1"><vh>Summary</vh></v>
+</v>
+<v t="ekr.20160222040422.1"><vh>@clean design.md</vh></v>
+<v t="ekr.20160222030015.1"><vh>2.1.5 Explicit line joining</vh></v>
+<v t="ekr.20160222030107.1"><vh>ast differences</vh></v>
+</v>
+<v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
+<v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
+<v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
+<v t="ekr.20160220050433.11"><vh>  main</vh></v>
+<v t="ekr.20160220050433.7"><vh>  utility functions</vh>
+<v t="ekr.20160220050433.8"><vh>dump</vh></v>
+<v t="ekr.20160220050433.9"><vh>dump_dict</vh></v>
+<v t="ekr.20160220050433.10"><vh>dump_list</vh></v>
+<v t="ekr.20160220050433.12"><vh>pdb</vh></v>
+<v t="ekr.20160220050433.13"><vh>truncate</vh></v>
 </v>
 <v t="ekr.20160220050433.14"><vh>class CoffeeScriptTraverser</vh>
 <v t="ekr.20160222091458.1"><vh> cv.ctor</vh></v>
@@ -243,20 +238,41 @@
 <v t="ekr.20160222132448.1"><vh>ts.show_comments</vh></v>
 <v t="ekr.20160221151640.1"><vh>ts.sync_op</vh></v>
 <v t="ekr.20160222091644.1"><vh>ts.sync_string</vh></v>
-<v t="ekr.20160221145254.1"><vh>ts.sync_word</vh></v>
+<v t="ekr.20160221145254.1"><vh>ts.sync_node</vh></v>
 <v t="ekr.20160222124401.1"><vh>ts.token_type/raw_val/val</vh></v>
 </v>
 </v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160222141140.1"><vh>recent</vh>
-<v t="ekr.20160220050433.20"></v>
+<v t="ekr.20160222170506.1"><vh>Found:sync_node</vh>
+<v t="ekr.20160220050433.16"></v>
+<v t="ekr.20160220050433.57"></v>
+<v t="ekr.20160220050433.60"></v>
 <v t="ekr.20160220050433.19"></v>
-<v t="ekr.20160220050433.47"></v>
-<v t="ekr.20160220050433.17"></v>
+<v t="ekr.20160220050433.61"></v>
+<v t="ekr.20160220050433.62"></v>
+<v t="ekr.20160220050433.63"></v>
+<v t="ekr.20160220050433.64"></v>
+<v t="ekr.20160220050433.25"></v>
+<v t="ekr.20160220050433.65"></v>
+<v t="ekr.20160220050433.20"></v>
+<v t="ekr.20160220050433.66"></v>
+<v t="ekr.20160220050433.67"></v>
+<v t="ekr.20160220050433.68"></v>
+<v t="ekr.20160220050433.70"></v>
+<v t="ekr.20160220050433.71"></v>
+<v t="ekr.20160220050433.72"></v>
+<v t="ekr.20160220050433.73"></v>
+<v t="ekr.20160220050433.74"></v>
+<v t="ekr.20160220094909.1"></v>
+<v t="ekr.20160220050433.75"></v>
+<v t="ekr.20160220050433.76"></v>
+<v t="ekr.20160220050433.77"></v>
+<v t="ekr.20160220050433.78"></v>
+<v t="ekr.20160220050433.79"></v>
+<v t="ekr.20160221145254.1"></v>
 </v>
 <v t="ekr.20160221143000.1"></v>
-<v t="ekr.20160222141147.1"><vh>checkin log</vh></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -279,7 +295,6 @@ Written by Edward K. Ream.
 '''
 &lt;&lt; license &gt;&gt;
 &lt;&lt; imports &gt;&gt;
-use_tree = True
 @others
 
 g = LeoGlobals() # For ekr.
@@ -372,11 +387,9 @@ def make_coffeescript_file(self, fn):
         s = open(fn).read()
         readlines = g.ReadLinesClass(s).next
         tokens = list(tokenize.generate_tokens(readlines))
-        if use_tree:
-            node = ast.parse(s, filename=fn, mode='exec')
-            s = CoffeeScriptTraverser(controller=self).format(node, s, tokens)
-        else:
-            s = CoffeeScriptTokenizer(controller=self).format(tokens)
+        # s = CoffeeScriptTokenizer(controller=self).format(tokens)
+        node = ast.parse(s, filename=fn, mode='exec')
+        s = CoffeeScriptTraverser(controller=self).format(node, s, tokens)
         f = open(out_fn, 'w')
         self.output_time_stamp(f)
         f.write(s)
@@ -580,7 +593,7 @@ def format(self, node, s, tokens):
     sync = TokenSync(s, tokens)
     self.sync_op = sync.sync_op
     self.sync_string = sync.sync_string
-    self.sync_word = sync.sync_word
+    self.sync_node = sync.sync_node
     val = self.visit(node)
     return val or ''
 </t>
@@ -635,24 +648,23 @@ def parse_group(group):
 # ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
 
 def do_ClassDef(self, node):
-    
-    comments = self.sync_word(node, 'class')
-    result = []
+
+    result = self.sync_node(node, 'class')
     name = node.name # Only a plain string is valid.
     bases = [self.visit(z) for z in node.bases] if node.bases else []
     result.append('\n\n')
     if bases:
-        result.append(self.indent('class %s(%s):\n' % (name, ', '.join(bases))))
+        # result.append(self.indent('class %s(%s):\n' % (name, ', '.join(bases))))
+        result.append(self.indent('class %s extends %s\n' % (name, ', '.join(bases))))
     else:
-        result.append(self.indent('class %s:\n' % name))
+        result.append(self.indent('class %s\n' % name))
+    self.class_stack.append(name)
     for i, z in enumerate(node.body):
         self.level += 1
-        # self.first_statement = i == 0
         result.append(self.visit(z))
         self.level -= 1
-    s = ''.join(comments + result)
-    # g.trace(result[2].rstrip())
-    return s
+    self.class_stack.pop()
+    return ''.join(result)
 </t>
 <t tx="ekr.20160220050433.190">
 def return_all(self):
@@ -710,23 +722,26 @@ else:
 
 def do_FunctionDef(self, node):
     '''Format a FunctionDef node.'''
-    self.sync_word(node, 'def')
-    result = []
+    result = self.sync_node(node, 'def')
     if node.decorator_list:
         for z in node.decorator_list:
             result.append(self.indent('@%s\n' % self.visit(z)))
     name = node.name # Only a plain string is valid.
     args = self.visit(node.args) if node.args else ''
+    args = [z.strip() for z in args.split(',')]
+    if self.class_stack and args and args[0] == '@':
+        args = args[1:]
+    args = ', '.join(args)
+    args = '(%s) ' % args if args else ''
     result.append('\n')
-    result.append(self.indent('def %s(%s):\n' % (name, args)))
+    sep = ': ' if self.class_stack else ' = '
+    s = '%s%s%s-&gt;\n' % (name, sep, args)
+    result.append(self.indent(s))
     for i, z in enumerate(node.body):
         self.level += 1
-        # self.first_statement = i == 0
         result.append(self.visit(z))
         self.level -= 1
-    s = ''.join(result)
-    # g.trace(result[1].rstrip())
-    return s
+    return ''.join(result)
 </t>
 <t tx="ekr.20160220050433.21">
 def do_Interactive(self, node):
@@ -753,7 +768,9 @@ def do_Lambda(self, node):
 <t tx="ekr.20160220050433.25">
 def do_Expr(self, node):
     '''An outer expression: must be indented.'''
-    return self.indent('%s\n' % self.visit(node.value))
+    comments = self.sync_node(node, 'expr')
+    s = '%s\n' % self.visit(node.value)
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.26">
 def do_Expression(self, node):
@@ -829,9 +846,11 @@ def do_arg(self, node):
 # Attribute(expr value, identifier attr, expr_context ctx)
 
 def do_Attribute(self, node):
-    return '%s.%s' % (
-        self.visit(node.value),
-        node.attr) # Don't visit node.attr: it is always a string.
+    
+    # Don't visit node.attr: it is always a string.
+    val = self.visit(node.value)
+    val = '@' if val == '@' else val + '.'
+    return val + node.attr
 </t>
 <t tx="ekr.20160220050433.33">
 def do_Bytes(self, node): # Python 3.x only.
@@ -923,7 +942,7 @@ def do_ListComp(self, node):
 </t>
 <t tx="ekr.20160220050433.43">
 def do_Name(self, node):
-    return node.id
+    return '@' if node.id == 'self' else node.id
 
 def do_NameConstant(self, node): # Python 3 only.
     s = repr(node.value)
@@ -1028,15 +1047,13 @@ def do_IfExp(self, node):
 <t tx="ekr.20160220050433.57">
 def do_Assert(self, node):
     
-    self.sync_word(node, 'assert')
+    comments = self.sync_node(node, 'assert')
     test = self.visit(node.test)
     if getattr(node, 'msg', None) is not None:
-        message = self.visit(node.msg)
-        s = self.indent('assert %s, %s\n' % (test, message))
+        s = 'assert %s, %s\n' % (test, self.visit(node.msg))
     else:
-        s = self.indent('assert %s\n' % test)
-    g.trace(s)
-    return s
+        s = 'assert %s\n' % test
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.58">
 def do_Assign(self, node):
@@ -1062,27 +1079,27 @@ def do_AugAssign(self, node):
 <t tx="ekr.20160220050433.60">
 def do_Break(self, node):
     
-    self.sync_word(node, 'break')
-    return self.indent('break\n')
+    comments = self.sync_node(node, 'break')
+    return ''.join(comments) + self.indent('break\n')
 </t>
 <t tx="ekr.20160220050433.61">
 def do_Continue(self, node):
     
-    self.sync_word(node, 'continue')
-    return self.indent('continue\n')
+    comments = self.sync_node(node, 'continue')
+    return ''.join(comments) + self.indent('continue\n')
 </t>
 <t tx="ekr.20160220050433.62">
 def do_Delete(self, node):
     
-    self.sync_word(node, 'del')
+    comments = self.sync_node(node, 'del')
     targets = [self.visit(z) for z in node.targets]
-    return self.indent('del %s\n' % ','.join(targets))
+    s = 'del %s\n' % ','.join(targets)
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.63">
 def do_ExceptHandler(self, node):
-    
-    self.sync_word(node, 'except')
-    result = []
+
+    result = self.sync_node(node, 'except')
     result.append(self.indent('except'))
     if getattr(node, 'type', None):
         result.append(' %s' % self.visit(node.type))
@@ -1103,7 +1120,7 @@ def do_ExceptHandler(self, node):
 
 def do_Exec(self, node):
     
-    self.sync_word(node, 'exec')
+    comments = self.sync_node(node, 'exec')
     body = self.visit(node.body)
     args = [] # Globals before locals.
     if getattr(node, 'globals', None):
@@ -1111,16 +1128,15 @@ def do_Exec(self, node):
     if getattr(node, 'locals', None):
         args.append(self.visit(node.locals))
     if args:
-        return self.indent('exec %s in %s\n' % (
-            body, ','.join(args)))
+        s = 'exec %s in %s\n' % (body, ','.join(args))
     else:
-        return self.indent('exec %s\n' % (body))
+        s = 'exec %s\n' % body
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.65">
 def do_For(self, node):
-    
-    self.sync_word(node, 'for')
-    result = []
+
+    result = self.sync_node(node, 'for')
     result.append(self.indent('for %s in %s:\n' % (
         self.visit(node.target),
         self.visit(node.iter))))
@@ -1129,6 +1145,7 @@ def do_For(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
+        result.extend(self.sync_node(node.orelse, 'orelse'))
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
@@ -1139,15 +1156,14 @@ def do_For(self, node):
 <t tx="ekr.20160220050433.66">
 def do_Global(self, node):
     
-    self.sync_word(node, 'global')
-    return self.indent('global %s\n' % (
-        ','.join(node.names)))
+    comments = self.sync_node(node, 'global')
+    s = 'global %s\n' % ','.join(node.names)
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.67">
 def do_If(self, node):
-    
-    self.sync_word(node, 'if')
-    result = []
+
+    result = self.sync_node(node, 'if')
     result.append(self.indent('if %s:\n' % (
         self.visit(node.test))))
     for z in node.body:
@@ -1155,7 +1171,7 @@ def do_If(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        self.sync_word(node, 'else')
+        result.extend(self.sync_node(node.orelse, 'orelse'))
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
@@ -1166,16 +1182,15 @@ def do_If(self, node):
 <t tx="ekr.20160220050433.68">
 def do_Import(self, node):
     
-    self.sync_word(node, 'import')
+    comments = self.sync_node(node, 'import')
     names = []
     for fn, asname in self.get_import_names(node):
         if asname:
             names.append('%s as %s' % (fn, asname))
         else:
             names.append(fn)
-    s = self.indent('import %s\n' % (','.join(names)))
-    g.trace(s)
-    return s
+    s = 'import %s\n' % ','.join(names)
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.69">
 def get_import_names(self, node):
@@ -1193,74 +1208,68 @@ def get_import_names(self, node):
 #</t>
 <t tx="ekr.20160220050433.70">
 def do_ImportFrom(self, node):
-    
-    
+
+    comments = self.sync_node(node, 'from')
     names = []
     for fn, asname in self.get_import_names(node):
         if asname:
             names.append('%s as %s' % (fn, asname))
         else:
             names.append(fn)
-    self.sync_word(node, 'from')
-    self.sync_word(node, 'import')
-    s = self.indent('from %s import %s\n' % (
-                    node.module,
-                    ','.join(names)))
-    g.trace(s)
-    return s
+    s = 'from %s import %s\n' % (node.module, ','.join(names))
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.71">
 def do_Pass(self, node):
     
-    self.sync_word(node, 'pass')
-    return self.indent('pass\n')
+    comments = self.sync_node(node, 'pass')
+    return ''.join(comments) + self.indent('pass\n')
 </t>
 <t tx="ekr.20160220050433.72">
 # Python 2.x only
 
 def do_Print(self, node):
     
-    self.sync_word(node, 'print')
+    comments = self.sync_node(node, 'print')
     vals = []
     for z in node.values:
         vals.append(self.visit(z))
-    if getattr(node, 'dest', None):
+    if getattr(node, 'dest', None) is not None:
         vals.append('dest=%s' % self.visit(node.dest))
-    if getattr(node, 'nl', None):
+    if getattr(node, 'nl', None) is not None:
         if node.nl == 'False':
             vals.append('nl=%s' % node.nl)
-    return self.indent('print(%s)\n' % (
-        ','.join(vals)))
+    s = 'print(%s)\n' % ','.join(vals)
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.73">
 def do_Raise(self, node):
     
-    self.sync_word(node, 'raise')
+    comments = self.sync_node(node, 'raise')
     args = []
     for attr in ('type', 'inst', 'tback'):
         if getattr(node, attr, None) is not None:
             args.append(self.visit(getattr(node, attr)))
     if args:
-        return self.indent('raise %s\n' % (
-            ','.join(args)))
+        s = 'raise %s\n' % ', '.join(args)
     else:
-        return self.indent('raise\n')
+        s = 'raise\n'
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.74">
 def do_Return(self, node):
     
-    self.sync_word(node, 'return')
+    comments = self.sync_node(node, 'return')
     if node.value:
-        return self.indent('return %s\n' % (
-            self.visit(node.value).strip()))
+        s = 'return %s\n' % self.visit(node.value).strip()
     else:
-        return self.indent('return\n')
+        s = 'return\n'
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.75">
 def do_TryExcept(self, node):
-    
-    self.sync_word(node, 'try')
-    result = []
+
+    result = self.sync_node(node, 'try')
     result.append(self.indent('try:\n'))
     for z in node.body:
         self.level += 1
@@ -1270,6 +1279,7 @@ def do_TryExcept(self, node):
         for z in node.handlers:
             result.append(self.visit(z))
     if node.orelse:
+        result.extend(self.sync_node(node.orelse, 'orelse'))
         result.append('else:\n')
         for z in node.orelse:
             self.level += 1
@@ -1280,14 +1290,13 @@ def do_TryExcept(self, node):
 <t tx="ekr.20160220050433.76">
 def do_TryFinally(self, node):
     
-    self.sync_word(node, 'try')
-    result = []
+    result = self.sync_node(node, 'try')
     result.append(self.indent('try:\n'))
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
         self.level -= 1
-    self.sync_word(node, 'finally')
+    result.extend(self.sync_node(node.finalbody, 'finalbody'))
     result.append(self.indent('finally:\n'))
     for z in node.finalbody:
         self.level += 1
@@ -1298,8 +1307,7 @@ def do_TryFinally(self, node):
 <t tx="ekr.20160220050433.77">
 def do_While(self, node):
     
-    self.sync_word(node, 'while')
-    result = []
+    result = self.sync_node(node, 'while')
     result.append(self.indent('while %s:\n' % (
         self.visit(node.test))))
     for z in node.body:
@@ -1307,6 +1315,7 @@ def do_While(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
+        result.extend(self.sync_node(node.orelse, 'orelse'))
         result.append('else:\n')
         for z in node.orelse:
             self.level += 1
@@ -1317,8 +1326,7 @@ def do_While(self, node):
 <t tx="ekr.20160220050433.78">
 def do_With(self, node):
 
-    self.sync_word(node, 'with')
-    result = []
+    result = self.sync_node(node, 'with')
     result.append(self.indent('with '))
     if hasattr(node, 'context_expression'):
         result.append(self.visit(node.context_expresssion))
@@ -1341,12 +1349,12 @@ def do_With(self, node):
 <t tx="ekr.20160220050433.79">
 def do_Yield(self, node):
     
-    self.sync_word(node, 'yield')
-    if getattr(node, 'value', None):
-        return self.indent('yield %s\n' % (
-            self.visit(node.value)))
+    comments = self.sync_node(node, 'yield')
+    if getattr(node, 'value', None) is not None:
+        s = 'yield %s\n' % self.visit(node.value)
     else:
-        return self.indent('yield\n')
+        s ='yield\n'
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.8">
 def dump(title, s=None):
@@ -1741,8 +1749,7 @@ def output_time_stamp(self, f):
 
 def do_Try(self, node): # Python 3
 
-    self.sync_word(node, 'try')
-    result = []
+    result = self.sync_node(node, 'try')
     result.append(self.indent('try:\n'))
     for z in node.body:
         self.level += 1
@@ -1752,14 +1759,14 @@ def do_Try(self, node): # Python 3
         for z in node.handlers:
             result.append(self.visit(z))
     if node.orelse:
-        self.sync_word(node, 'else')
+        result.extend(self.sync_node(node.orelse, 'orelse'))
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
             self.level -= 1
     if node.finalbody:
-        self.sync_word(node, 'finally')
+        result.extend(self.sync_node(node.finalbody, 'finalbody'))
         result.append(self.indent('finally:\n'))
         for z in node.finalbody:
             self.level += 1
@@ -1943,15 +1950,6 @@ def add_token(self, kind, value=''):
     ):
         # g.trace(token,g.callers())
         self.prev_sig_token = token
-</t>
-<t tx="ekr.20160220103223.21">
-# def gen_arg_end(self):
-    # '''Add a token indicating the end of an argument list.'''
-    # self.add_token('arg-end')
-
-# def gent_arg_start(self):
-    # '''Add a token indicating the start of an argument list.'''
-    # self.add_token('arg-start')
 </t>
 <t tx="ekr.20160220103223.22">
 def gen_backslash(self):
@@ -2429,18 +2427,29 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-- All statements (including assignments) should output leading comments.
-- Output trailing comments.
-- Check that ts.comment_lines is empty at the end of the traversal.
-- Node visitors should output coffeescript instead of python.
+*** Rewrite ts.make_line_tokens:
+    - can't compile multi-line docstrings line by line.
+- Discuss TokenSync class in theory.md.
+- How to handle line breaks within statements?
+- Output trailing comments at the end of the traversal.
+- tv.visit should check that ts.comment_lines is empty at end.
+
+Done:
+- Retired the CoffeeScriptTokenizer class.
+- Removed the use_tree switch.
+- Converted self to @ and @. to @.
+- Statement visitors now output reasonable coffeescript.
+- Statements now call sync_node to get leading comments.
 
 Later:
+- Respond here:
+http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node
+- Maybe: remember blank lines.
 - `###` means something (invalid) to coffeescript
 - Remove type hints from arg lists.
 - Change `is not` to `isnt`
 - Peephole: last return of def.
 - Move TokenSync class into leoAst.py.
-
 </t>
 <t tx="ekr.20160220143251.1">
 def gen_class_or_def(self, name):
@@ -2701,25 +2710,6 @@ I have years of experience working with tokens and parse trees. Nevertheless, it
 Edward K. Ream  
 February 21, 2016
 </t>
-<t tx="ekr.20160221124544.1">
-def advance(self):
-    '''Advance one token. Update ivars.'''
-    trace = False ; verbose = False
-    if not self.tokens:
-        return None, None
-    token5tuple = self.tokens.pop(0)
-    t1, t2, t3, t4, t5 = token5tuple
-    srow, scol = t3
-    kind = token_module.tok_name[t1].lower()
-    val = g.toUnicode(t2)
-    raw_val = g.toUnicode(t5).rstrip()
-    if trace and srow != self.last_line_number:
-        caller = g.callers(2).split(',')[0].strip()
-        g.trace('%16s ===== %s' % (caller, raw_val.rstrip()))
-    if trace and verbose and kind == 'name':
-        g.trace(val)
-    return kind, val
-</t>
 <t tx="ekr.20160221143000.1">
 
 class TokenSync(object):
@@ -2737,13 +2727,9 @@ def __init__(self, s, tokens):
     self.line_tokens = self.make_line_tokens(tokens)
     self.string_tokens = self.make_string_tokens()
     self.comment_lines = self.make_comment_lines()
-    # TODO: remove. Now used by advance.
-    self.last_line_number = -1
-    self.queue = []
-    self.tokens = tokens
 </t>
 <t tx="ekr.20160221145254.1">
-def sync_word(self, node, name):
+def sync_node(self, node, name):
     '''Advance tokens until the given keyword is found.'''
     comments = self.show_comments(node)
     g.trace('%-12s %2s: %s' % (name, node.lineno, self.line_at(node)))
@@ -2754,20 +2740,6 @@ def sync_op(self, node, op):
     '''Advance tokens until the given keyword is found.'''
     self.show_comments(node)
     g.trace('  %-12s %2s: %s' % (op, node.lineno, self.line_at(node)))
-</t>
-<t tx="ekr.20160221163955.1">
-def dump_queue(self):
-    '''Return the queued tokens, and clear them.'''
-    s = '[%s]' % ' '.join([z.strip() for z in self.queue])
-    self.queue = []
-    return s
-    
-def enqueue(self, kind, val):
-    '''Queue the token.'''
-    if kind == 'string':
-        self.queue.append('&lt;str&gt;')
-    elif kind in ('name', 'number', 'op'):
-        self.queue.append(val or '&lt;empty! %s&gt;' % kind)
 </t>
 <t tx="ekr.20160222023117.1">'''Test file illustrating difficulties of tokenizing.'''
 # lineno: line number of source text (first line is line 1).
@@ -2781,19 +2753,21 @@ def spam():
     b = 2
     
 # Comment before TestClass.
-class TestClass:
+class TestClass(object):
     
     # Comment before InnerClass.
 
-    class InnerClass:
+    class InnerClass(object, str):
         # Comment.
-        def __init__(self):
+        def __init__(self, a):
             '''Ctor for InnerClass'''
-            pass
+            self.a = a
         def inner1(self):
             """inner1 docstring"""
-    def test1():
-        pass # comment
+    def test1(a):
+        # Comment1 before print statement.
+        # Comment2 before print statement.
+        print(a) # comment
     def test2():
         pass
         
@@ -2889,7 +2863,12 @@ def make_line_tokens(self, tokens):
 
     result = []
     for s in self.lines:
-        result.append(list(tokenize.generate_tokens(readlines(s))))
+        try:
+            # Fails for multi-line triple-quoted strings.
+            result.append(list(tokenize.generate_tokens(readlines(s))))
+        except tokenize.TokenError:
+            g.trace(repr(s))
+            raise
     assert len(self.lines) == len(result), len(result)
     return result
 </t>
@@ -2898,7 +2877,6 @@ def make_string_tokens(self):
     '''Return a copy of line_tokens containing only string tokens.'''
     result = []
     for aList in self.line_tokens:
-        # g.trace([self.token_type(z) for z in aList])
         result.append([z for z in aList if self.token_type(z) == 'string'])
     assert len(result) == len(self.line_tokens)
     return result
@@ -2909,7 +2887,8 @@ def __init__(self, controller):
     self.controller = controller
     self.sync_op = None
     self.sync_string = None
-    self.sync_word = None</t>
+    self.sync_node = None
+    self.class_stack = []</t>
 <t tx="ekr.20160222091644.1">
 def sync_string(self, node):
     '''Return the spelling of the string at the given node.'''
@@ -2938,36 +2917,6 @@ def token_val(self, token):
     '''Return the raw value of the token.'''
     t1, t2, t3, t4, t5 = token
     return g.toUnicode(t2)
-</t>
-<t tx="ekr.20160222130021.1">
-# From sync_op
-
-    trace = True
-    kind = 'start'
-    while kind:
-        kind, val = self.advance()
-        self.enqueue(kind, val)
-        if kind == 'op' and val == op:
-            s = self.dump_queue()
-            if trace: g.trace(g.callers(1), '=== FOUND:', s)
-            return
-    s = self.dump_queue()
-    if trace: g.trace(g.callers(1), '=== FAIL:', op, s)
-
-# From sync_word
-
-    trace = True
-    kind = 'start'
-    while kind:
-        kind, val = self.advance()
-        self.enqueue(kind, val)
-        if kind == 'name' and val == name:
-            s = self.dump_queue()
-            if trace: g.trace(g.callers(1), '=== FOUND:', s)
-            return
-    s = self.dump_queue()
-    if trace: g.trace(g.callers(1), '=== FAIL:', name, s)
-    
 </t>
 <t tx="ekr.20160222130449.1">
 def make_comment_lines(self):
@@ -3002,24 +2951,13 @@ def show_comments(self, node):
     while i &lt; n:
         token = self.comment_lines[i]
         if token:
-            s = self.token_val(token).rstrip()
+            s = self.token_raw_val(token).rstrip()+'\n'
             comments.append(s)
-            g.trace('%11s: %s' % (i, s))
+            g.trace('%11s: %s' % (i, s.rstrip()))
         i += 1
     self.first_comment_line = i
     return comments
 </t>
-<t tx="ekr.20160222141140.1"></t>
-<t tx="ekr.20160222141147.1">@language rest
-@wrap
-
-The TokenSync class is *already* a successful prototype! A big breakthrough.
-- It is straightforward for node visitors to handle full-line comments.
-- The do_Str visitor now recovers proper string spelling.
-- The TokenSync class is easy to use and remarkably simple.
-- Added ts.make_comment_lines, ts.is_line_comment
-- Added ts.token_type/raw_val/val
-- Added ts.show_comments, ts.sync_string.
-</t>
+<t tx="ekr.20160222170506.1"># flattened, word, ignore-case, head, body</t>
 </tnodes>
 </leo_file>

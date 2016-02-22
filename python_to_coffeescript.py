@@ -48,7 +48,6 @@ else:
     # import StringIO as io # Python 2
 # except ImportError:
     # import io # Python 3
-use_tree = True
 
 def main():
     '''
@@ -102,647 +101,6 @@ def truncate(s, n):
     return s if len(s) <= n else s[:n-3] + '...'
 
 
-class CoffeeScriptTokenizer:
-    '''A token-based Python beautifier.'''
-
-
-    class OutputToken(object):
-        '''A class representing Output Tokens'''
-
-        def __init__(self, kind, value):
-            self.kind = kind
-            self.value = value
-
-        def __repr__(self):
-            if self.kind == 'line-indent':
-                assert not self.value.strip(' ')
-                return '%15s %s' % (self.kind, len(self.value))
-            else:
-                return '%15s %r' % (self.kind, self.value)
-
-        __str__ = __repr__
-
-        def to_string(self):
-            '''Convert an output token to a string.'''
-            return self.value if g.isString(self.value) else ''
-
-
-    class StateStack(object):
-        '''
-        A class representing a stack of ParseStates and encapsulating various
-        operations on same.
-        '''
-        
-        def __init__(self):
-            '''Ctor for ParseStack class.'''
-            self.stack = []
-
-        def get(self, kind):
-            '''Return the last state of the given kind, leaving the stack unchanged.'''
-            n = len(self.stack)
-            i = n - 1
-            while 0 <= i:
-                state = self.stack[i]
-                if state.kind == kind:
-                    return state
-                i -= 1
-            return None
-
-        def has(self, kind):
-            '''Return True if state.kind == kind for some ParseState on the stack.'''
-            return any([z.kind == kind for z in self.stack])
-
-        def pop(self):
-            '''Pop the state on the stack and return it.'''
-            return self.stack.pop()
-
-        def push(self, kind, value=None):
-            '''Append a state to the state stack.'''
-            trace = False
-            self.stack.append(ParseState(kind, value))
-            if trace and kind == 'tuple':
-                g.trace(kind, value, g.callers(2))
-
-        def remove(self, kind):
-            '''Remove the last state on the stack of the given kind.'''
-            trace = False
-            n = len(self.stack)
-            i = n - 1
-            found = None
-            while 0 <= i:
-                state = self.stack[i]
-                if state.kind == kind:
-                    found = state
-                    self.stack = self.stack[:i] + self.stack[i+1:]
-                    assert len(self.stack) == n-1, (len(self.stack), n-1)
-                    break
-                i -= 1
-            if trace and kind == 'tuple':
-                kind = found and found.kind or 'fail'
-                value = found and found.value or 'fail'
-                g.trace(kind, value, g.callers(2))
-
-    def __init__(self, controller):
-        '''Ctor for CoffeeScriptTokenizer class.'''
-        self.controller = controller
-        # Globals...
-        self.code_list = [] # The list of output tokens.
-        # The present line and token...
-        self.last_line_number = 0
-        self.raw_val = None # Raw value for strings, comments.
-        self.s = None # The string containing the line.
-        self.val = None
-        # State vars...
-        self.after_self = False
-        self.backslash_seen = False
-        self.decorator_seen = False
-        self.extends_flag = False
-        self.in_class_line = False
-        self.in_def_line = False
-        self.in_import = False
-        self.in_list = False
-        self.input_paren_level = 0
-        self.def_name_seen = False
-        self.level = 0 # indentation level.
-        self.lws = '' # Leading whitespace.
-            # Typically ' '*self.tab_width*self.level,
-            # but may be changed for continued lines.
-        self.output_paren_level = 0 # Number of unmatched left parens in output.
-        self.prev_sig_token = None # Previous non-whitespace token.
-        self.stack = None # Stack of ParseState objects, set in format.
-        # Settings...
-        self.delete_blank_lines = False
-        self.tab_width = 4
-
-    def format(self, tokens):
-        '''The main line of CoffeeScriptTokenizer class.'''
-        trace = False
-        self.code_list = []
-        self.stack = self.StateStack()
-        self.gen_file_start()
-        for token5tuple in tokens:
-            t1, t2, t3, t4, t5 = token5tuple
-            srow, scol = t3
-            self.kind = token_module.tok_name[t1].lower()
-            self.val = g.toUnicode(t2)
-            self.raw_val = g.toUnicode(t5)
-            if srow != self.last_line_number:
-                # Handle a previous backslash.
-                if self.backslash_seen:
-                    self.gen_backslash()
-                # Start a new row.
-                raw_val = self.raw_val.rstrip()
-                self.backslash_seen = raw_val.endswith('\\')
-                # g.trace('backslash_seen',self.backslash_seen)
-                if self.output_paren_level > 0:
-                    s = self.raw_val.rstrip()
-                    n = g.computeLeadingWhitespaceWidth(s, self.tab_width)
-                    # This n will be one-too-many if formatting has
-                    # changed: foo (
-                    # to:      foo(
-                    self.gen_line_indent(ws=' ' * n)
-                        # Do not set self.lws here!
-                self.last_line_number = srow
-            if trace: g.trace('%10s %r'% (self.kind,self.val))
-            func = getattr(self, 'do_' + self.kind, None)
-            if func: func()
-        self.gen_file_end()
-        return ''.join([z.to_string() for z in self.code_list])
-
-    #
-    # Input token handlers...
-    #
-
-    def do_comment(self):
-        '''Handle a comment token.'''
-        raw_val = self.raw_val.rstrip()
-        val = self.val.rstrip()
-        entire_line = raw_val.lstrip().startswith('#')
-        self.backslash_seen = False
-            # Putting the comment will put the backslash.
-        if entire_line:
-            self.clean('line-indent')
-            self.add_token('comment', raw_val)
-        else:
-            self.gen_blank()
-            self.add_token('comment', val)
-
-    def do_endmarker(self):
-        '''Handle an endmarker token.'''
-        pass
-
-    def do_errortoken(self):
-        '''Handle an errortoken token.'''
-        # This code is executed for versions of Python earlier than 2.4
-        if self.val == '@':
-            self.gen_op(self.val)
-
-    def do_dedent(self):
-        '''Handle dedent token.'''
-        self.level -= 1
-        self.lws = self.level * self.tab_width * ' '
-        self.gen_line_start()
-        # End all classes & defs.
-        for state in self.stack.stack:
-            if state.kind in ('class', 'def'):
-                if state.value >= self.level:
-                    # g.trace(self.level, 'end', state.kind)
-                    self.stack.remove(state.kind)
-                else:
-                    break
-
-    def do_indent(self):
-        '''Handle indent token.'''
-        self.level += 1
-        self.lws = self.val
-        self.gen_line_start()
-
-    def do_name(self):
-        '''Handle a name token.'''
-        name = self.val
-        if name in ('class', 'def'):
-            self.gen_class_or_def(name)
-        elif name in ('from', 'import'):
-            self.gen_import(name)
-        elif name == 'self':
-            self.gen_self()
-        elif self.in_def_line and not self.def_name_seen:
-            if name == '__init__':
-                name = 'constructor'
-            self.gen_word(name)
-            if self.stack.has('class'):
-                self.gen_op_blank(':')
-            else:
-                self.gen_op('=')
-            self.def_name_seen = True
-        elif name in ('and', 'in', 'not', 'not in', 'or'):
-            self.gen_word_op(name)
-        elif name == 'default':
-            # Hard to know where to put a warning comment.
-            self.gen_word(name+'_')
-        else:
-            self.gen_word(name)
-
-    def do_newline(self):
-        '''Handle a regular newline.'''
-        self.gen_line_end()
-
-    def do_nl(self):
-        '''Handle a continuation line.'''
-        self.gen_line_end()
-
-    def do_number(self):
-        '''Handle a number token.'''
-        self.add_token('number', self.val)
-
-    def do_op(self):
-        '''Handle an op token.'''
-        val = self.val
-        if val == '.':
-            self.gen_period()
-        elif val == '@':
-            self.gen_at()
-        elif val == ':':
-            self.gen_colon()
-        elif val == '(':
-            self.gen_open_paren()
-        elif val == ')':
-            self.gen_close_paren()
-        elif val == ',':
-            self.gen_comma()
-        elif val == ';':
-            # Pep 8: Avoid extraneous whitespace immediately before
-            # comma, semicolon, or colon.
-            self.gen_op_blank(val)
-        elif val in '[{':
-            # Pep 8: Avoid extraneous whitespace immediately inside
-            # parentheses, brackets or braces.
-            self.gen_lt(val)
-        elif val in ']}':
-            self.gen_rt(val)
-        elif val == '=':
-            # Pep 8: Don't use spaces around the = sign when used to indicate
-            # a keyword argument or a default parameter value.
-            if self.output_paren_level:
-                self.gen_op_no_blanks(val)
-            else:
-                self.gen_op(val)
-        elif val in '~+-':
-            self.gen_possible_unary_op(val)
-        elif val == '*':
-            self.gen_star_op()
-        elif val == '**':
-            self.gen_star_star_op()
-        else:
-            # Pep 8: always surround binary operators with a single space.
-            # '==','+=','-=','*=','**=','/=','//=','%=','!=','<=','>=','<','>',
-            # '^','~','*','**','&','|','/','//',
-            # Pep 8: If operators with different priorities are used,
-            # consider adding whitespace around the operators with the lowest priority(ies).
-            self.gen_op(val)
-
-    def do_string(self):
-        '''Handle a 'string' token.'''
-        self.add_token('string', self.val)
-        if self.val.find('\\\n'):
-            self.backslash_seen = False
-            # This *does* retain the string's spelling.
-        self.gen_blank()
-
-    #
-    # Output token generators and helpers...
-    #
-
-    def add_token(self, kind, value=''):
-        '''Add a token to the code list.'''
-        token = self.OutputToken(kind, value)
-        self.code_list.append(token)
-        if kind not in (
-            'backslash',
-            'blank', 'blank-lines',
-            'file-start',
-            'line-end', 'line-indent'
-        ):
-            # g.trace(token,g.callers())
-            self.prev_sig_token = token
-
-    def clean(self, kind):
-        '''Remove the last item of token list if it has the given kind.'''
-        prev = self.code_list[-1]
-        if prev.kind == kind:
-            self.code_list.pop()
-
-    def clean_blank_lines(self):
-        '''Remove all vestiges of previous lines.'''
-        table = ('blank-lines', 'line-end', 'line-indent')
-        while self.code_list[-1].kind in table:
-            self.code_list.pop()
-
-    def gen_at(self):
-        
-        val = self.val
-        assert val == '@', val
-        if not self.decorator_seen:
-            self.gen_blank_lines(1)
-            self.decorator_seen = True
-        self.gen_op_no_blanks(val)
-        self.stack.push('decorator')
-
-    def gen_backslash(self):
-        '''Add a backslash token and clear .backslash_seen'''
-        self.add_token('backslash', '\\')
-        self.add_token('line-end', '\n')
-        self.gen_line_indent()
-        self.backslash_seen = False
-
-    def gen_blank(self):
-        '''Add a blank request on the code list.'''
-        prev = self.code_list[-1]
-        if not prev.kind in (
-            'blank', 'blank-lines', 'blank-op',
-            'file-start',
-            'line-end', 'line-indent',
-            'lt', 'op-no-blanks', 'unary-op',
-        ):
-            self.add_token('blank', ' ')
-
-    def gen_blank_lines(self, n):
-        '''
-        Add a request for n blank lines to the code list.
-        Multiple blank-lines request yield at least the maximum of all requests.
-        '''
-        self.clean_blank_lines()
-        kind = self.code_list[-1].kind
-        if kind == 'file-start':
-            self.add_token('blank-lines', n)
-        else:
-            for i in range(0, n + 1):
-                self.add_token('line-end', '\n')
-            # Retain the token (intention) for debugging.
-            self.add_token('blank-lines', n)
-            self.gen_line_indent()
-
-    def gen_class_or_def(self, name):
-        
-        # g.trace(self.level, name)
-        self.decorator_seen = False
-        if self.stack.has('decorator'):
-            self.stack.remove('decorator')
-            self.clean_blank_lines()
-            self.gen_line_end()
-        else:
-            self.gen_blank_lines(1)
-        self.stack.push(name, self.level)
-            # name is 'class' or 'def'
-            # do_dedent pops these entries.
-        if name == 'def':
-            self.in_def_line = True
-            self.in_class_line = False
-            self.def_name_seen = False
-        else:
-            self.extends_flag = False
-            self.in_class_line = True
-            self.gen_word(name)
-
-    def gen_close_paren(self):
-        
-        val = self.val
-        assert val == ')', val
-        self.input_paren_level -= 1
-        if self.in_class_line:
-            self.in_class_line = False
-        else:
-            self.gen_rt(val)
-        self.after_self = False
-
-    def gen_colon(self):
-        
-        val = self.val
-        assert val == ':', val
-        if self.in_def_line:
-            if self.input_paren_level == 0:
-                self.in_def_line = False
-                self.gen_op('->')
-        elif self.in_class_line:
-            if self.input_paren_level == 0:
-                self.in_class_line = False
-        else:
-            pass
-            # TODO
-            # Some colons are correct.
-            # self.gen_op_blank(val)
-
-    def gen_comma(self):
-        
-        val = self.val
-        assert val == ',', val
-        if self.after_self:
-            self.after_self = False
-        else:
-            # Pep 8: Avoid extraneous whitespace immediately before
-            # comma, semicolon, or colon.
-            self.gen_op_blank(val)
-
-    def gen_file_end(self):
-        '''
-        Add a file-end token to the code list.
-        Retain exactly one line-end token.
-        '''
-        self.clean_blank_lines()
-        self.add_token('line-end', '\n')
-        self.add_token('line-end', '\n')
-        self.add_token('file-end')
-
-    def gen_file_start(self):
-        '''Add a file-start token to the code list and the state stack.'''
-        self.add_token('file-start')
-        self.stack.push('file-start')
-
-    def gen_import(self, name):
-        '''Convert an import to something that looks like a call.'''
-        self.gen_word('pass')
-        self.add_token('comment', '# ' + name)
-
-    def gen_line_indent(self, ws=None):
-        '''Add a line-indent token if indentation is non-empty.'''
-        self.clean('line-indent')
-        ws = ws or self.lws
-        if ws:
-            self.add_token('line-indent', ws)
-
-    def gen_line_end(self):
-        '''Add a line-end request to the code list.'''
-        prev = self.code_list[-1]
-        if prev.kind == 'file-start':
-            return
-        self.clean('blank') # Important!
-        if self.delete_blank_lines:
-            self.clean_blank_lines()
-        self.clean('line-indent')
-        if self.backslash_seen:
-            self.gen_backslash()
-        self.add_token('line-end', '\n')
-        self.gen_line_indent()
-            # Add the indentation for all lines
-            # until the next indent or unindent token.
-
-    def gen_line_start(self):
-        '''Add a line-start request to the code list.'''
-        self.gen_line_indent()
-
-    def gen_lt(self, s):
-        '''Add a left paren to the code list.'''
-        assert s in '([{', repr(s)
-        self.output_paren_level += 1
-        self.clean('blank')
-        prev = self.code_list[-1]
-        if self.in_def_line:
-            self.gen_blank()
-            self.add_token('lt', s)
-        elif prev.kind in ('op', 'word-op'):
-            self.gen_blank()
-            if s == '(':
-                # g.trace(self.prev_sig_token)
-                s = '['
-                self.stack.push('tuple', self.output_paren_level)
-            self.add_token('lt', s)
-        elif prev.kind == 'word':
-            # Only suppress blanks before '(' or '[' for non-keyworks.
-            if s == '{' or prev.value in ('if', 'else', 'return'):
-                self.gen_blank()
-            self.add_token('lt', s)
-        elif prev.kind == 'op':
-            self.gen_op(s)
-        else:
-            self.gen_op_no_blanks(s)
-
-    def gen_rt(self, s):
-        '''Add a right paren to the code list.'''
-        assert s in ')]}', repr(s)
-        self.output_paren_level -= 1
-        prev = self.code_list[-1]
-        if prev.kind == 'arg-end':
-            # Remove a blank token preceding the arg-end token.
-            prev = self.code_list.pop()
-            self.clean('blank')
-            self.code_list.append(prev)
-        else:
-            self.clean('blank')
-            prev = self.code_list[-1]
-        if self.stack.has('tuple'):
-            # g.trace('line', self.last_line_number, self.output_paren_level + 1)
-            state = self.stack.get('tuple')
-            if state.value == self.output_paren_level + 1:
-                self.add_token('rt', ']')
-                self.stack.remove('tuple')
-            else:
-                self.add_token('rt', s)
-        elif s == ')' and prev and prev.kind == 'lt' and prev.value == '(':
-            # Remove ()
-            self.code_list.pop()
-        else:
-            self.add_token('rt', s)
-
-    def gen_op(self, s):
-        '''Add op token to code list.'''
-        assert s and g.isString(s), repr(s)
-        self.gen_blank()
-        self.add_token('op', s)
-        self.gen_blank()
-
-    def gen_op_blank(self, s):
-        '''Remove a preceding blank token, then add op and blank tokens.'''
-        assert s and g.isString(s), repr(s)
-        self.clean('blank')
-        self.add_token('op', s)
-        self.gen_blank()
-
-    def gen_op_no_blanks(self, s):
-        '''Add an operator *not* surrounded by blanks.'''
-        self.clean('blank')
-        self.add_token('op-no-blanks', s)
-        
-    def gen_blank_op(self, s):
-        '''Add an operator possibly with a preceding blank.'''
-        self.gen_blank()
-        self.add_token('blank-op', s)
-
-    def gen_open_paren(self):
-        
-        val = self.val
-        assert val == '(', val
-        self.input_paren_level += 1
-        if self.in_class_line:
-            if not self.extends_flag:
-                self.gen_word('extends')
-                self.extends_flag = True
-        else:
-            # Generate a function call or a list.
-            self.gen_lt(val)
-        self.after_self = False
-
-    def gen_period(self):
-        
-        val = self.val
-        assert val == '.', val
-        if self.after_self:
-            self.after_self = False
-        else:
-            self.gen_op_no_blanks(val)
-
-    def gen_possible_unary_op(self, s):
-        '''Add a unary or binary op to the token list.'''
-        self.clean('blank')
-        prev = self.code_list[-1]
-        if prev.kind in ('lt', 'op', 'op-no-blanks', 'word-op'):
-            self.gen_unary_op(s)
-        elif prev.kind == 'word' and prev.value in ('elif', 'if', 'return', 'while'):
-            self.gen_unary_op(s)
-        else:
-            self.gen_op(s)
-
-    def gen_unary_op(self, s):
-        '''Add an operator request to the code list.'''
-        assert s and g.isString(s), repr(s)
-        self.gen_blank()
-        self.add_token('unary-op', s)
-
-    def gen_self(self):
-        if self.in_def_line:
-            self.after_self = True
-        else:
-            self.gen_blank_op('@')
-            self.after_self = True
-
-    def gen_star_op(self):
-        '''Put a '*' op, with special cases for *args.'''
-        val = '*'
-        if self.output_paren_level:
-            i = len(self.code_list) - 1
-            if self.code_list[i].kind == 'blank':
-                i -= 1
-            token = self.code_list[i]
-            if token.kind == 'lt':
-                self.gen_op_no_blanks(val)
-            elif token.value == ',':
-                self.gen_blank()
-                self.add_token('op-no-blanks', val)
-            else:
-                self.gen_op(val)
-        else:
-            self.gen_op(val)
-
-    def gen_star_star_op(self):
-        '''Put a ** operator, with a special case for **kwargs.'''
-        val = '**'
-        if self.output_paren_level:
-            i = len(self.code_list) - 1
-            if self.code_list[i].kind == 'blank':
-                i -= 1
-            token = self.code_list[i]
-            if token.value == ',':
-                self.gen_blank()
-                self.add_token('op-no-blanks', val)
-            else:
-                self.gen_op(val)
-        else:
-            self.gen_op(val)
-
-    def gen_word(self, s):
-        '''Add a word request to the code list.'''
-        assert s and g.isString(s), repr(s)
-        self.gen_blank()
-        self.add_token('word', s)
-        self.gen_blank()
-
-    def gen_word_op(self, s):
-        '''Add a word-op request to the code list.'''
-        assert s and g.isString(s), repr(s)
-        self.gen_blank()
-        self.add_token('word-op', s)
-        self.gen_blank()
-
-
 class CoffeeScriptTraverser(object):
     '''A class to convert python sources to coffeescript sources.'''
     # pylint: disable=consider-using-enumerate
@@ -752,7 +110,8 @@ class CoffeeScriptTraverser(object):
         self.controller = controller
         self.sync_op = None
         self.sync_string = None
-        self.sync_word = None
+        self.sync_node = None
+        self.class_stack = []
 
     def format(self, node, s, tokens):
         '''Format the node (or list of nodes) and its descendants.'''
@@ -760,7 +119,7 @@ class CoffeeScriptTraverser(object):
         sync = TokenSync(s, tokens)
         self.sync_op = sync.sync_op
         self.sync_string = sync.sync_string
-        self.sync_word = sync.sync_word
+        self.sync_node = sync.sync_node
         val = self.visit(node)
         return val or ''
 
@@ -793,46 +152,48 @@ class CoffeeScriptTraverser(object):
     # ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
 
     def do_ClassDef(self, node):
-        
-        comments = self.sync_word(node, 'class')
-        result = []
+
+        result = self.sync_node(node, 'class')
         name = node.name # Only a plain string is valid.
         bases = [self.visit(z) for z in node.bases] if node.bases else []
         result.append('\n\n')
         if bases:
-            result.append(self.indent('class %s(%s):\n' % (name, ', '.join(bases))))
+            # result.append(self.indent('class %s(%s):\n' % (name, ', '.join(bases))))
+            result.append(self.indent('class %s extends %s\n' % (name, ', '.join(bases))))
         else:
-            result.append(self.indent('class %s:\n' % name))
+            result.append(self.indent('class %s\n' % name))
+        self.class_stack.append(name)
         for i, z in enumerate(node.body):
             self.level += 1
-            # self.first_statement = i == 0
             result.append(self.visit(z))
             self.level -= 1
-        s = ''.join(comments + result)
-        # g.trace(result[2].rstrip())
-        return s
+        self.class_stack.pop()
+        return ''.join(result)
 
     # FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
 
     def do_FunctionDef(self, node):
         '''Format a FunctionDef node.'''
-        self.sync_word(node, 'def')
-        result = []
+        result = self.sync_node(node, 'def')
         if node.decorator_list:
             for z in node.decorator_list:
                 result.append(self.indent('@%s\n' % self.visit(z)))
         name = node.name # Only a plain string is valid.
         args = self.visit(node.args) if node.args else ''
+        args = [z.strip() for z in args.split(',')]
+        if self.class_stack and args and args[0] == '@':
+            args = args[1:]
+        args = ', '.join(args)
+        args = '(%s) ' % args if args else ''
         result.append('\n')
-        result.append(self.indent('def %s(%s):\n' % (name, args)))
+        sep = ': ' if self.class_stack else ' = '
+        s = '%s%s%s->\n' % (name, sep, args)
+        result.append(self.indent(s))
         for i, z in enumerate(node.body):
             self.level += 1
-            # self.first_statement = i == 0
             result.append(self.visit(z))
             self.level -= 1
-        s = ''.join(result)
-        # g.trace(result[1].rstrip())
-        return s
+        return ''.join(result)
 
     def do_Interactive(self, node):
         for z in node.body:
@@ -854,7 +215,9 @@ class CoffeeScriptTraverser(object):
 
     def do_Expr(self, node):
         '''An outer expression: must be indented.'''
-        return self.indent('%s\n' % self.visit(node.value))
+        comments = self.sync_node(node, 'expr')
+        s = '%s\n' % self.visit(node.value)
+        return ''.join(comments) + self.indent(s)
 
     def do_Expression(self, node):
         '''An inner expression: do not indent.'''
@@ -924,9 +287,11 @@ class CoffeeScriptTraverser(object):
     # Attribute(expr value, identifier attr, expr_context ctx)
 
     def do_Attribute(self, node):
-        return '%s.%s' % (
-            self.visit(node.value),
-            node.attr) # Don't visit node.attr: it is always a string.
+        
+        # Don't visit node.attr: it is always a string.
+        val = self.visit(node.value)
+        val = '@' if val == '@' else val + '.'
+        return val + node.attr
 
     def do_Bytes(self, node): # Python 3.x only.
         return str(node.s)
@@ -1007,7 +372,7 @@ class CoffeeScriptTraverser(object):
         return '%s for %s' % (elt, ''.join(gens))
 
     def do_Name(self, node):
-        return node.id
+        return '@' if node.id == 'self' else node.id
 
     def do_NameConstant(self, node): # Python 3 only.
         s = repr(node.value)
@@ -1148,15 +513,13 @@ class CoffeeScriptTraverser(object):
 
     def do_Assert(self, node):
         
-        self.sync_word(node, 'assert')
+        comments = self.sync_node(node, 'assert')
         test = self.visit(node.test)
         if getattr(node, 'msg', None) is not None:
-            message = self.visit(node.msg)
-            s = self.indent('assert %s, %s\n' % (test, message))
+            s = 'assert %s, %s\n' % (test, self.visit(node.msg))
         else:
-            s = self.indent('assert %s\n' % test)
-        g.trace(s)
-        return s
+            s = 'assert %s\n' % test
+        return ''.join(comments) + self.indent(s)
 
     def do_Assign(self, node):
         
@@ -1179,24 +542,24 @@ class CoffeeScriptTraverser(object):
 
     def do_Break(self, node):
         
-        self.sync_word(node, 'break')
-        return self.indent('break\n')
+        comments = self.sync_node(node, 'break')
+        return ''.join(comments) + self.indent('break\n')
 
     def do_Continue(self, node):
         
-        self.sync_word(node, 'continue')
-        return self.indent('continue\n')
+        comments = self.sync_node(node, 'continue')
+        return ''.join(comments) + self.indent('continue\n')
 
     def do_Delete(self, node):
         
-        self.sync_word(node, 'del')
+        comments = self.sync_node(node, 'del')
         targets = [self.visit(z) for z in node.targets]
-        return self.indent('del %s\n' % ','.join(targets))
+        s = 'del %s\n' % ','.join(targets)
+        return ''.join(comments) + self.indent(s)
 
     def do_ExceptHandler(self, node):
-        
-        self.sync_word(node, 'except')
-        result = []
+
+        result = self.sync_node(node, 'except')
         result.append(self.indent('except'))
         if getattr(node, 'type', None):
             result.append(' %s' % self.visit(node.type))
@@ -1216,7 +579,7 @@ class CoffeeScriptTraverser(object):
 
     def do_Exec(self, node):
         
-        self.sync_word(node, 'exec')
+        comments = self.sync_node(node, 'exec')
         body = self.visit(node.body)
         args = [] # Globals before locals.
         if getattr(node, 'globals', None):
@@ -1224,15 +587,14 @@ class CoffeeScriptTraverser(object):
         if getattr(node, 'locals', None):
             args.append(self.visit(node.locals))
         if args:
-            return self.indent('exec %s in %s\n' % (
-                body, ','.join(args)))
+            s = 'exec %s in %s\n' % (body, ','.join(args))
         else:
-            return self.indent('exec %s\n' % (body))
+            s = 'exec %s\n' % body
+        return ''.join(comments) + self.indent(s)
 
     def do_For(self, node):
-        
-        self.sync_word(node, 'for')
-        result = []
+
+        result = self.sync_node(node, 'for')
         result.append(self.indent('for %s in %s:\n' % (
             self.visit(node.target),
             self.visit(node.iter))))
@@ -1241,6 +603,7 @@ class CoffeeScriptTraverser(object):
             result.append(self.visit(z))
             self.level -= 1
         if node.orelse:
+            result.extend(self.sync_node(node.orelse, 'orelse'))
             result.append(self.indent('else:\n'))
             for z in node.orelse:
                 self.level += 1
@@ -1250,14 +613,13 @@ class CoffeeScriptTraverser(object):
 
     def do_Global(self, node):
         
-        self.sync_word(node, 'global')
-        return self.indent('global %s\n' % (
-            ','.join(node.names)))
+        comments = self.sync_node(node, 'global')
+        s = 'global %s\n' % ','.join(node.names)
+        return ''.join(comments) + self.indent(s)
 
     def do_If(self, node):
-        
-        self.sync_word(node, 'if')
-        result = []
+
+        result = self.sync_node(node, 'if')
         result.append(self.indent('if %s:\n' % (
             self.visit(node.test))))
         for z in node.body:
@@ -1265,7 +627,7 @@ class CoffeeScriptTraverser(object):
             result.append(self.visit(z))
             self.level -= 1
         if node.orelse:
-            self.sync_word(node, 'else')
+            result.extend(self.sync_node(node.orelse, 'orelse'))
             result.append(self.indent('else:\n'))
             for z in node.orelse:
                 self.level += 1
@@ -1275,16 +637,15 @@ class CoffeeScriptTraverser(object):
 
     def do_Import(self, node):
         
-        self.sync_word(node, 'import')
+        comments = self.sync_node(node, 'import')
         names = []
         for fn, asname in self.get_import_names(node):
             if asname:
                 names.append('%s as %s' % (fn, asname))
             else:
                 names.append(fn)
-        s = self.indent('import %s\n' % (','.join(names)))
-        g.trace(s)
-        return s
+        s = 'import %s\n' % ','.join(names)
+        return ''.join(comments) + self.indent(s)
 
     def get_import_names(self, node):
         '''Return a list of the the full file names in the import statement.'''
@@ -1296,71 +657,65 @@ class CoffeeScriptTraverser(object):
         return result
 
     def do_ImportFrom(self, node):
-        
-        
+
+        comments = self.sync_node(node, 'from')
         names = []
         for fn, asname in self.get_import_names(node):
             if asname:
                 names.append('%s as %s' % (fn, asname))
             else:
                 names.append(fn)
-        self.sync_word(node, 'from')
-        self.sync_word(node, 'import')
-        s = self.indent('from %s import %s\n' % (
-                        node.module,
-                        ','.join(names)))
-        g.trace(s)
-        return s
+        s = 'from %s import %s\n' % (node.module, ','.join(names))
+        return ''.join(comments) + self.indent(s)
 
     def do_Pass(self, node):
         
-        self.sync_word(node, 'pass')
-        return self.indent('pass\n')
+        comments = self.sync_node(node, 'pass')
+        return ''.join(comments) + self.indent('pass\n')
 
     # Python 2.x only
 
     def do_Print(self, node):
         
-        self.sync_word(node, 'print')
+        comments = self.sync_node(node, 'print')
         vals = []
         for z in node.values:
             vals.append(self.visit(z))
-        if getattr(node, 'dest', None):
+        if getattr(node, 'dest', None) is not None:
             vals.append('dest=%s' % self.visit(node.dest))
-        if getattr(node, 'nl', None):
+        if getattr(node, 'nl', None) is not None:
             if node.nl == 'False':
                 vals.append('nl=%s' % node.nl)
-        return self.indent('print(%s)\n' % (
-            ','.join(vals)))
+        s = 'print(%s)\n' % ','.join(vals)
+        return ''.join(comments) + self.indent(s)
 
     def do_Raise(self, node):
         
-        self.sync_word(node, 'raise')
+        comments = self.sync_node(node, 'raise')
         args = []
         for attr in ('type', 'inst', 'tback'):
             if getattr(node, attr, None) is not None:
                 args.append(self.visit(getattr(node, attr)))
         if args:
-            return self.indent('raise %s\n' % (
-                ','.join(args)))
+            s = 'raise %s\n' % ', '.join(args)
         else:
-            return self.indent('raise\n')
+            s = 'raise\n'
+        return ''.join(comments) + self.indent(s)
 
     def do_Return(self, node):
         
-        self.sync_word(node, 'return')
+        comments = self.sync_node(node, 'return')
         if node.value:
-            return self.indent('return %s\n' % (
-                self.visit(node.value).strip()))
+            s = 'return %s\n' % self.visit(node.value).strip()
         else:
-            return self.indent('return\n')
+            s = 'return\n'
+        return ''.join(comments) + self.indent(s)
 
     # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
     def do_Try(self, node): # Python 3
 
-        self.sync_word(node, 'try')
-        result = []
+        result = self.sync_node(node, 'try')
         result.append(self.indent('try:\n'))
         for z in node.body:
             self.level += 1
@@ -1370,14 +725,14 @@ class CoffeeScriptTraverser(object):
             for z in node.handlers:
                 result.append(self.visit(z))
         if node.orelse:
-            self.sync_word(node, 'else')
+            result.extend(self.sync_node(node.orelse, 'orelse'))
             result.append(self.indent('else:\n'))
             for z in node.orelse:
                 self.level += 1
                 result.append(self.visit(z))
                 self.level -= 1
         if node.finalbody:
-            self.sync_word(node, 'finally')
+            result.extend(self.sync_node(node.finalbody, 'finalbody'))
             result.append(self.indent('finally:\n'))
             for z in node.finalbody:
                 self.level += 1
@@ -1386,9 +741,8 @@ class CoffeeScriptTraverser(object):
         return ''.join(result)
 
     def do_TryExcept(self, node):
-        
-        self.sync_word(node, 'try')
-        result = []
+
+        result = self.sync_node(node, 'try')
         result.append(self.indent('try:\n'))
         for z in node.body:
             self.level += 1
@@ -1398,6 +752,7 @@ class CoffeeScriptTraverser(object):
             for z in node.handlers:
                 result.append(self.visit(z))
         if node.orelse:
+            result.extend(self.sync_node(node.orelse, 'orelse'))
             result.append('else:\n')
             for z in node.orelse:
                 self.level += 1
@@ -1407,14 +762,13 @@ class CoffeeScriptTraverser(object):
 
     def do_TryFinally(self, node):
         
-        self.sync_word(node, 'try')
-        result = []
+        result = self.sync_node(node, 'try')
         result.append(self.indent('try:\n'))
         for z in node.body:
             self.level += 1
             result.append(self.visit(z))
             self.level -= 1
-        self.sync_word(node, 'finally')
+        result.extend(self.sync_node(node.finalbody, 'finalbody'))
         result.append(self.indent('finally:\n'))
         for z in node.finalbody:
             self.level += 1
@@ -1424,8 +778,7 @@ class CoffeeScriptTraverser(object):
 
     def do_While(self, node):
         
-        self.sync_word(node, 'while')
-        result = []
+        result = self.sync_node(node, 'while')
         result.append(self.indent('while %s:\n' % (
             self.visit(node.test))))
         for z in node.body:
@@ -1433,6 +786,7 @@ class CoffeeScriptTraverser(object):
             result.append(self.visit(z))
             self.level -= 1
         if node.orelse:
+            result.extend(self.sync_node(node.orelse, 'orelse'))
             result.append('else:\n')
             for z in node.orelse:
                 self.level += 1
@@ -1442,8 +796,7 @@ class CoffeeScriptTraverser(object):
 
     def do_With(self, node):
 
-        self.sync_word(node, 'with')
-        result = []
+        result = self.sync_node(node, 'with')
         result.append(self.indent('with '))
         if hasattr(node, 'context_expression'):
             result.append(self.visit(node.context_expresssion))
@@ -1465,12 +818,12 @@ class CoffeeScriptTraverser(object):
 
     def do_Yield(self, node):
         
-        self.sync_word(node, 'yield')
-        if getattr(node, 'value', None):
-            return self.indent('yield %s\n' % (
-                self.visit(node.value)))
+        comments = self.sync_node(node, 'yield')
+        if getattr(node, 'value', None) is not None:
+            s = 'yield %s\n' % self.visit(node.value)
         else:
-            return self.indent('yield\n')
+            s ='yield\n'
+        return ''.join(comments) + self.indent(s)
 
 
 class LeoGlobals(object):
@@ -1714,11 +1067,9 @@ class MakeCoffeeScriptController(object):
             s = open(fn).read()
             readlines = g.ReadLinesClass(s).next
             tokens = list(tokenize.generate_tokens(readlines))
-            if use_tree:
-                node = ast.parse(s, filename=fn, mode='exec')
-                s = CoffeeScriptTraverser(controller=self).format(node, s, tokens)
-            else:
-                s = CoffeeScriptTokenizer(controller=self).format(tokens)
+            # s = CoffeeScriptTokenizer(controller=self).format(tokens)
+            node = ast.parse(s, filename=fn, mode='exec')
+            s = CoffeeScriptTraverser(controller=self).format(node, s, tokens)
             f = open(out_fn, 'w')
             self.output_time_stamp(f)
             f.write(s)
@@ -1927,10 +1278,6 @@ class TokenSync(object):
         self.line_tokens = self.make_line_tokens(tokens)
         self.string_tokens = self.make_string_tokens()
         self.comment_lines = self.make_comment_lines()
-        # TODO: remove. Now used by advance.
-        self.last_line_number = -1
-        self.queue = []
-        self.tokens = tokens
 
     def make_comment_lines(self):
         '''Return a copy of line_tokens containing only full-line comments.'''
@@ -1959,7 +1306,12 @@ class TokenSync(object):
 
         result = []
         for s in self.lines:
-            result.append(list(tokenize.generate_tokens(readlines(s))))
+            try:
+                # Fails for multi-line triple-quoted strings.
+                result.append(list(tokenize.generate_tokens(readlines(s))))
+            except tokenize.TokenError:
+                g.trace(repr(s))
+                raise
         assert len(self.lines) == len(result), len(result)
         return result
 
@@ -1967,7 +1319,6 @@ class TokenSync(object):
         '''Return a copy of line_tokens containing only string tokens.'''
         result = []
         for aList in self.line_tokens:
-            # g.trace([self.token_type(z) for z in aList])
             result.append([z for z in aList if self.token_type(z) == 'string'])
         assert len(result) == len(self.line_tokens)
         return result
@@ -2005,9 +1356,9 @@ class TokenSync(object):
         while i < n:
             token = self.comment_lines[i]
             if token:
-                s = self.token_val(token).rstrip()
+                s = self.token_raw_val(token).rstrip()+'\n'
                 comments.append(s)
-                g.trace('%11s: %s' % (i, s))
+                g.trace('%11s: %s' % (i, s.rstrip()))
             i += 1
         self.first_comment_line = i
         return comments
@@ -2029,7 +1380,7 @@ class TokenSync(object):
         else:
             return '<can not happen: no lineno>'
 
-    def sync_word(self, node, name):
+    def sync_node(self, node, name):
         '''Advance tokens until the given keyword is found.'''
         comments = self.show_comments(node)
         g.trace('%-12s %2s: %s' % (name, node.lineno, self.line_at(node)))

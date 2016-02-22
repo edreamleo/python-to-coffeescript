@@ -10,19 +10,21 @@ def spam():
     b = 2
     
 # Comment before TestClass.
-class TestClass:
+class TestClass(object):
     
     # Comment before InnerClass.
 
-    class InnerClass:
+    class InnerClass(object, str):
         # Comment.
-        def __init__(self):
+        def __init__(self, a):
             '''Ctor for InnerClass'''
-            pass
+            self.a = a
         def inner1(self):
             """inner1 docstring"""
-    def test1():
-        pass # comment
+    def test1(a):
+        # Comment1 before print statement.
+        # Comment2 before print statement.
+        print(a) # comment
     def test2():
         pass
         
