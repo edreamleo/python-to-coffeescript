@@ -54,6 +54,13 @@
 <v t="ekr.20160221033247.1"><vh>stat vars</vh></v>
 <v t="ekr.20160220103223.39"><vh>cst.print_stats</vh></v>
 <v t="ekr.20160220103223.21"><vh>cst.gen_arg_start &amp; gen_arg_end (not used)</vh></v>
+<v t="ekr.20160220050433.188"><vh>class TestClass</vh>
+<v t="ekr.20160220050433.189"><vh>parse_group (Guido)</vh></v>
+<v t="ekr.20160220050433.190"><vh>return_all</vh></v>
+<v t="ekr.20160220050433.191"><vh>return_array</vh></v>
+<v t="ekr.20160220050433.192"><vh>return_list</vh></v>
+<v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
+</v>
 </v>
 </v>
 <v t="ekr.20160220050053.2"><vh>@clean README.md</vh>
@@ -64,9 +71,14 @@
 <v t="ekr.20160221071408.1"><vh>Code notes</vh></v>
 <v t="ekr.20160221071735.1"><vh>Summary</vh></v>
 </v>
+<v t="ekr.20160222040422.1"><vh>@clean design.md</vh>
+<v t="ekr.20160222023718.1"><vh>A fascinating sub-project</vh></v>
+<v t="ekr.20160222030015.1"><vh>2.1.5 Explicit line joining</vh></v>
+<v t="ekr.20160222030107.1"><vh>ast differences</vh></v>
+</v>
 <v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
-<v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
+<v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.11"><vh>  main</vh></v>
 <v t="ekr.20160220050433.7"><vh>  utility functions</vh>
 <v t="ekr.20160220050433.8"><vh>dump</vh></v>
@@ -91,7 +103,7 @@
 <v t="ekr.20160220103223.10"><vh>ct.do_endmarker</vh></v>
 <v t="ekr.20160220103223.11"><vh>ct.do_errortoken</vh></v>
 <v t="ekr.20160220103223.12"><vh>ct.do_indent &amp; do_dedent</vh></v>
-<v t="ekr.20160220103223.13"><vh>ct.do_name &amp; helpers</vh></v>
+<v t="ekr.20160220103223.13"><vh>ct.do_name</vh></v>
 <v t="ekr.20160220103223.14"><vh>ct.do_newline</vh></v>
 <v t="ekr.20160220103223.15"><vh>ct.do_nl</vh></v>
 <v t="ekr.20160220103223.16"><vh>ct.do_number</vh></v>
@@ -233,21 +245,17 @@
 </v>
 </v>
 <v t="ekr.20160220103223.3"><vh>class ParseState</vh></v>
-<v t="ekr.20160220050433.188"><vh>class TestClass</vh>
-<v t="ekr.20160220050433.189"><vh>parse_group (Guido)</vh></v>
-<v t="ekr.20160220050433.190"><vh>return_all</vh></v>
-<v t="ekr.20160220050433.191"><vh>return_array</vh></v>
-<v t="ekr.20160220050433.192"><vh>return_list</vh></v>
-<v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
-</v>
 <v t="ekr.20160221143000.1"><vh>class TokenSync</vh>
 <v t="ekr.20160221143402.1"><vh> cv.ctor</vh></v>
-<v t="ekr.20160221124544.1"><vh>cv.advance</vh></v>
+<v t="ekr.20160221124544.1"><vh>cv.advance (test)</vh></v>
 <v t="ekr.20160221144446.1"><vh>cv.do_backslash (maybe)</vh></v>
 <v t="ekr.20160221143755.1"><vh>cv.do_line_indent (maybe)</vh></v>
+<v t="ekr.20160221163955.1"><vh>cv.dump_queue &amp; enqueue</vh></v>
+<v t="ekr.20160221151640.1"><vh>cv.sync_op</vh></v>
 <v t="ekr.20160221145254.1"><vh>cv.sync_word</vh></v>
 </v>
 </v>
+<v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
 <v t="ekr.20160221042509.1"><vh>recent</vh>
 <v t="ekr.20160220103223.4"></v>
@@ -257,9 +265,17 @@
 <v t="ekr.20160220143842.1"></v>
 <v t="ekr.20160220050433.121"></v>
 </v>
+<v t="ekr.20160222023712.1"><vh>recent2</vh>
 <v t="ekr.20160220103223.1"></v>
 <v t="ekr.20160220050433.14"></v>
 <v t="ekr.20160221143000.1"></v>
+<v t="ekr.20160220050433.18"></v>
+<v t="ekr.20160220050433.56"></v>
+<v t="ekr.20160221124544.1"></v>
+<v t="ekr.20160220050433.34"></v>
+<v t="ekr.20160220050433.19"></v>
+<v t="ekr.20160220050433.20"></v>
+</v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -578,14 +594,17 @@ class CoffeeScriptTraverser(object):
     def __init__(self, controller):
         '''Ctor for CoffeeScriptFormatter class.'''
         self.controller = controller
-        self.first_statement = False
+        self.sync_op = None
+        self.sync_word = None
     @others
 </t>
 <t tx="ekr.20160220050433.16">
 def format(self, node, tokens):
     '''Format the node (or list of nodes) and its descendants.'''
     self.level = 0
-    self.tokens = tokens
+    ts = TokenSync(tokens)
+    self.sync_op = ts.sync_op
+    self.sync_word = ts.sync_word
     val = self.visit(node)
     return val or ''
 </t>
@@ -607,8 +626,9 @@ def visit(self, node):
         return s
 </t>
 <t tx="ekr.20160220050433.18">
-# Contexts...
-</t>
+#
+# CoffeeScriptTraverser contexts...
+#</t>
 <t tx="ekr.20160220050433.188">
 
 class TestClass(object):
@@ -638,6 +658,8 @@ def parse_group(group):
 # ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
 
 def do_ClassDef(self, node):
+    
+    self.sync_word('class')
     result = []
     name = node.name # Only a plain string is valid.
     bases = [self.visit(z) for z in node.bases] if node.bases else []
@@ -648,10 +670,12 @@ def do_ClassDef(self, node):
         result.append(self.indent('class %s:\n' % name))
     for i, z in enumerate(node.body):
         self.level += 1
-        self.first_statement = i == 0
+        # self.first_statement = i == 0
         result.append(self.visit(z))
         self.level -= 1
-    return ''.join(result)
+    s = ''.join(result)
+    g.trace(result[2].rstrip())
+    return s
 </t>
 <t tx="ekr.20160220050433.190">
 def return_all(self):
@@ -709,6 +733,7 @@ else:
 
 def do_FunctionDef(self, node):
     '''Format a FunctionDef node.'''
+    self.sync_word('def')
     result = []
     if node.decorator_list:
         for z in node.decorator_list:
@@ -719,10 +744,12 @@ def do_FunctionDef(self, node):
     result.append(self.indent('def %s(%s):\n' % (name, args)))
     for i, z in enumerate(node.body):
         self.level += 1
-        self.first_statement = i == 0
+        # self.first_statement = i == 0
         result.append(self.visit(z))
         self.level -= 1
-    return ''.join(result)
+    s = ''.join(result)
+    g.trace(result[1].rstrip())
+    return s
 </t>
 <t tx="ekr.20160220050433.21">
 def do_Interactive(self, node):
@@ -732,7 +759,7 @@ def do_Interactive(self, node):
 <t tx="ekr.20160220050433.22">
 def do_Module(self, node):
 
-    return''.join([self.visit(z) for z in node.body])
+    return ''.join([self.visit(z) for z in node.body])
 </t>
 <t tx="ekr.20160220050433.23">
 def do_Lambda(self, node):
@@ -741,7 +768,10 @@ def do_Lambda(self, node):
         self.visit(node.body)))
 </t>
 <t tx="ekr.20160220050433.24">
-# Expressions...
+#
+# CoffeeScriptTraverser expressions...
+#
+
 </t>
 <t tx="ekr.20160220050433.25">
 def do_Expr(self, node):
@@ -777,8 +807,9 @@ def do_Store(self, node):
     return 'Store'
 </t>
 <t tx="ekr.20160220050433.29">
-# Operands...
-</t>
+#
+# CoffeeScriptTraverser operands...
+#</t>
 <t tx="ekr.20160220050433.30">
 # arguments = (expr* args, identifier? vararg, identifier? kwarg, expr* defaults)
 
@@ -843,7 +874,9 @@ def do_Call(self, node):
     if getattr(node, 'kwargs', None):
         args.append('**%s' % (self.visit(node.kwargs)))
     args = [z for z in args if z] # Kludge: Defensive coding.
-    return '%s(%s)' % (func, ','.join(args))
+    s = '%s(%s)' % (func, ','.join(args))
+    g.trace(s)
+    return s
 </t>
 <t tx="ekr.20160220050433.35">
 # keyword = (identifier arg, expr value)
@@ -949,18 +982,20 @@ def do_Str(self, node):
     '''A string constant, including docstrings.'''
     # A pretty spectacular hack.
     # We assume docstrings are the first expr following a class or def.
-    docstring = False
-    if self.first_statement:
-        callers = ''.join([z for z in g.callers(2).split(',') if z != 'visit'])
-        docstring = callers.endswith('do_Expr')
-    if docstring:
-        s = repr(node.s).replace('\\n','\n')
-        if s.startswith('"'):
-            return '""%s""' % s
-        else:
-            return "''%s''" % s
-    else:
-        return repr(node.s)
+    return repr(node.s)
+    # TODO: remove all this.
+    # docstring = False
+    # if self.first_statement:
+        # callers = ''.join([z for z in g.callers(2).split(',') if z != 'visit'])
+        # docstring = callers.endswith('do_Expr')
+    # if docstring:
+        # s = repr(node.s).replace('\\n','\n')
+        # if s.startswith('"'):
+            # return '""%s""' % s
+        # else:
+            # return "''%s''" % s
+    # else:
+        # return repr(node.s)
 </t>
 <t tx="ekr.20160220050433.48">
 # Subscript(expr value, slice slice, expr_context ctx)
@@ -976,8 +1011,9 @@ def do_Tuple(self, node):
     return '(%s)' % ', '.join(elts)
 </t>
 <t tx="ekr.20160220050433.50">
-# Operators...
-</t>
+#
+# CoffeeScriptTraverser operators...
+#</t>
 <t tx="ekr.20160220050433.51">
 def do_BinOp(self, node):
     return '%s%s%s' % (
@@ -1019,45 +1055,67 @@ def do_IfExp(self, node):
         self.visit(node.orelse))
 </t>
 <t tx="ekr.20160220050433.56">
-# Statements...
-</t>
+#
+# CoffeeScriptTraverser statements...
+#</t>
 <t tx="ekr.20160220050433.57">
 def do_Assert(self, node):
+    
+    self.sync_word('assert')
     test = self.visit(node.test)
-    if getattr(node, 'msg', None):
+    if getattr(node, 'msg', None) is not None:
         message = self.visit(node.msg)
-        return self.indent('assert %s, %s\n' % (test, message))
+        s = self.indent('assert %s, %s\n' % (test, message))
     else:
-        return self.indent('assert %s\n' % test)
+        s = self.indent('assert %s\n' % test)
+    g.trace(s)
+    return s
 </t>
 <t tx="ekr.20160220050433.58">
 def do_Assign(self, node):
-    return self.indent('%s=%s\n' % (
-        '='.join([self.visit(z) for z in node.targets]),
-        self.visit(node.value)))
+    
+    self.sync_op('=')
+    s = self.indent('%s=%s\n' % (
+                    '='.join([self.visit(z) for z in node.targets]),
+                    self.visit(node.value)))
+    g.trace(s)
+    return s
 </t>
 <t tx="ekr.20160220050433.59">
 def do_AugAssign(self, node):
-    return self.indent('%s%s=%s\n' % (
+    
+    op = self.op_name(node.op)
+    self.sync_op(op)
+    s = self.indent('%s%s=%s\n' % (
         self.visit(node.target),
-        self.op_name(node.op), # Bug fix: 2013/03/08.
+        op,
         self.visit(node.value)))
+    g.trace(s)
+    return s
 </t>
 <t tx="ekr.20160220050433.60">
 def do_Break(self, node):
+    
+    self.sync_word('break')
     return self.indent('break\n')
 </t>
 <t tx="ekr.20160220050433.61">
 def do_Continue(self, node):
+    
+    self.sync_word('continue')
     return self.indent('continue\n')
 </t>
 <t tx="ekr.20160220050433.62">
 def do_Delete(self, node):
+    
+    self.sync_word('del')
     targets = [self.visit(z) for z in node.targets]
     return self.indent('del %s\n' % ','.join(targets))
 </t>
 <t tx="ekr.20160220050433.63">
 def do_ExceptHandler(self, node):
+    
+    self.sync_word('except')
     result = []
     result.append(self.indent('except'))
     if getattr(node, 'type', None):
@@ -1078,6 +1136,8 @@ def do_ExceptHandler(self, node):
 # Python 2.x only
 
 def do_Exec(self, node):
+    
+    self.sync_word('exec')
     body = self.visit(node.body)
     args = [] # Globals before locals.
     if getattr(node, 'globals', None):
@@ -1092,6 +1152,8 @@ def do_Exec(self, node):
 </t>
 <t tx="ekr.20160220050433.65">
 def do_For(self, node):
+    
+    self.sync_word('for')
     result = []
     result.append(self.indent('for %s in %s:\n' % (
         self.visit(node.target),
@@ -1110,11 +1172,15 @@ def do_For(self, node):
 </t>
 <t tx="ekr.20160220050433.66">
 def do_Global(self, node):
+    
+    self.sync_word('global')
     return self.indent('global %s\n' % (
         ','.join(node.names)))
 </t>
 <t tx="ekr.20160220050433.67">
 def do_If(self, node):
+    
+    self.sync_word('if')
     result = []
     result.append(self.indent('if %s:\n' % (
         self.visit(node.test))))
@@ -1123,6 +1189,7 @@ def do_If(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
+        self.sync_word('else')
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
@@ -1132,14 +1199,17 @@ def do_If(self, node):
 </t>
 <t tx="ekr.20160220050433.68">
 def do_Import(self, node):
+    
+    self.sync_word('import')
     names = []
     for fn, asname in self.get_import_names(node):
         if asname:
             names.append('%s as %s' % (fn, asname))
         else:
             names.append(fn)
-    return self.indent('import %s\n' % (
-        ','.join(names)))
+    s = self.indent('import %s\n' % (','.join(names)))
+    g.trace(s)
+    return s
 </t>
 <t tx="ekr.20160220050433.69">
 def get_import_names(self, node):
@@ -1157,24 +1227,34 @@ def get_import_names(self, node):
 #</t>
 <t tx="ekr.20160220050433.70">
 def do_ImportFrom(self, node):
+    
+    
     names = []
     for fn, asname in self.get_import_names(node):
         if asname:
             names.append('%s as %s' % (fn, asname))
         else:
             names.append(fn)
-    return self.indent('from %s import %s\n' % (
-        node.module,
-        ','.join(names)))
+    self.sync_word('from')
+    self.sync_word('import')
+    s = self.indent('from %s import %s\n' % (
+                    node.module,
+                    ','.join(names)))
+    g.trace(s)
+    return s
 </t>
 <t tx="ekr.20160220050433.71">
 def do_Pass(self, node):
+    
+    self.sync_word('pass')
     return self.indent('pass\n')
 </t>
 <t tx="ekr.20160220050433.72">
 # Python 2.x only
 
 def do_Print(self, node):
+    
+    self.sync_word('print')
     vals = []
     for z in node.values:
         vals.append(self.visit(z))
@@ -1188,6 +1268,8 @@ def do_Print(self, node):
 </t>
 <t tx="ekr.20160220050433.73">
 def do_Raise(self, node):
+    
+    self.sync_word('raise')
     args = []
     for attr in ('type', 'inst', 'tback'):
         if getattr(node, attr, None) is not None:
@@ -1200,6 +1282,8 @@ def do_Raise(self, node):
 </t>
 <t tx="ekr.20160220050433.74">
 def do_Return(self, node):
+    
+    self.sync_word('return')
     if node.value:
         return self.indent('return %s\n' % (
             self.visit(node.value).strip()))
@@ -1208,6 +1292,8 @@ def do_Return(self, node):
 </t>
 <t tx="ekr.20160220050433.75">
 def do_TryExcept(self, node):
+    
+    self.sync_word('try')
     result = []
     result.append(self.indent('try:\n'))
     for z in node.body:
@@ -1227,12 +1313,15 @@ def do_TryExcept(self, node):
 </t>
 <t tx="ekr.20160220050433.76">
 def do_TryFinally(self, node):
+    
+    self.sync_word('try')
     result = []
     result.append(self.indent('try:\n'))
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
         self.level -= 1
+    self.sync_word('finally')
     result.append(self.indent('finally:\n'))
     for z in node.finalbody:
         self.level += 1
@@ -1242,6 +1331,8 @@ def do_TryFinally(self, node):
 </t>
 <t tx="ekr.20160220050433.77">
 def do_While(self, node):
+    
+    self.sync_word('while')
     result = []
     result.append(self.indent('while %s:\n' % (
         self.visit(node.test))))
@@ -1259,6 +1350,8 @@ def do_While(self, node):
 </t>
 <t tx="ekr.20160220050433.78">
 def do_With(self, node):
+    
+    self.sync_word('with')
     result = []
     result.append(self.indent('with '))
     if hasattr(node, 'context_expression'):
@@ -1281,6 +1374,8 @@ def do_With(self, node):
 </t>
 <t tx="ekr.20160220050433.79">
 def do_Yield(self, node):
+    
+    self.sync_word('yield')
     if getattr(node, 'value', None):
         return self.indent('yield %s\n' % (
             self.visit(node.value)))
@@ -1999,6 +2094,8 @@ bunch = Bunch
 # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
 def do_Try(self, node): # Python 3
+
+    self.sync_word('try')
     result = []
     result.append(self.indent('try:\n'))
     for z in node.body:
@@ -2009,12 +2106,14 @@ def do_Try(self, node): # Python 3
         for z in node.handlers:
             result.append(self.visit(z))
     if node.orelse:
+        self.sync_word('else')
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
             self.level -= 1
     if node.finalbody:
+        self.sync_word('finally')
         result.append(self.indent('finally:\n'))
         for z in node.finalbody:
             self.level += 1
@@ -2684,17 +2783,17 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-One more day for the prototype:
+*** Create simple test file.
 - Test TokenSync class on *python* output.
-- Handle `elif`
+    - cv.indent might work with TokenSync class.
 
 Later:
+- Handle `elif`
 - `###` means something (invalid) to coffeescript
 - Remove type hints from arg lists.
 - Change `is not` to `isnt`
 - Revise TestClass.
-- Peepholes:
-    - last return of def.
+- Peephole: last return of def.
 </t>
 <t tx="ekr.20160220143251.1">
 def gen_class_or_def(self, name):
@@ -2959,9 +3058,9 @@ February 21, 2016
 <t tx="ekr.20160221124544.1">
 def advance(self):
     '''Advance one token. Update ivars.'''
-    trace = False
+    trace = True ; verbose = False
     if not self.tokens:
-        return
+        return None, None
     token5tuple = self.tokens.pop(0)
     t1, t2, t3, t4, t5 = token5tuple
     srow, scol = t3
@@ -2969,6 +3068,9 @@ def advance(self):
     val = g.toUnicode(t2)
     raw_val = g.toUnicode(t5).rstrip()
     if srow != self.last_line_number:
+        if trace:
+            caller = g.callers(2).split(',')[0].strip()
+            g.trace('%16s ===== %s' % (caller, raw_val.rstrip()))
         # Handle a previous backslash.
         if self.backslash_seen:
             self.do_backslash()
@@ -2983,7 +3085,9 @@ def advance(self):
             self.do_line_indent(ws=' ' * n)
                 # Do not set self.lws here!
         self.last_line_number = srow
-    if trace: g.trace('%10s %r'% (kind,val))
+    if trace and verbose and kind == 'name': g.trace(val)
+        # g.trace('%10s %s'% (kind,val))
+    return kind, val
 </t>
 <t tx="ekr.20160221143000.1">
 
@@ -2997,11 +3101,14 @@ def __init__(self, tokens):
     self.tokens = tokens
     # Accumulation ivars...
     # self.lws = 0
-    self.returns = []
-    self.ws = []
+    self.queue = []
+        # self.ops = []
+        # self.returns = []
+        # self.words = []
+        # self.ws = []
     # State ivars...
     self.backslash_seen = False
-    self.last_line_number = None
+    self.last_line_number = -1
     self.output_paren_level = 0
     # TODO (maybe)...
     # self.kind = None
@@ -3018,9 +3125,132 @@ def do_line_indent(self, ws=None):
 </t>
 <t tx="ekr.20160221144446.1">
 def do_backslash(self):
-    '''Handle a backslash-newline.'''</t>
+    '''Handle a backslash-newline.'''
+</t>
 <t tx="ekr.20160221145254.1">
-def sync_word(self, s):
-    '''Advance tokens until the given keyword is found.'''</t>
+def sync_word(self, name):
+    '''Advance tokens until the given keyword is found.'''
+    trace = True
+    kind = 'start'
+    while kind:
+        kind, val = self.advance()
+        self.enqueue(kind, val)
+        if kind == 'name' and val == name:
+            s = self.dump_queue()
+            if trace: g.trace(g.callers(1), '=== FOUND:', s)
+            return
+    s = self.dump_queue()
+    if trace: g.trace(g.callers(1), '=== FAIL:', name, s)
+</t>
+<t tx="ekr.20160221151640.1">
+def sync_op(self, op):
+    '''Advance tokens until the given keyword is found.'''
+    trace = True
+    kind = 'start'
+    while kind:
+        kind, val = self.advance()
+        self.enqueue(kind, val)
+        if kind == 'op' and val == op:
+            s = self.dump_queue()
+            if trace: g.trace(g.callers(1), '=== FOUND:', s)
+            return
+    s = self.dump_queue()
+    if trace: g.trace(g.callers(1), '=== FAIL:', op, s)
+</t>
+<t tx="ekr.20160221163955.1">
+def dump_queue(self):
+    '''Return the queued tokens, and clear them.'''
+    s = '[%s]' % ' '.join([z.strip() for z in self.queue])
+    self.queue = []
+    return s
+    
+def enqueue(self, kind, val):
+    '''Queue the token.'''
+    if kind == 'string':
+        self.queue.append('&lt;str&gt;')
+    elif kind in ('name', 'number', 'op'):
+        self.queue.append(val or '&lt;empty! %s&gt;' % kind)
+</t>
+<t tx="ekr.20160222023117.1">'''Test file illustrating difficulties of tokenizing.'''
+# lineno: line number of source text (first line is line 1).
+# col_offset: the UTF-8 byte offset of the first token that generated the node.
+# http://joao.npimentel.net/2015/07/23/python-2-vs-python-3-ast-differences/
+
+a = 1
+
+def spam():
+    b = 2
+    
+class TestClass:
+    
+    class InnerClass:
+        
+        def __init__(self):
+            pass
+            
+    def test1():
+        pass
+        
+def eggs():
+    pass</t>
+<t tx="ekr.20160222023712.1"></t>
+<t tx="ekr.20160222023718.1">The initial version of python_to_coffeescript.py (the script) used only tokens. This solves all token-related problems, but makes parsing difficult. Conversely, basing the code on ast trees solves all parsing-related problems, but makes recovering token-related information difficult. Yesterday I started experimenting with using parse trees.
+
+This posting gives a preliminary design for a way of associating important token-related data with parse trees. Doing this *cleanly* and *reliably* is far from a trivial project. Imo, it's fascinating and well worth doing for its own sake. I'm starting to have a good feeling about this...
+
+The script needs the following token-related data:
+
+- The **ignored lines** (comment lines and blank lines) that preceed or follow any given **statement line**.
+
+- The **line breaks** occuring within lines. This is not absolutely essential--the script could break lines automatically, but it would be best if the original line breaks were respected.
+
+- The exact spelling of all strings. Essential in general, though perhaps not for python_to_coffeescript.py.
+
+The present plan is as follows:
+
+1. Use *only* the ast.lineno fields and the tokenizer module to recreate token data. The design requires that both the ast.lineno field and Python's tokenizer module are absolutely solid.
+
+2. Ignore the ast.col_offset field. It's notoriously hard to recreate token-related data using col_offset. col_offset is buggy and differs in Python 2 and 3. 
+
+3. Recreate the spelling of strings by traversing the tree in **string order**. That is, we assume that the Str visitor will be called in the order in which strings appear in the source file. This is an important constraint on the traverser class. I *think* it is possible to satisfy this contraint, but I wouldn't be my life on it.
+
+Given the list of tokens, we create another list containng only string tokens:
+
+    def tok_name(the_token):
+        return token.tok_name[the_token[0]].lower()
+
+    string_toks = [z for z in tokens if tok_name(z) == 'string']
+    
+The ast.Str visitor gets the strings spelling by popping the next token from the start of the string_toks list.
+
+4. Associate ignored lines with statements by traversing the tree in **line order**. Again, this is a non-trivial constraint on the traversal.
+
+Assuming that this constraint can be met, we can *preprocess* the tokens in various ways. For example, it may be useful to tokenize the input line-by-line:
+
+    line_tokens = [list(tokenize.generate_tokens(z)) for z in s.splitlines(True)]
+    
+We shall have to munge this list if the ast.lineno is a logical line number instead of a physical line number.
+
+5. Insert line breaks within statements using the line_tokens array. Details omitted. Invention may be required.
+
+### Summary
+
+The overal plan is to sync tokens with statements in the ast tree by preprocessing tokens. There are a number of complicating factors, including continued lines and lines containing multiple statements. Nevertheless, syncing tokens appears more promising than using the ast.col_offset field.
+
+This design is preliminary and experimental. Gotcha's may lurk. Another one-day prototype should prove revealing. I am cautiously optimistic at 4 a.m  ;-)
+
+Edward</t>
+<t tx="ekr.20160222030015.1">Lines can be continued using backslash-newlines. Here are the detailed rules from section `2.1.5. Explicit line joining` of the reference. (Same in Python 2 and 3).
+
+Two or more physical lines may be joined into logical lines using backslash characters (\), as follows: when a physical line ends in a backslash that is not part of a string literal or comment, it is joined with the following forming a single logical line, deleting the backslash and the following end-of-line character...
+
+A line ending in a backslash cannot carry a comment. A backslash does not continue a comment. A backslash does not continue a token except for string literals (i.e., tokens other than string literals cannot be split across physical lines using a backslash). A backslash is illegal elsewhere on a line outside a string literal.
+</t>
+<t tx="ekr.20160222030107.1">http://joao.npimentel.net/2015/07/23/python-2-vs-python-3-ast-differences/
+discusses the differences in ast trees between Python 2 and 3. Helpful, but possibly not complete.
+</t>
+<t tx="ekr.20160222040422.1">@language rest
+@wrap
+@others</t>
 </tnodes>
 </leo_file>

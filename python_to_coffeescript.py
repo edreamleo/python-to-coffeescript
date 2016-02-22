@@ -750,12 +750,15 @@ class CoffeeScriptTraverser(object):
     def __init__(self, controller):
         '''Ctor for CoffeeScriptFormatter class.'''
         self.controller = controller
-        self.first_statement = False
+        self.sync_op = None
+        self.sync_word = None
 
     def format(self, node, tokens):
         '''Format the node (or list of nodes) and its descendants.'''
         self.level = 0
-        self.tokens = tokens
+        ts = TokenSync(tokens)
+        self.sync_op = ts.sync_op
+        self.sync_word = ts.sync_word
         val = self.visit(node)
         return val or ''
 
@@ -780,11 +783,15 @@ class CoffeeScriptTraverser(object):
             assert type(s) == type('abc'), (node, type(s))
             return s
 
-    # Contexts...
+    #
+    # CoffeeScriptTraverser contexts...
+    #
 
     # ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
 
     def do_ClassDef(self, node):
+        
+        self.sync_word('class')
         result = []
         name = node.name # Only a plain string is valid.
         bases = [self.visit(z) for z in node.bases] if node.bases else []
@@ -795,15 +802,18 @@ class CoffeeScriptTraverser(object):
             result.append(self.indent('class %s:\n' % name))
         for i, z in enumerate(node.body):
             self.level += 1
-            self.first_statement = i == 0
+            # self.first_statement = i == 0
             result.append(self.visit(z))
             self.level -= 1
-        return ''.join(result)
+        s = ''.join(result)
+        g.trace(result[2].rstrip())
+        return s
 
     # FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
 
     def do_FunctionDef(self, node):
         '''Format a FunctionDef node.'''
+        self.sync_word('def')
         result = []
         if node.decorator_list:
             for z in node.decorator_list:
@@ -814,10 +824,12 @@ class CoffeeScriptTraverser(object):
         result.append(self.indent('def %s(%s):\n' % (name, args)))
         for i, z in enumerate(node.body):
             self.level += 1
-            self.first_statement = i == 0
+            # self.first_statement = i == 0
             result.append(self.visit(z))
             self.level -= 1
-        return ''.join(result)
+        s = ''.join(result)
+        g.trace(result[1].rstrip())
+        return s
 
     def do_Interactive(self, node):
         for z in node.body:
@@ -825,14 +837,17 @@ class CoffeeScriptTraverser(object):
 
     def do_Module(self, node):
 
-        return''.join([self.visit(z) for z in node.body])
+        return ''.join([self.visit(z) for z in node.body])
 
     def do_Lambda(self, node):
         return self.indent('lambda %s: %s' % (
             self.visit(node.args),
             self.visit(node.body)))
 
-    # Expressions...
+    #
+    # CoffeeScriptTraverser expressions...
+    #
+
 
     def do_Expr(self, node):
         '''An outer expression: must be indented.'''
@@ -863,7 +878,9 @@ class CoffeeScriptTraverser(object):
     def do_Store(self, node):
         return 'Store'
 
-    # Operands...
+    #
+    # CoffeeScriptTraverser operands...
+    #
 
     # arguments = (expr* args, identifier? vararg, identifier? kwarg, expr* defaults)
 
@@ -924,7 +941,9 @@ class CoffeeScriptTraverser(object):
         if getattr(node, 'kwargs', None):
             args.append('**%s' % (self.visit(node.kwargs)))
         args = [z for z in args if z] # Kludge: Defensive coding.
-        return '%s(%s)' % (func, ','.join(args))
+        s = '%s(%s)' % (func, ','.join(args))
+        g.trace(s)
+        return s
 
     # keyword = (identifier arg, expr value)
 
@@ -1017,18 +1036,20 @@ class CoffeeScriptTraverser(object):
         '''A string constant, including docstrings.'''
         # A pretty spectacular hack.
         # We assume docstrings are the first expr following a class or def.
-        docstring = False
-        if self.first_statement:
-            callers = ''.join([z for z in g.callers(2).split(',') if z != 'visit'])
-            docstring = callers.endswith('do_Expr')
-        if docstring:
-            s = repr(node.s).replace('\\n','\n')
-            if s.startswith('"'):
-                return '""%s""' % s
-            else:
-                return "''%s''" % s
-        else:
-            return repr(node.s)
+        return repr(node.s)
+        # TODO: remove all this.
+        # docstring = False
+        # if self.first_statement:
+            # callers = ''.join([z for z in g.callers(2).split(',') if z != 'visit'])
+            # docstring = callers.endswith('do_Expr')
+        # if docstring:
+            # s = repr(node.s).replace('\\n','\n')
+            # if s.startswith('"'):
+                # return '""%s""' % s
+            # else:
+                # return "''%s''" % s
+        # else:
+            # return repr(node.s)
 
     # Subscript(expr value, slice slice, expr_context ctx)
 
@@ -1041,7 +1062,9 @@ class CoffeeScriptTraverser(object):
         elts = [self.visit(z) for z in node.elts]
         return '(%s)' % ', '.join(elts)
 
-    # Operators...
+    #
+    # CoffeeScriptTraverser operators...
+    #
 
     def op_name (self,node,strict=True):
         '''Return the print name of an operator node.'''
@@ -1126,38 +1149,61 @@ class CoffeeScriptTraverser(object):
             self.op_name(node.op),
             self.visit(node.operand))
 
-    # Statements...
+    #
+    # CoffeeScriptTraverser statements...
+    #
 
     def do_Assert(self, node):
+        
+        self.sync_word('assert')
         test = self.visit(node.test)
-        if getattr(node, 'msg', None):
+        if getattr(node, 'msg', None) is not None:
             message = self.visit(node.msg)
-            return self.indent('assert %s, %s\n' % (test, message))
+            s = self.indent('assert %s, %s\n' % (test, message))
         else:
-            return self.indent('assert %s\n' % test)
+            s = self.indent('assert %s\n' % test)
+        g.trace(s)
+        return s
 
     def do_Assign(self, node):
-        return self.indent('%s=%s\n' % (
-            '='.join([self.visit(z) for z in node.targets]),
-            self.visit(node.value)))
+        
+        self.sync_op('=')
+        s = self.indent('%s=%s\n' % (
+                        '='.join([self.visit(z) for z in node.targets]),
+                        self.visit(node.value)))
+        g.trace(s)
+        return s
 
     def do_AugAssign(self, node):
-        return self.indent('%s%s=%s\n' % (
+        
+        op = self.op_name(node.op)
+        self.sync_op(op)
+        s = self.indent('%s%s=%s\n' % (
             self.visit(node.target),
-            self.op_name(node.op), # Bug fix: 2013/03/08.
+            op,
             self.visit(node.value)))
+        g.trace(s)
+        return s
 
     def do_Break(self, node):
+        
+        self.sync_word('break')
         return self.indent('break\n')
 
     def do_Continue(self, node):
+        
+        self.sync_word('continue')
         return self.indent('continue\n')
 
     def do_Delete(self, node):
+        
+        self.sync_word('del')
         targets = [self.visit(z) for z in node.targets]
         return self.indent('del %s\n' % ','.join(targets))
 
     def do_ExceptHandler(self, node):
+        
+        self.sync_word('except')
         result = []
         result.append(self.indent('except'))
         if getattr(node, 'type', None):
@@ -1177,6 +1223,8 @@ class CoffeeScriptTraverser(object):
     # Python 2.x only
 
     def do_Exec(self, node):
+        
+        self.sync_word('exec')
         body = self.visit(node.body)
         args = [] # Globals before locals.
         if getattr(node, 'globals', None):
@@ -1190,6 +1238,8 @@ class CoffeeScriptTraverser(object):
             return self.indent('exec %s\n' % (body))
 
     def do_For(self, node):
+        
+        self.sync_word('for')
         result = []
         result.append(self.indent('for %s in %s:\n' % (
             self.visit(node.target),
@@ -1207,10 +1257,14 @@ class CoffeeScriptTraverser(object):
         return ''.join(result)
 
     def do_Global(self, node):
+        
+        self.sync_word('global')
         return self.indent('global %s\n' % (
             ','.join(node.names)))
 
     def do_If(self, node):
+        
+        self.sync_word('if')
         result = []
         result.append(self.indent('if %s:\n' % (
             self.visit(node.test))))
@@ -1219,6 +1273,7 @@ class CoffeeScriptTraverser(object):
             result.append(self.visit(z))
             self.level -= 1
         if node.orelse:
+            self.sync_word('else')
             result.append(self.indent('else:\n'))
             for z in node.orelse:
                 self.level += 1
@@ -1227,14 +1282,17 @@ class CoffeeScriptTraverser(object):
         return ''.join(result)
 
     def do_Import(self, node):
+        
+        self.sync_word('import')
         names = []
         for fn, asname in self.get_import_names(node):
             if asname:
                 names.append('%s as %s' % (fn, asname))
             else:
                 names.append(fn)
-        return self.indent('import %s\n' % (
-            ','.join(names)))
+        s = self.indent('import %s\n' % (','.join(names)))
+        g.trace(s)
+        return s
 
     def get_import_names(self, node):
         '''Return a list of the the full file names in the import statement.'''
@@ -1246,22 +1304,32 @@ class CoffeeScriptTraverser(object):
         return result
 
     def do_ImportFrom(self, node):
+        
+        
         names = []
         for fn, asname in self.get_import_names(node):
             if asname:
                 names.append('%s as %s' % (fn, asname))
             else:
                 names.append(fn)
-        return self.indent('from %s import %s\n' % (
-            node.module,
-            ','.join(names)))
+        self.sync_word('from')
+        self.sync_word('import')
+        s = self.indent('from %s import %s\n' % (
+                        node.module,
+                        ','.join(names)))
+        g.trace(s)
+        return s
 
     def do_Pass(self, node):
+        
+        self.sync_word('pass')
         return self.indent('pass\n')
 
     # Python 2.x only
 
     def do_Print(self, node):
+        
+        self.sync_word('print')
         vals = []
         for z in node.values:
             vals.append(self.visit(z))
@@ -1274,6 +1342,8 @@ class CoffeeScriptTraverser(object):
             ','.join(vals)))
 
     def do_Raise(self, node):
+        
+        self.sync_word('raise')
         args = []
         for attr in ('type', 'inst', 'tback'):
             if getattr(node, attr, None) is not None:
@@ -1285,6 +1355,8 @@ class CoffeeScriptTraverser(object):
             return self.indent('raise\n')
 
     def do_Return(self, node):
+        
+        self.sync_word('return')
         if node.value:
             return self.indent('return %s\n' % (
                 self.visit(node.value).strip()))
@@ -1294,6 +1366,8 @@ class CoffeeScriptTraverser(object):
     # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
     def do_Try(self, node): # Python 3
+
+        self.sync_word('try')
         result = []
         result.append(self.indent('try:\n'))
         for z in node.body:
@@ -1304,12 +1378,14 @@ class CoffeeScriptTraverser(object):
             for z in node.handlers:
                 result.append(self.visit(z))
         if node.orelse:
+            self.sync_word('else')
             result.append(self.indent('else:\n'))
             for z in node.orelse:
                 self.level += 1
                 result.append(self.visit(z))
                 self.level -= 1
         if node.finalbody:
+            self.sync_word('finally')
             result.append(self.indent('finally:\n'))
             for z in node.finalbody:
                 self.level += 1
@@ -1318,6 +1394,8 @@ class CoffeeScriptTraverser(object):
         return ''.join(result)
 
     def do_TryExcept(self, node):
+        
+        self.sync_word('try')
         result = []
         result.append(self.indent('try:\n'))
         for z in node.body:
@@ -1336,12 +1414,15 @@ class CoffeeScriptTraverser(object):
         return ''.join(result)
 
     def do_TryFinally(self, node):
+        
+        self.sync_word('try')
         result = []
         result.append(self.indent('try:\n'))
         for z in node.body:
             self.level += 1
             result.append(self.visit(z))
             self.level -= 1
+        self.sync_word('finally')
         result.append(self.indent('finally:\n'))
         for z in node.finalbody:
             self.level += 1
@@ -1350,6 +1431,8 @@ class CoffeeScriptTraverser(object):
         return ''.join(result)
 
     def do_While(self, node):
+        
+        self.sync_word('while')
         result = []
         result.append(self.indent('while %s:\n' % (
             self.visit(node.test))))
@@ -1366,6 +1449,8 @@ class CoffeeScriptTraverser(object):
         return ''.join(result)
 
     def do_With(self, node):
+        
+        self.sync_word('with')
         result = []
         result.append(self.indent('with '))
         if hasattr(node, 'context_expression'):
@@ -1387,6 +1472,8 @@ class CoffeeScriptTraverser(object):
         return ''.join(result)
 
     def do_Yield(self, node):
+        
+        self.sync_word('yield')
         if getattr(node, 'value', None):
             return self.indent('yield %s\n' % (
                 self.visit(node.value)))
@@ -1835,44 +1922,6 @@ class ParseState(object):
     __str__ = __repr__
 
 
-class TestClass(object):
-    '''A class containing constructs that have caused difficulties.'''
-    # pylint: disable=no-member
-    # pylint: disable=undefined-variable
-    # pylint: disable=no-self-argument
-    # pylint: disable=no-method-argument
-
-
-    def parse_group(group):
-        if len(group) >= 3 and group[-2] == 'as':
-            del group[-2:]
-        ndots = 0
-        i = 0
-        while len(group) > i and group[i].startswith('.'):
-            ndots += len(group[i])
-            i += 1
-        assert ''.join(group[: i]) == '.' * ndots, group
-        del group[: i]
-        assert all(g == '.' for g in group[1:: 2]), group
-        return ndots, os.sep.join(group[:: 2])
-
-    def return_all(self):
-        return all([is_known_type(z) for z in s3.split(',')])
-        # return all(['abc'])
-
-    def return_array():
-        return f(s[1: -1])
-
-    def return_list(self, a):
-        return [a]
-
-    def return_two_lists(s):
-        if 1:
-            return aList
-        else:
-            return list(self.regex.finditer(s))
-
-
 class TokenSync(object):
     '''A class to sync and remember tokens.'''
 
@@ -1882,11 +1931,14 @@ class TokenSync(object):
         self.tokens = tokens
         # Accumulation ivars...
         # self.lws = 0
-        self.returns = []
-        self.ws = []
+        self.queue = []
+            # self.ops = []
+            # self.returns = []
+            # self.words = []
+            # self.ws = []
         # State ivars...
         self.backslash_seen = False
-        self.last_line_number = None
+        self.last_line_number = -1
         self.output_paren_level = 0
         # TODO (maybe)...
         # self.kind = None
@@ -1895,9 +1947,9 @@ class TokenSync(object):
 
     def advance(self):
         '''Advance one token. Update ivars.'''
-        trace = False
+        trace = True ; verbose = False
         if not self.tokens:
-            return
+            return None, None
         token5tuple = self.tokens.pop(0)
         t1, t2, t3, t4, t5 = token5tuple
         srow, scol = t3
@@ -1905,6 +1957,9 @@ class TokenSync(object):
         val = g.toUnicode(t2)
         raw_val = g.toUnicode(t5).rstrip()
         if srow != self.last_line_number:
+            if trace:
+                caller = g.callers(2).split(',')[0].strip()
+                g.trace('%16s ===== %s' % (caller, raw_val.rstrip()))
             # Handle a previous backslash.
             if self.backslash_seen:
                 self.do_backslash()
@@ -1919,7 +1974,9 @@ class TokenSync(object):
                 self.do_line_indent(ws=' ' * n)
                     # Do not set self.lws here!
             self.last_line_number = srow
-        if trace: g.trace('%10s %r'% (kind,val))
+        if trace and verbose and kind == 'name': g.trace(val)
+            # g.trace('%10s %s'% (kind,val))
+        return kind, val
 
     def do_backslash(self):
         '''Handle a backslash-newline.'''
@@ -1931,8 +1988,46 @@ class TokenSync(object):
         # if ws:
             # self.add_token('line-indent', ws)
 
-    def sync_word(self, s):
+    def dump_queue(self):
+        '''Return the queued tokens, and clear them.'''
+        s = '[%s]' % ' '.join([z.strip() for z in self.queue])
+        self.queue = []
+        return s
+        
+    def enqueue(self, kind, val):
+        '''Queue the token.'''
+        if kind == 'string':
+            self.queue.append('<str>')
+        elif kind in ('name', 'number', 'op'):
+            self.queue.append(val or '<empty! %s>' % kind)
+
+    def sync_op(self, op):
         '''Advance tokens until the given keyword is found.'''
+        trace = True
+        kind = 'start'
+        while kind:
+            kind, val = self.advance()
+            self.enqueue(kind, val)
+            if kind == 'op' and val == op:
+                s = self.dump_queue()
+                if trace: g.trace(g.callers(1), '=== FOUND:', s)
+                return
+        s = self.dump_queue()
+        if trace: g.trace(g.callers(1), '=== FAIL:', op, s)
+
+    def sync_word(self, name):
+        '''Advance tokens until the given keyword is found.'''
+        trace = True
+        kind = 'start'
+        while kind:
+            kind, val = self.advance()
+            self.enqueue(kind, val)
+            if kind == 'name' and val == name:
+                s = self.dump_queue()
+                if trace: g.trace(g.callers(1), '=== FOUND:', s)
+                return
+        s = self.dump_queue()
+        if trace: g.trace(g.callers(1), '=== FAIL:', name, s)
 
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
