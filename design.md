@@ -1,3 +1,4 @@
+
 The initial version of python_to_coffeescript.py (the script) used only tokens. This solves all token-related problems, but makes parsing difficult. Conversely, basing the code on ast trees solves all parsing-related problems, but makes recovering token-related information difficult. Yesterday I started experimenting with using parse trees.
 
 This posting gives a preliminary design for a way of associating important token-related data with parse trees. Doing this *cleanly* and *reliably* is far from a trivial project. Imo, it's fascinating and well worth doing for its own sake. I'm starting to have a good feeling about this...
@@ -40,10 +41,3 @@ The overal plan is to sync tokens with statements in the ast tree by preprocessi
 This design is preliminary and experimental. Gotcha's may lurk. Another one-day prototype should prove revealing. I am cautiously optimistic at 4 a.m  ;-)
 
 Edward
-Lines can be continued using backslash-newlines. Here are the detailed rules from section `2.1.5. Explicit line joining` of the reference. (Same in Python 2 and 3).
-
-Two or more physical lines may be joined into logical lines using backslash characters (\), as follows: when a physical line ends in a backslash that is not part of a string literal or comment, it is joined with the following forming a single logical line, deleting the backslash and the following end-of-line character...
-
-A line ending in a backslash cannot carry a comment. A backslash does not continue a comment. A backslash does not continue a token except for string literals (i.e., tokens other than string literals cannot be split across physical lines using a backslash). A backslash is illegal elsewhere on a line outside a string literal.
-http://joao.npimentel.net/2015/07/23/python-2-vs-python-3-ast-differences/
-discusses the differences in ast trees between Python 2 and 3. Helpful, but possibly not complete.
