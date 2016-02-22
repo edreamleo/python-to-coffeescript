@@ -5,9 +5,9 @@ This posting gives a preliminary design for a way of associating important token
 
 The script needs the following token-related data:
 
-- The **ignored lines** (comment lines and blank lines) that preceed or follow any given **statement line**.
+- The **ignored lines** (comment lines and blank lines) that precede or follow any given **statement line**.
 
-- The **line breaks** occuring within lines. This is not absolutely essential--the script could break lines automatically, but it would be best if the original line breaks were respected.
+- The **line breaks** occurring within lines. This is not absolutely essential--the script could break lines automatically, but it would be best if the original line breaks were respected.
 
 - The exact spelling of all strings. Essential in general, though perhaps not for python_to_coffeescript.py.
 
@@ -17,7 +17,7 @@ The present plan is as follows:
 
 2. Ignore the ast.col_offset field. It's notoriously hard to recreate token-related data using col_offset. col_offset is buggy and differs in Python 2 and 3. 
 
-3. Recreate the spelling of strings by traversing the tree in **string order**. That is, we assume that the Str visitor will be called in the order in which strings appear in the source file. This is an important constraint on the traverser class. I *think* it is possible to satisfy this contraint, but I wouldn't be my life on it. Given the list of tokens, we create another list containng only string tokens:
+3. Recreate the spelling of strings by traversing the tree in **string order**. That is, we assume that the Str visitor will be called in the order in which strings appear in the source file. This is an important constraint on the traverser class. I *think* it is possible to satisfy this constraint, but I wouldn't bet my life on it. Given the list of tokens, we create another list containing only string tokens:
 
         def tok_name(the_token):
             return token.tok_name[the_token[0]].lower()
@@ -26,7 +26,7 @@ The present plan is as follows:
     
    The ast.Str visitor gets the strings spelling by popping the next token from the start of the string_toks list.
 
-4. Associate ignored lines with statements by traversing the tree in **line order**. Again, this is a non-trivial constraint on the traversal. Assuming that this constraint can be met, we can *preprocess* the tokens in various ways. For example, it may be useful to tokenize the input line-by-line:
+4. Associate ignored lines with statements by traversing the tree in **line order**. Again, this is a non-trivial constraint on the traversal. Assuming that this constraint can be met, we can preprocess the tokens in various ways. For example, it may be useful to tokenize the input line-by-line:
 
         line_tokens = [list(tokenize.generate_tokens(z)) for z in s.splitlines(True)]
     
@@ -36,7 +36,7 @@ The present plan is as follows:
 
 ### Summary
 
-The overal plan is to sync tokens with statements in the ast tree by preprocessing tokens. There are a number of complicating factors, including continued lines and lines containing multiple statements. Nevertheless, syncing tokens appears more promising than using the ast.col_offset field.
+The overall plan is to sync tokens with statements in the ast tree by preprocessing tokens. There are a number of complicating factors, including continued lines and lines containing multiple statements. Nevertheless, syncing tokens appears more promising than using the ast.col_offset field.
 
 This design is preliminary and experimental. Gotcha's may lurk. Another one-day prototype should prove revealing. I am cautiously optimistic at 4 a.m  ;-)
 
