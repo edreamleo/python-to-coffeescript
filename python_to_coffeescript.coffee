@@ -1,4 +1,4 @@
-# python_to_coffeescript: Tue 23 Feb 2016 at 01:53:28
+# python_to_coffeescript: Tue 23 Feb 2016 at 02:19:09
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -96,18 +96,16 @@ class CoffeeScriptTraverser extends object
     __init__: (controller) ->
         '''Ctor for CoffeeScriptFormatter class.'''
         @controller=controller
-        @sync_op=None
         @sync_string=None
-        @sync_node=None
+        @leading_lines=None
         @class_stack=[]
 
     format: (node, s, tokens) ->
         '''Format the node (or list of nodes) and its descendants.'''
         @level=0
         sync=TokenSync(s,tokens)
-        @sync_op=sync.sync_op
         @sync_string=sync.sync_string
-        @sync_node=sync.sync_node
+        @leading_lines=sync.leading_lines
         val=@visit(node)
         return val or ''
 
@@ -143,7 +141,7 @@ class CoffeeScriptTraverser extends object
     # ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
 
     do_ClassDef: (node) ->
-        result=@sync_node(node,'class')
+        result=@leading_lines(node)
         name=node.name
         bases=@visit(z) for z in node.bases if node.bases else [] 
         result.append('\n\n')
@@ -163,7 +161,7 @@ class CoffeeScriptTraverser extends object
 
     do_FunctionDef: (node) ->
         '''Format a FunctionDef node.'''
-        result=@sync_node(node,'def')
+        result=@leading_lines(node)
         if node.decorator_list:
             for z in node.decorator_list:
                 result.append(@indent('@%s\n'%@visit(z)))
@@ -199,9 +197,9 @@ class CoffeeScriptTraverser extends object
 
     do_Expr: (node) ->
         '''An outer expression: must be indented.'''
-        comments=@sync_node(node,'expr')
+        leading=@leading_lines(node)
         s='%s\n'%@visit(node.value)
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
 
     do_Expression: (node) ->
         '''An inner expression: do not indent.'''
@@ -319,9 +317,9 @@ class CoffeeScriptTraverser extends object
                 items.append('%s:%s'%(keys[i], values[i]))
             result.append(', '.join(items))
             result.append('}')
+        else:
             # result.append(',\n'.join(items))
             # result.append('\n}' if keys else '}')
-        else:
             print('Error: f.Dict: len(keys) != len(values)\nkeys: %s\nvals: %s'%(repr(keys), repr(values)))
         return ''.join(result)
 
@@ -440,44 +438,43 @@ class CoffeeScriptTraverser extends object
     #
 
     do_Assert: (node) ->
-        comments=@sync_node(node,'assert')
+        leading=@leading_lines(node)
         test=@visit(node.test)
         if getattr(node,'msg',None) is not None:
             s='assert %s, %s\n'%(test, @visit(node.msg))
         else:
             s='assert %s\n'%test
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
 
     do_Assign: (node) ->
-        comments=@sync_op(node,'=')
-        targets='='.join(@visit(z) for z in node.targets)
-        s='%s=%s\n'%(targets, @visit(node.value))
-        return ''.join(comments)+@indent(s)
+        leading=@leading_lines(node)
+        s='%s=%s\n'%('='.join(@visit(z) for z in node.targets), @visit(node.value))
+        return ''.join(leading)+@indent(s)
 
     do_AugAssign: (node) ->
         op=@op_name(node.op)
-        comments=@sync_op(node,op)
+        leading=@leading_lines(node)
         target=@visit(node.target)
         value=@visit(node.value)
         s='%s%s=%s\n'%(target, op, value)
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
 
     do_Break: (node) ->
-        comments=@sync_node(node,'break')
-        return ''.join(comments)+@indent('break\n')
+        leading=@leading_lines(node)
+        return ''.join(leading)+@indent('break\n')
 
     do_Continue: (node) ->
-        comments=@sync_node(node,'continue')
-        return ''.join(comments)+@indent('continue\n')
+        leading=@leading_lines(node)
+        return ''.join(leading)+@indent('continue\n')
 
     do_Delete: (node) ->
-        comments=@sync_node(node,'del')
+        leading=@leading_lines(node)
         targets=@visit(z) for z in node.targets
         s='del %s\n'%','.join(targets)
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
 
     do_ExceptHandler: (node) ->
-        result=@sync_node(node,'except')
+        result=@leading_lines(node)
         result.append(@indent('except'))
         if getattr(node,'type',None):
             result.append(' %s'%@visit(node.type))
@@ -495,7 +492,7 @@ class CoffeeScriptTraverser extends object
     # Python 2.x only
 
     do_Exec: (node) ->
-        comments=@sync_node(node,'exec')
+        leading=@leading_lines(node)
         body=@visit(node.body)
         args=[]
         if getattr(node,'globals',None):
@@ -506,17 +503,16 @@ class CoffeeScriptTraverser extends object
             s='exec %s in %s\n'%(body, ','.join(args))
         else:
             s='exec %s\n'%body
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
 
     do_For: (node) ->
-        result=@sync_node(node,'for')
+        result=@leading_lines(node)
         result.append(@indent('for %s in %s:\n'%(@visit(node.target), @visit(node.iter))))
         for z in node.body:
             @level+=1
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            result.extend(@sync_node(node.orelse[0],'orelse'))
             result.append(@indent('else:\n'))
             for z in node.orelse:
                 @level+=1
@@ -525,19 +521,18 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_Global: (node) ->
-        comments=@sync_node(node,'global')
+        leading=@leading_lines(node)
         s='global %s\n'%','.join(node.names)
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
 
     do_If: (node) ->
-        result=@sync_node(node,'if')
+        result=@leading_lines(node)
         result.append(@indent('if %s:\n'%@visit(node.test)))
         for z in node.body:
             @level+=1
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            result.extend(@sync_node(node.orelse[0],'orelse'))
             result.append(@indent('else:\n'))
             for z in node.orelse:
                 @level+=1
@@ -546,7 +541,7 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_Import: (node) ->
-        comments=@sync_node(node,'import')
+        leading=@leading_lines(node)
         names=[]
         for (fn, asname) in @get_import_names(node):
             if asname:
@@ -555,7 +550,7 @@ class CoffeeScriptTraverser extends object
                 names.append(fn)
         s='import %s\n'%','.join(names)
         s='pass # '+s
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
 
     get_import_names: (node) ->
         '''Return a list of the the full file names in the import statement.'''
@@ -567,7 +562,7 @@ class CoffeeScriptTraverser extends object
         return result
 
     do_ImportFrom: (node) ->
-        comments=@sync_node(node,'from')
+        leading=@leading_lines(node)
         names=[]
         for (fn, asname) in @get_import_names(node):
             if asname:
@@ -576,15 +571,15 @@ class CoffeeScriptTraverser extends object
                 names.append(fn)
         s='from %s import %s\n'%(node.module, ','.join(names))
         s='pass # '+s
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
 
     do_Pass: (node) ->
-        comments=@sync_node(node,'pass')
-        return ''.join(comments)+@indent('pass\n')
+        leading=@leading_lines(node)
+        return ''.join(leading)+@indent('pass\n')
     # Python 2.x only
 
     do_Print: (node) ->
-        comments=@sync_node(node,'print')
+        leading=@leading_lines(node)
         vals=[]
         for z in node.values:
             vals.append(@visit(z))
@@ -594,10 +589,10 @@ class CoffeeScriptTraverser extends object
             if node.nl=='False':
                 vals.append('nl=%s'%node.nl)
         s='print(%s)\n'%','.join(vals)
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
 
     do_Raise: (node) ->
-        comments=@sync_node(node,'raise')
+        leading=@leading_lines(node)
         args=[]
         for attr in ('type', 'inst', 'tback'):
             if getattr(node,attr,None) is not None:
@@ -606,19 +601,19 @@ class CoffeeScriptTraverser extends object
             s='raise %s\n'%', '.join(args)
         else:
             s='raise\n'
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
 
     do_Return: (node) ->
-        comments=@sync_node(node,'return')
+        leading=@leading_lines(node)
         if node.value:
             s='return %s\n'%@visit(node.value).strip()
         else:
             s='return\n'
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
     # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
     do_Try: (node) ->
-        result=@sync_node(node,'try')
+        result=@leading_lines(node)
         result.append(@indent('try:\n'))
         for z in node.body:
             @level+=1
@@ -628,14 +623,12 @@ class CoffeeScriptTraverser extends object
             for z in node.handlers:
                 result.append(@visit(z))
         if node.orelse:
-            result.extend(@sync_node(node.orelse[0],'orelse'))
             result.append(@indent('else:\n'))
             for z in node.orelse:
                 @level+=1
                 result.append(@visit(z))
                 @level-=1
         if node.finalbody:
-            result.extend(@sync_node(node.finalbody,'finalbody'))
             result.append(@indent('finally:\n'))
             for z in node.finalbody:
                 @level+=1
@@ -644,7 +637,7 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_TryExcept: (node) ->
-        result=@sync_node(node,'try')
+        result=@leading_lines(node)
         result.append(@indent('try:\n'))
         for z in node.body:
             @level+=1
@@ -654,7 +647,6 @@ class CoffeeScriptTraverser extends object
             for z in node.handlers:
                 result.append(@visit(z))
         if node.orelse:
-            result.extend(@sync_node(node.orelse[0],'orelse'))
             result.append('else:\n')
             for z in node.orelse:
                 @level+=1
@@ -663,13 +655,12 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_TryFinally: (node) ->
-        result=@sync_node(node,'try')
+        result=@leading_lines(node)
         result.append(@indent('try:\n'))
         for z in node.body:
             @level+=1
             result.append(@visit(z))
             @level-=1
-        result.extend(@sync_node(node.finalbody,'finalbody'))
         result.append(@indent('finally:\n'))
         for z in node.finalbody:
             @level+=1
@@ -678,14 +669,13 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_While: (node) ->
-        result=@sync_node(node,'while')
+        result=@leading_lines(node)
         result.append(@indent('while %s:\n'%@visit(node.test)))
         for z in node.body:
             @level+=1
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            result.extend(@sync_node(node.orelse[0],'orelse'))
             result.append('else:\n')
             for z in node.orelse:
                 @level+=1
@@ -694,7 +684,7 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_With: (node) ->
-        result=@sync_node(node,'with')
+        result=@leading_lines(node)
         result.append(@indent('with '))
         if hasattr(node,'context_expression'):
             result.append(@visit(node.context_expresssion))
@@ -715,12 +705,12 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_Yield: (node) ->
-        comments=@sync_node(node,'yield')
+        leading=@leading_lines(node)
         if getattr(node,'value',None) is not None:
             s='yield %s\n'%@visit(node.value)
         else:
             s='yield\n'
-        return ''.join(comments)+@indent(s)
+        return ''.join(leading)+@indent(s)
 
 
 class LeoGlobals extends object
@@ -1183,7 +1173,7 @@ class TokenSync extends object
         '''Ctor for TokenSync class.'''
         assert isinstance(tokens,list)
         @s=s
-        @first_comment_line=None
+        @first_leading_line=None
         @lines=z.rstrip() for z in g.splitLines(s)
         @line_tokens=@make_line_tokens(tokens)
         @string_tokens=@make_string_tokens()
@@ -1199,10 +1189,10 @@ class TokenSync extends object
         assert len(result)==len(@line_tokens)
         for (i, aList) in enumerate(result):
             if aList:
-                @first_comment_line=i
+                @first_leading_line=i
                 break
         else:
-            @first_comment_line=len(result)
+            @first_leading_line=len(result)
         return result
 
     make_line_tokens: (tokens) ->
@@ -1249,6 +1239,24 @@ class TokenSync extends object
         raw_val=t5
         return kind=='comment' and raw_val.lstrip().startswith('#')
 
+    leading_lines: (node) ->
+        '''Return a list of the preceding comment and blank lines'''
+        # This can be called on arbitrary nodes.
+        trace=False
+        leading=[]
+        if hasattr(node,'lineno'):
+            (i, n)=(@first_leading_line, node.lineno)
+            while i<n:
+                token=@comment_lines[i]
+                if token:
+                    s=@token_raw_val(token).rstrip()+'\n'
+                    leading.append(s)
+                    if trace:
+                        g.trace('%11s: %s'%(i, s.rstrip()))
+                i+=1
+            @first_leading_line=i
+        return leading
+
     line_at: (node, continued_lines=True) ->
         '''Return the lines at the node, possibly including continuation lines.'''
         n=getattr(node,'lineno',None)
@@ -1269,30 +1277,6 @@ class TokenSync extends object
             else:
                 return @lines[n-1]
 
-    show_comments: (node) ->
-        '''Show the comments preceding the node.'''
-        # This can be called on arbitrary nodes.
-        trace=False
-        comments=[]
-        if hasattr(node,'lineno'):
-            (i, n)=(@first_comment_line, node.lineno)
-            while i<n:
-                token=@comment_lines[i]
-                if token:
-                    s=@token_raw_val(token).rstrip()+'\n'
-                    comments.append(s)
-                    if trace:
-                        g.trace('%11s: %s'%(i, s.rstrip()))
-                i+=1
-            @first_comment_line=i
-        return comments
-
-    sync_op: (node, op) ->
-        '''Advance tokens until the given keyword is found.'''
-        aList=@show_comments(node)
-        # g.trace('  %-12s %2s: %s' % (op, node.lineno, self.line_at(node)))
-        return aList
-
     sync_string: (node) ->
         '''Return the spelling of the string at the given node.'''
         # g.trace('%-10s %2s: %s' % (' ', node.lineno, self.line_at(node)))
@@ -1305,13 +1289,6 @@ class TokenSync extends object
         else:
             g.trace('===== underflow',n,node.s)
             return node.s
-
-    sync_node: (node, name) ->
-        '''Advance tokens until the given keyword is found.'''
-        comments=@show_comments(node)
-        n=node.lineno if hasattr(node,'lineno') else -1 
-        # g.trace('%-12s %2s: %s' % (name, n, self.line_at(node)))
-        return comments
 
     token_type: (token) ->
         '''Return the token's type.'''

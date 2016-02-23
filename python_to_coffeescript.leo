@@ -93,6 +93,7 @@
 </v>
 </v>
 <v t="ekr.20160223014237.1"><vh>clean, defined in do_Str</vh></v>
+<v t="ekr.20160221151640.1"><vh>ts.sync_op</vh></v>
 </v>
 </v>
 <v t="ekr.20160222041249.1"><vh>Docs</vh>
@@ -236,11 +237,9 @@
 </v>
 <v t="ekr.20160223013055.1"><vh>ts.dump_token</vh></v>
 <v t="ekr.20160222130731.1"><vh>ts.is_line_comment</vh></v>
+<v t="ekr.20160222132448.1"><vh>ts.leading_lines</vh></v>
 <v t="ekr.20160222081027.1"><vh>ts.line_at</vh></v>
-<v t="ekr.20160222132448.1"><vh>ts.show_comments</vh></v>
-<v t="ekr.20160221151640.1"><vh>ts.sync_op</vh></v>
 <v t="ekr.20160222091644.1"><vh>ts.sync_string</vh></v>
-<v t="ekr.20160221145254.1"><vh>ts.sync_node</vh></v>
 <v t="ekr.20160222124401.1"><vh>ts.token_type/raw_val/val</vh></v>
 </v>
 </v>
@@ -249,11 +248,8 @@
 <v t="ekr.20160223014745.1"><vh>recent</vh>
 <v t="ekr.20160222084258.1"></v>
 <v t="ekr.20160222091644.1"></v>
-<v t="ekr.20160220050433.47"></v>
-<v t="ekr.20160220050433.68"></v>
-<v t="ekr.20160220050433.70"></v>
 </v>
-<v t="ekr.20160221143000.1"></v>
+<v t="ekr.20160223021522.1"><vh>checkin log</vh></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -572,9 +568,8 @@ def format(self, node, s, tokens):
     '''Format the node (or list of nodes) and its descendants.'''
     self.level = 0
     sync = TokenSync(s, tokens)
-    self.sync_op = sync.sync_op
     self.sync_string = sync.sync_string
-    self.sync_node = sync.sync_node
+    self.leading_lines = sync.leading_lines
     val = self.visit(node)
     return val or ''
 </t>
@@ -630,7 +625,7 @@ def parse_group(group):
 
 def do_ClassDef(self, node):
 
-    result = self.sync_node(node, 'class')
+    result = self.leading_lines(node)
     name = node.name # Only a plain string is valid.
     bases = [self.visit(z) for z in node.bases] if node.bases else []
     result.append('\n\n')
@@ -690,7 +685,7 @@ except ImportError:
 
 def do_FunctionDef(self, node):
     '''Format a FunctionDef node.'''
-    result = self.sync_node(node, 'def')
+    result = self.leading_lines(node)
     if node.decorator_list:
         for z in node.decorator_list:
             result.append(self.indent('@%s\n' % self.visit(z)))
@@ -736,9 +731,9 @@ def do_Lambda(self, node):
 <t tx="ekr.20160220050433.25">
 def do_Expr(self, node):
     '''An outer expression: must be indented.'''
-    comments = self.sync_node(node, 'expr')
+    leading = self.leading_lines(node)
     s = '%s\n' % self.visit(node.value)
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.26">
 def do_Expression(self, node):
@@ -1013,56 +1008,57 @@ def do_IfExp(self, node):
 <t tx="ekr.20160220050433.57">
 def do_Assert(self, node):
     
-    comments = self.sync_node(node, 'assert')
+    leading = self.leading_lines(node)
     test = self.visit(node.test)
     if getattr(node, 'msg', None) is not None:
         s = 'assert %s, %s\n' % (test, self.visit(node.msg))
     else:
         s = 'assert %s\n' % test
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.58">
 def do_Assign(self, node):
     
-    comments = self.sync_op(node, '=')
-    targets = '='.join([self.visit(z) for z in node.targets])
-    s = '%s=%s\n' % (targets, self.visit(node.value))
-    return ''.join(comments) + self.indent(s)
+    leading = self.leading_lines(node)
+    s = '%s=%s\n' % (
+        '='.join([self.visit(z) for z in node.targets]),
+        self.visit(node.value))
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.59">
 def do_AugAssign(self, node):
     
     op = self.op_name(node.op)
-    comments = self.sync_op(node, op)
+    leading = self.leading_lines(node)
     target = self.visit(node.target)
     value = self.visit(node.value)
     s = '%s%s=%s\n' % (target, op, value)
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.60">
 def do_Break(self, node):
     
-    comments = self.sync_node(node, 'break')
-    return ''.join(comments) + self.indent('break\n')
+    leading = self.leading_lines(node)
+    return ''.join(leading) + self.indent('break\n')
 </t>
 <t tx="ekr.20160220050433.61">
 def do_Continue(self, node):
     
-    comments = self.sync_node(node, 'continue')
-    return ''.join(comments) + self.indent('continue\n')
+    leading = self.leading_lines(node)
+    return ''.join(leading) + self.indent('continue\n')
 </t>
 <t tx="ekr.20160220050433.62">
 def do_Delete(self, node):
     
-    comments = self.sync_node(node, 'del')
+    leading = self.leading_lines(node)
     targets = [self.visit(z) for z in node.targets]
     s = 'del %s\n' % ','.join(targets)
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.63">
 def do_ExceptHandler(self, node):
 
-    result = self.sync_node(node, 'except')
+    result = self.leading_lines(node)
     result.append(self.indent('except'))
     if getattr(node, 'type', None):
         result.append(' %s' % self.visit(node.type))
@@ -1083,7 +1079,7 @@ def do_ExceptHandler(self, node):
 
 def do_Exec(self, node):
     
-    comments = self.sync_node(node, 'exec')
+    leading = self.leading_lines(node)
     body = self.visit(node.body)
     args = [] # Globals before locals.
     if getattr(node, 'globals', None):
@@ -1094,12 +1090,12 @@ def do_Exec(self, node):
         s = 'exec %s in %s\n' % (body, ','.join(args))
     else:
         s = 'exec %s\n' % body
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.65">
 def do_For(self, node):
 
-    result = self.sync_node(node, 'for')
+    result = self.leading_lines(node)
     result.append(self.indent('for %s in %s:\n' % (
         self.visit(node.target),
         self.visit(node.iter))))
@@ -1108,7 +1104,6 @@ def do_For(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        result.extend(self.sync_node(node.orelse[0], 'orelse'))
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
@@ -1119,14 +1114,14 @@ def do_For(self, node):
 <t tx="ekr.20160220050433.66">
 def do_Global(self, node):
     
-    comments = self.sync_node(node, 'global')
+    leading = self.leading_lines(node)
     s = 'global %s\n' % ','.join(node.names)
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.67">
 def do_If(self, node):
 
-    result = self.sync_node(node, 'if')
+    result = self.leading_lines(node)
     result.append(self.indent('if %s:\n' % (
         self.visit(node.test))))
     for z in node.body:
@@ -1134,7 +1129,6 @@ def do_If(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        result.extend(self.sync_node(node.orelse[0], 'orelse'))
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
@@ -1145,7 +1139,7 @@ def do_If(self, node):
 <t tx="ekr.20160220050433.68">
 def do_Import(self, node):
     
-    comments = self.sync_node(node, 'import')
+    leading = self.leading_lines(node)
     names = []
     for fn, asname in self.get_import_names(node):
         if asname:
@@ -1154,7 +1148,7 @@ def do_Import(self, node):
             names.append(fn)
     s = 'import %s\n' % ','.join(names)
     s = 'pass # ' + s
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.69">
 def get_import_names(self, node):
@@ -1173,7 +1167,7 @@ def get_import_names(self, node):
 <t tx="ekr.20160220050433.70">
 def do_ImportFrom(self, node):
 
-    comments = self.sync_node(node, 'from')
+    leading = self.leading_lines(node)
     names = []
     for fn, asname in self.get_import_names(node):
         if asname:
@@ -1182,20 +1176,20 @@ def do_ImportFrom(self, node):
             names.append(fn)
     s = 'from %s import %s\n' % (node.module, ','.join(names))
     s = 'pass # ' + s
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.71">
 def do_Pass(self, node):
     
-    comments = self.sync_node(node, 'pass')
-    return ''.join(comments) + self.indent('pass\n')
+    leading = self.leading_lines(node)
+    return ''.join(leading) + self.indent('pass\n')
 </t>
 <t tx="ekr.20160220050433.72">
 # Python 2.x only
 
 def do_Print(self, node):
     
-    comments = self.sync_node(node, 'print')
+    leading = self.leading_lines(node)
     vals = []
     for z in node.values:
         vals.append(self.visit(z))
@@ -1205,12 +1199,12 @@ def do_Print(self, node):
         if node.nl == 'False':
             vals.append('nl=%s' % node.nl)
     s = 'print(%s)\n' % ','.join(vals)
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.73">
 def do_Raise(self, node):
     
-    comments = self.sync_node(node, 'raise')
+    leading = self.leading_lines(node)
     args = []
     for attr in ('type', 'inst', 'tback'):
         if getattr(node, attr, None) is not None:
@@ -1219,22 +1213,22 @@ def do_Raise(self, node):
         s = 'raise %s\n' % ', '.join(args)
     else:
         s = 'raise\n'
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.74">
 def do_Return(self, node):
     
-    comments = self.sync_node(node, 'return')
+    leading = self.leading_lines(node)
     if node.value:
         s = 'return %s\n' % self.visit(node.value).strip()
     else:
         s = 'return\n'
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.75">
 def do_TryExcept(self, node):
 
-    result = self.sync_node(node, 'try')
+    result = self.leading_lines(node)
     result.append(self.indent('try:\n'))
     for z in node.body:
         self.level += 1
@@ -1244,7 +1238,6 @@ def do_TryExcept(self, node):
         for z in node.handlers:
             result.append(self.visit(z))
     if node.orelse:
-        result.extend(self.sync_node(node.orelse[0], 'orelse'))
         result.append('else:\n')
         for z in node.orelse:
             self.level += 1
@@ -1255,13 +1248,12 @@ def do_TryExcept(self, node):
 <t tx="ekr.20160220050433.76">
 def do_TryFinally(self, node):
     
-    result = self.sync_node(node, 'try')
+    result = self.leading_lines(node)
     result.append(self.indent('try:\n'))
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
         self.level -= 1
-    result.extend(self.sync_node(node.finalbody, 'finalbody'))
     result.append(self.indent('finally:\n'))
     for z in node.finalbody:
         self.level += 1
@@ -1272,7 +1264,7 @@ def do_TryFinally(self, node):
 <t tx="ekr.20160220050433.77">
 def do_While(self, node):
     
-    result = self.sync_node(node, 'while')
+    result = self.leading_lines(node)
     result.append(self.indent('while %s:\n' % (
         self.visit(node.test))))
     for z in node.body:
@@ -1280,7 +1272,6 @@ def do_While(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        result.extend(self.sync_node(node.orelse[0], 'orelse'))
         result.append('else:\n')
         for z in node.orelse:
             self.level += 1
@@ -1291,7 +1282,7 @@ def do_While(self, node):
 <t tx="ekr.20160220050433.78">
 def do_With(self, node):
 
-    result = self.sync_node(node, 'with')
+    result = self.leading_lines(node)
     result.append(self.indent('with '))
     if hasattr(node, 'context_expression'):
         result.append(self.visit(node.context_expresssion))
@@ -1314,12 +1305,12 @@ def do_With(self, node):
 <t tx="ekr.20160220050433.79">
 def do_Yield(self, node):
     
-    comments = self.sync_node(node, 'yield')
+    leading = self.leading_lines(node)
     if getattr(node, 'value', None) is not None:
         s = 'yield %s\n' % self.visit(node.value)
     else:
         s ='yield\n'
-    return ''.join(comments) + self.indent(s)
+    return ''.join(leading) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.8">
 def dump(title, s=None):
@@ -1718,7 +1709,7 @@ def output_time_stamp(self, f):
 
 def do_Try(self, node): # Python 3
 
-    result = self.sync_node(node, 'try')
+    result = self.leading_lines(node)
     result.append(self.indent('try:\n'))
     for z in node.body:
         self.level += 1
@@ -1728,14 +1719,12 @@ def do_Try(self, node): # Python 3
         for z in node.handlers:
             result.append(self.visit(z))
     if node.orelse:
-        result.extend(self.sync_node(node.orelse[0], 'orelse'))
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
             self.level -= 1
     if node.finalbody:
-        result.extend(self.sync_node(node.finalbody, 'finalbody'))
         result.append(self.indent('finally:\n'))
         for z in node.finalbody:
             self.level += 1
@@ -2396,6 +2385,7 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
+*** Auto-move clones
 * Handle blank lines: don't add blank lines before class &amp; def.
 * Handle end-of-line comments.
 - Discuss TokenSync class in theory.md.
@@ -2684,24 +2674,16 @@ def __init__(self, s, tokens):
     '''Ctor for TokenSync class.'''
     assert isinstance(tokens, list) # Not a generator.
     self.s = s
-    self.first_comment_line = None
+    self.first_leading_line = None
     self.lines = [z.rstrip() for z in g.splitLines(s)]
     self.line_tokens = self.make_line_tokens(tokens)
     self.string_tokens = self.make_string_tokens()
     self.comment_lines = self.make_comment_lines()
 </t>
-<t tx="ekr.20160221145254.1">
-def sync_node(self, node, name):
-    '''Advance tokens until the given keyword is found.'''
-    comments = self.show_comments(node)
-    n = node.lineno if hasattr(node, 'lineno') else -1
-    # g.trace('%-12s %2s: %s' % (name, n, self.line_at(node)))
-    return comments
-</t>
 <t tx="ekr.20160221151640.1">
 def sync_op(self, node, op):
     '''Advance tokens until the given keyword is found.'''
-    aList = self.show_comments(node)
+    aList = self.leading_lines(node)
     # g.trace('  %-12s %2s: %s' % (op, node.lineno, self.line_at(node)))
     return aList
 </t>
@@ -2852,9 +2834,8 @@ def make_string_tokens(self):
 def __init__(self, controller):
     '''Ctor for CoffeeScriptFormatter class.'''
     self.controller = controller
-    self.sync_op = None
     self.sync_string = None
-    self.sync_node = None
+    self.leading_lines = None
     self.class_stack = []</t>
 <t tx="ekr.20160222091644.1">
 def sync_string(self, node):
@@ -2897,10 +2878,10 @@ def make_comment_lines(self):
     assert len(result) == len(self.line_tokens)
     for i, aList in enumerate(result):
         if aList:
-            self.first_comment_line = i
+            self.first_leading_line = i
             break
     else:
-        self.first_comment_line = len(result)
+        self.first_leading_line = len(result)
     return result
 </t>
 <t tx="ekr.20160222130731.1">
@@ -2912,22 +2893,22 @@ def is_line_comment(self, token):
     return kind == 'comment' and raw_val.lstrip().startswith('#')
 </t>
 <t tx="ekr.20160222132448.1">
-def show_comments(self, node):
-    '''Show the comments preceding the node.'''
+def leading_lines(self, node):
+    '''Return a list of the preceding comment and blank lines'''
     # This can be called on arbitrary nodes.
     trace = False
-    comments = []
+    leading = []
     if hasattr(node, 'lineno'):
-        i, n = self.first_comment_line, node.lineno
+        i, n = self.first_leading_line, node.lineno
         while i &lt; n:
             token = self.comment_lines[i]
             if token:
                 s = self.token_raw_val(token).rstrip()+'\n'
-                comments.append(s)
+                leading.append(s)
                 if trace: g.trace('%11s: %s' % (i, s.rstrip()))
             i += 1
-        self.first_comment_line = i
-    return comments
+        self.first_leading_line = i
+    return leading
 </t>
 <t tx="ekr.20160223013055.1">
 def dump_token(self, token):
@@ -2946,5 +2927,12 @@ def clean(s):
         .replace('\\t','').replace('\t','')
         .replace('\\','').replace('\\',''))</t>
 <t tx="ekr.20160223014745.1"></t>
+<t tx="ekr.20160223021522.1">@language rest
+@wrap
+
+Cleaned up leading-lines code, preparing to handle blank lines.
+- Renamed both ts.sync_node &amp; ts.sync_op to ts.leading_lines
+- Don't special case 'orelse' clauses
+</t>
 </tnodes>
 </leo_file>
