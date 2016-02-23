@@ -232,7 +232,7 @@
 <v t="ekr.20160221143402.1"><vh> ts.ctor &amp; helpers</vh>
 <v t="ekr.20160223023354.1"><vh>ts.make_blank_lines</vh></v>
 <v t="ekr.20160222130449.1"><vh>ts.make_ignored_lines</vh></v>
-<v t="ekr.20160222084258.1"><vh>ts.make_line_tokens</vh></v>
+<v t="ekr.20160222084258.1"><vh>ts.make_line_tokens (trace tokens)</vh></v>
 <v t="ekr.20160223031552.1"><vh>ts.make_nl_token</vh></v>
 <v t="ekr.20160222084401.1"><vh>ts.make_string_tokens</vh></v>
 </v>
@@ -244,11 +244,11 @@
 <v t="ekr.20160222091644.1"><vh>ts.sync_string</vh></v>
 <v t="ekr.20160222124401.1"><vh>ts.token_kind/raw_val/val</vh></v>
 <v t="ekr.20160223042247.1"><vh>ts.trailing_comment</vh></v>
+<v t="ekr.20160223061445.1"><vh>trailing_comment_at_lineno</vh></v>
 </v>
 </v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160223061031.1"><vh>Recent</vh>
 <v t="ekr.20160223041901.1"><vh>Found:leading_lines</vh>
 <v t="ekr.20160220050433.57"></v>
 <v t="ekr.20160220050433.58"></v>
@@ -278,11 +278,6 @@
 <v t="ekr.20160220050433.78"></v>
 <v t="ekr.20160220050433.79"></v>
 </v>
-<v t="ekr.20160222084258.1"></v>
-<v t="ekr.20160223042247.1"></v>
-<v t="ekr.20160220050433.72"></v>
-</v>
-<v t="ekr.20160221143000.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -603,6 +598,7 @@ def format(self, node, s, tokens):
     self.leading_lines = sync.leading_lines
     self.leading_string = sync.leading_string
     self.trailing_comment = sync.trailing_comment
+    self.trailing_comment_at_lineno = sync.trailing_comment_at_lineno
     val = self.visit(node)
     return val or ''
 </t>
@@ -1153,12 +1149,17 @@ def do_For(self, node):
         self.visit(node.target),
         self.visit(node.iter))
     result.append(self.indent(s + tail))
+    max_n = -1
     for z in node.body:
         self.level += 1
+        max_n = max(max_n, node.lineno)
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        # TODO: how to get a comment following the else?
+        if max_n &gt; -1:
+            tail = self.trailing_comment_at_lineno(max_n + 2)
+        else:
+            tail = '\n'
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
@@ -1181,13 +1182,18 @@ def do_If(self, node):
     tail = self.trailing_comment(node)
     s = 'if %s:%s' % (self.visit(node.test), tail)
     result.append(self.indent(s))
+    max_n = -1
     for z in node.body:
         self.level += 1
+        max_n = max(max_n, node.lineno)
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        # TODO: how to get a comment following the else?
-        result.append(self.indent('else:\n'))
+        if max_n &gt; -1:
+            tail = self.trailing_comment_at_lineno(max_n + 2)
+        else:
+            tail = '\n'
+        result.append(self.indent('else:' + tail))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
@@ -1314,12 +1320,17 @@ def do_TryFinally(self, node):
     result = self.leading_lines(node)
     tail = self.trailing_comment(node)
     result.append(self.indent('try:' + tail))
+    max_n = -1
     for z in node.body:
         self.level += 1
+        max_n = max(max_n, node.lineno)
         result.append(self.visit(z))
         self.level -= 1
-    # TODO: how to attach comments that appear after 'finally'?
-    result.append(self.indent('finally:\n'))
+    if max_n &gt; -1:
+        tail = self.trailing_comment_at_lineno(max_n + 2)
+    else:
+        tail = '\n'
+    result.append(self.indent('finally:' + tail))
     for z in node.finalbody:
         self.level += 1
         result.append(self.visit(z))
@@ -2783,7 +2794,11 @@ class TestClass(object):
         # Comment 1.
         def __init__(self, a):
             '''Ctor for InnerClass'''
-            self.a = a
+            if a: # after if
+                self.a = a
+            else: # after else
+                pass
+
         def inner1(self):
             """inner1 docstring"""
 
@@ -2913,6 +2928,7 @@ def __init__(self, controller):
     self.leading_lines = None
     self.leading_string = None
     self.trailing_comment = None
+    self.trailing_comment_at_lineno = None
     </t>
 <t tx="ekr.20160222091644.1">
 def sync_string(self, node):
@@ -3040,24 +3056,29 @@ def trailing_comment(self, node):
     Return a string containing the trailing comment for the node, if any.
     The string always ends with a newline.
     '''
-    n = getattr(node, 'lineno', None)
-    if n is not None:
-        tokens = self.line_tokens[node.lineno-1]
-        for token in tokens:
-            if self.token_kind(token) == 'comment':
-                raw_val = self.token_raw_val(token).rstrip()
-                if not raw_val.strip().startswith('#'):
-                    val = self.token_val(token).rstrip()
-                    s = ' %s\n' % val
-                    # g.trace(node.lineno, s.rstrip(), g.callers())
-                    return s
+    if hasattr(node, 'lineno'):
+        return self.trailing_comment_at_lineno(node.lineno)
+    else:
+        g.trace('no lineno', node.__class__.__name__, g.callers())
         return '\n'
-    g.trace('no lineno', node.__class__.__name__, g.callers())
-    return '\n'</t>
+</t>
 <t tx="ekr.20160223043329.1">
 def leading_string(self, node):
     '''Return a string containing all lines preceding node.'''
     return ''.join(self.leading_lines(node))</t>
-<t tx="ekr.20160223061031.1"></t>
+<t tx="ekr.20160223061445.1">
+def trailing_comment_at_lineno(self, lineno):
+    '''Return any trailing comment at the given node.lineno.'''
+    trace = False
+    tokens = self.line_tokens[lineno-1]
+    for token in tokens:
+        if self.token_kind(token) == 'comment':
+            raw_val = self.token_raw_val(token).rstrip()
+            if not raw_val.strip().startswith('#'):
+                val = self.token_val(token).rstrip()
+                s = ' %s\n' % val
+                if trace: g.trace(lineno, s.rstrip(), g.callers())
+                return s
+    return '\n'</t>
 </tnodes>
 </leo_file>

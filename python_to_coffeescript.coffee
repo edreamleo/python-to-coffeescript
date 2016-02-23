@@ -1,4 +1,4 @@
-# python_to_coffeescript: Tue 23 Feb 2016 at 06:09:34
+# python_to_coffeescript: Tue 23 Feb 2016 at 06:37:05
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -101,6 +101,7 @@ class CoffeeScriptTraverser extends object
         @leading_lines=None
         @leading_string=None
         @trailing_comment=None
+        @trailing_comment_at_lineno=None
 
 
     format: (node, s, tokens) ->
@@ -111,6 +112,7 @@ class CoffeeScriptTraverser extends object
         @leading_lines=sync.leading_lines
         @leading_string=sync.leading_string
         @trailing_comment=sync.trailing_comment
+        @trailing_comment_at_lineno=sync.trailing_comment_at_lineno
         val=@visit(node)
         return val or ''
 
@@ -584,12 +586,17 @@ class CoffeeScriptTraverser extends object
         tail=@trailing_comment(node)
         s='for %s in %s:'%(@visit(node.target), @visit(node.iter))
         result.append(@indent(s+tail))
+        max_n=-1
         for z in node.body:
             @level+=1
+            max_n=max(max_n,node.lineno)
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            # TODO: how to get a comment following the else?
+            if max_n>-1:
+                tail=@trailing_comment_at_lineno(max_n+2)
+            else:
+                tail='\n'
             result.append(@indent('else:\n'))
             for z in node.orelse:
                 @level+=1
@@ -610,13 +617,18 @@ class CoffeeScriptTraverser extends object
         tail=@trailing_comment(node)
         s='if %s:%s'%(@visit(node.test), tail)
         result.append(@indent(s))
+        max_n=-1
         for z in node.body:
             @level+=1
+            max_n=max(max_n,node.lineno)
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            # TODO: how to get a comment following the else?
-            result.append(@indent('else:\n'))
+            if max_n>-1:
+                tail=@trailing_comment_at_lineno(max_n+2)
+            else:
+                tail='\n'
+            result.append(@indent('else:'+tail))
             for z in node.orelse:
                 @level+=1
                 result.append(@visit(z))
@@ -762,12 +774,17 @@ class CoffeeScriptTraverser extends object
         result=@leading_lines(node)
         tail=@trailing_comment(node)
         result.append(@indent('try:'+tail))
+        max_n=-1
         for z in node.body:
             @level+=1
+            max_n=max(max_n,node.lineno)
             result.append(@visit(z))
             @level-=1
-        # TODO: how to attach comments that appear after 'finally'?
-        result.append(@indent('finally:\n'))
+        if max_n>-1:
+            tail=@trailing_comment_at_lineno(max_n+2)
+        else:
+            tail='\n'
+        result.append(@indent('finally:'+tail))
         for z in node.finalbody:
             @level+=1
             result.append(@visit(z))
@@ -1456,19 +1473,25 @@ class TokenSync extends object
         Return a string containing the trailing comment for the node, if any.
         The string always ends with a newline.
         '''
-        n=getattr(node,'lineno',None)
-        if n is not None:
-            tokens=@line_tokens[node.lineno-1]
-            for token in tokens:
-                if @token_kind(token)=='comment':
-                    raw_val=@token_raw_val(token).rstrip()
-                    if  not raw_val.strip().startswith('#'):
-                        val=@token_val(token).rstrip()
-                        s=' %s\n'%val
-                        # g.trace(node.lineno, s.rstrip(), g.callers())
-                        return s
+        if hasattr(node,'lineno'):
+            return @trailing_comment_at_lineno(node.lineno)
+        else:
+            g.trace('no lineno',node.__class__.__name__,g.callers())
             return '\n'
-        g.trace('no lineno',node.__class__.__name__,g.callers())
+
+    trailing_comment_at_lineno: (lineno) ->
+        '''Return any trailing comment at the given node.lineno.'''
+        trace=False
+        tokens=@line_tokens[lineno-1]
+        for token in tokens:
+            if @token_kind(token)=='comment':
+                raw_val=@token_raw_val(token).rstrip()
+                if  not raw_val.strip().startswith('#'):
+                    val=@token_val(token).rstrip()
+                    s=' %s\n'%val
+                    if trace:
+                        g.trace(lineno,s.rstrip(),g.callers())
+                    return s
         return '\n'
 
 g=LeoGlobals() # For ekr.

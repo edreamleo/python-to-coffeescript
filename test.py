@@ -26,7 +26,11 @@ class TestClass(object):
         # Comment 1.
         def __init__(self, a):
             '''Ctor for InnerClass'''
-            self.a = a
+            if a: # after if
+                self.a = a
+            else: # after else
+                pass
+
         def inner1(self):
             """inner1 docstring"""
 

@@ -1,4 +1,4 @@
-# python_to_coffeescript: Tue 23 Feb 2016 at 06:06:24
+# python_to_coffeescript: Tue 23 Feb 2016 at 06:36:57
 '''
 Test file illustrating difficulties of tokenizing.
 At present, multi-line docstrings cause problems.
@@ -23,7 +23,11 @@ class TestClass extends object
         # Comment 1.
         __init__: (a) ->
             '''Ctor for InnerClass'''
-            @a=a
+            if a: # after if
+                @a=a
+            else: # after else
+                pass
+
         inner1: ->
             """inner1 docstring"""
 
