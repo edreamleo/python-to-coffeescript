@@ -1,4 +1,4 @@
-# python_to_coffeescript: Tue 23 Feb 2016 at 02:19:09
+# python_to_coffeescript: Tue 23 Feb 2016 at 04:14:31
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -49,6 +49,7 @@ main = ->
     controller.scan_options()
     controller.run()
     print('done')
+
 #
 # Utility functions...
 #
@@ -135,21 +136,24 @@ class CoffeeScriptTraverser extends object
                 else:
                     assert isinstance(s,(str, unicode))
                 return s
+
     #
     # CoffeeScriptTraverser contexts...
     #
+
     # ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
 
     do_ClassDef: (node) ->
+
         result=@leading_lines(node)
         name=node.name
         bases=@visit(z) for z in node.bases if node.bases else [] 
-        result.append('\n\n')
+        # result.append('\n\n')
         if bases:
-            # result.append(self.indent('class %s(%s):\n' % (name, ', '.join(bases))))
-            result.append(@indent('class %s extends %s\n'%(name, ', '.join(bases))))
+            s='class %s extends %s\n'%(name, ', '.join(bases))
         else:
-            result.append(@indent('class %s\n'%name))
+            s='class %s\n'%name
+        result.append(@indent(s))
         @class_stack.append(name)
         for (i, z) in enumerate(node.body):
             @level+=1
@@ -157,6 +161,7 @@ class CoffeeScriptTraverser extends object
             @level-=1
         @class_stack.pop()
         return ''.join(result)
+
     # FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
 
     do_FunctionDef: (node) ->
@@ -172,7 +177,7 @@ class CoffeeScriptTraverser extends object
             args=args[1:]
         args=', '.join(args)
         args='(%s) '%args if args else '' 
-        result.append('\n')
+        # result.append('\n')
         sep=': ' if @class_stack else ' = ' 
         s='%s%s%s->\n'%(name, sep, args)
         result.append(@indent(s))
@@ -187,10 +192,12 @@ class CoffeeScriptTraverser extends object
             @visit(z)
 
     do_Module: (node) ->
+
         return ''.join(@visit(z) for z in node.body)
 
     do_Lambda: (node) ->
         return @indent('lambda %s: %s'%(@visit(node.args), @visit(node.body)))
+
     #
     # CoffeeScriptTraverser expressions...
     #
@@ -211,23 +218,10 @@ class CoffeeScriptTraverser extends object
         gens=z if z else '<**None**>'  for z in gens
         return '<gen %s for %s>'%(elt, ','.join(gens))
 
-    do_AugLoad: (node) ->
-        return 'AugLoad'
-
-    do_Del: (node) ->
-        return 'Del'
-
-    do_Load: (node) ->
-        return 'Load'
-
-    do_Param: (node) ->
-        return 'Param'
-
-    do_Store: (node) ->
-        return 'Store'
     #
     # CoffeeScriptTraverser operands...
     #
+
     # arguments = (expr* args, identifier? vararg, identifier? kwarg, expr* defaults)
 
     do_arguments: (node) ->
@@ -257,14 +251,17 @@ class CoffeeScriptTraverser extends object
                 name=name.arg
             args2.append('**'+name)
         return ','.join(args2)
+
     # Python 3:
     # arg = (identifier arg, expr? annotation)
 
     do_arg: (node) ->
         return node.arg
+
     # Attribute(expr value, identifier attr, expr_context ctx)
 
     do_Attribute: (node) ->
+
         # Don't visit node.attr: it is always a string.
         val=@visit(node.value)
         val='@' if val=='@' else val+'.' 
@@ -272,6 +269,7 @@ class CoffeeScriptTraverser extends object
 
     do_Bytes: (node) ->
         return str(node.s)
+
     # Call(expr func, expr* args, keyword* keywords, expr? starargs, expr? kwargs)
 
     do_Call: (node) ->
@@ -287,6 +285,7 @@ class CoffeeScriptTraverser extends object
         args=z for z in args if z
         s='%s(%s)'%(func, ','.join(args))
         return s
+
     # keyword = (identifier arg, expr value)
 
     do_keyword: (node) ->
@@ -306,21 +305,24 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_Dict: (node) ->
-        result=[]
-        keys=@visit(z) for z in node.keys
-        values=@visit(z) for z in node.values
-        if len(keys)==len(values):
-            # result.append('{\n' if keys else '{')
-            result.append('{')
-            items=[]
-            for i in range(len(keys)):
-                items.append('%s:%s'%(keys[i], values[i]))
-            result.append(', '.join(items))
-            result.append('}')
-        else:
-            # result.append(',\n'.join(items))
-            # result.append('\n}' if keys else '}')
-            print('Error: f.Dict: len(keys) != len(values)\nkeys: %s\nvals: %s'%(repr(keys), repr(values)))
+        assert len(node.keys)==len(node.values)
+        (items, result)=([], [])
+        result.append('{')
+        @level+=1
+        for (i, key) in enumerate(node.keys):
+            leading=@leading_lines(key)
+                # Prevents leading lines from being handled again.
+            leading=z for z in leading if z.strip()
+                # Ignore blank lines.
+            if leading:
+                items.extend('\n'+''.join(leading))
+            key=@visit(node.keys[i])
+            value=@visit(node.values[i])
+            s='%s:%s\n'%(key, value)
+            items.append(@indent(s))
+        @level-=1
+        result.extend(items)
+        result.append(@indent('}'))
         return ''.join(result)
 
     do_Ellipsis: (node) ->
@@ -354,6 +356,7 @@ class CoffeeScriptTraverser extends object
 
     do_Num: (node) ->
         return repr(node.n)
+
     # Python 2.x only
 
     do_Repr: (node) ->
@@ -375,10 +378,13 @@ class CoffeeScriptTraverser extends object
     do_Str: (node) ->
         '''A string constant, including docstrings.'''
         if hasattr(node,'lineno'):
+            # Do *not* handle leading lines here.
+            # leading = self.leading_lines(node)
             return @sync_string(node)
         else:
             g.trace('==== no lineno',node.s)
             return node.s
+
     # Subscript(expr value, slice slice, expr_context ctx)
 
     do_Subscript: (node) ->
@@ -389,18 +395,58 @@ class CoffeeScriptTraverser extends object
     do_Tuple: (node) ->
         elts=@visit(z) for z in node.elts
         return '(%s)'%', '.join(elts)
+
     #
     # CoffeeScriptTraverser operators...
     #
 
     op_name: (node, strict=True) ->
         '''Return the print name of an operator node.'''
-        d={'Add':'+', 'BitAnd':'&', 'BitOr':'|', 'BitXor':'^', 'Div':'/', 'FloorDiv':'//', 'LShift':'<<', 'Mod':'%', 'Mult':'*', 'Pow':'**', 'RShift':'>>', 'Sub':'-', 'And':' and ', 'Or':' or ', 'Eq':'==', 'Gt':'>', 'GtE':'>=', 'In':' in ', 'Is':' is ', 'IsNot':' is not ', 'Lt':'<', 'LtE':'<=', 'NotEq':'!=', 'NotIn':' not in ', 'AugLoad':'<AugLoad>', 'AugStore':'<AugStore>', 'Del':'<Del>', 'Load':'<Load>', 'Param':'<Param>', 'Store':'<Store>', 'Invert':'~', 'Not':' not ', 'UAdd':'+', 'USub':'-'}
+        d={
             # Binary operators.
+            'Add':'+'
+            'BitAnd':'&'
+            'BitOr':'|'
+            'BitXor':'^'
+            'Div':'/'
+            'FloorDiv':'//'
+            'LShift':'<<'
+            'Mod':'%'
+            'Mult':'*'
+            'Pow':'**'
+            'RShift':'>>'
+            'Sub':'-'
+
             # Boolean operators.
+            'And':' and '
+            'Or':' or '
+
             # Comparison operators
+            'Eq':'=='
+            'Gt':'>'
+            'GtE':'>='
+            'In':' in '
+            'Is':' is '
+            'IsNot':' is not '
+            'Lt':'<'
+            'LtE':'<='
+            'NotEq':'!='
+            'NotIn':' not in '
+
             # Context operators.
+            'AugLoad':'<AugLoad>'
+            'AugStore':'<AugStore>'
+            'Del':'<Del>'
+            'Load':'<Load>'
+            'Param':'<Param>'
+            'Store':'<Store>'
+
             # Unary operators.
+            'Invert':'~'
+            'Not':' not '
+            'UAdd':'+'
+            'USub':'-'
+        }
         kind=node.__class__.__name__
         name=d.get(kind,'<%s>'%kind)
         if strict:
@@ -433,11 +479,13 @@ class CoffeeScriptTraverser extends object
 
     do_UnaryOp: (node) ->
         return '%s%s'%(@op_name(node.op), @visit(node.operand))
+
     #
     # CoffeeScriptTraverser statements...
     #
 
     do_Assert: (node) ->
+
         leading=@leading_lines(node)
         test=@visit(node.test)
         if getattr(node,'msg',None) is not None:
@@ -447,11 +495,13 @@ class CoffeeScriptTraverser extends object
         return ''.join(leading)+@indent(s)
 
     do_Assign: (node) ->
+
         leading=@leading_lines(node)
         s='%s=%s\n'%('='.join(@visit(z) for z in node.targets), @visit(node.value))
         return ''.join(leading)+@indent(s)
 
     do_AugAssign: (node) ->
+
         op=@op_name(node.op)
         leading=@leading_lines(node)
         target=@visit(node.target)
@@ -460,20 +510,24 @@ class CoffeeScriptTraverser extends object
         return ''.join(leading)+@indent(s)
 
     do_Break: (node) ->
+
         leading=@leading_lines(node)
         return ''.join(leading)+@indent('break\n')
 
     do_Continue: (node) ->
+
         leading=@leading_lines(node)
         return ''.join(leading)+@indent('continue\n')
 
     do_Delete: (node) ->
+
         leading=@leading_lines(node)
         targets=@visit(z) for z in node.targets
         s='del %s\n'%','.join(targets)
         return ''.join(leading)+@indent(s)
 
     do_ExceptHandler: (node) ->
+
         result=@leading_lines(node)
         result.append(@indent('except'))
         if getattr(node,'type',None):
@@ -489,9 +543,11 @@ class CoffeeScriptTraverser extends object
             result.append(@visit(z))
             @level-=1
         return ''.join(result)
+
     # Python 2.x only
 
     do_Exec: (node) ->
+
         leading=@leading_lines(node)
         body=@visit(node.body)
         args=[]
@@ -506,6 +562,7 @@ class CoffeeScriptTraverser extends object
         return ''.join(leading)+@indent(s)
 
     do_For: (node) ->
+
         result=@leading_lines(node)
         result.append(@indent('for %s in %s:\n'%(@visit(node.target), @visit(node.iter))))
         for z in node.body:
@@ -521,11 +578,13 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_Global: (node) ->
+
         leading=@leading_lines(node)
         s='global %s\n'%','.join(node.names)
         return ''.join(leading)+@indent(s)
 
     do_If: (node) ->
+
         result=@leading_lines(node)
         result.append(@indent('if %s:\n'%@visit(node.test)))
         for z in node.body:
@@ -541,6 +600,7 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_Import: (node) ->
+
         leading=@leading_lines(node)
         names=[]
         for (fn, asname) in @get_import_names(node):
@@ -562,6 +622,7 @@ class CoffeeScriptTraverser extends object
         return result
 
     do_ImportFrom: (node) ->
+
         leading=@leading_lines(node)
         names=[]
         for (fn, asname) in @get_import_names(node):
@@ -574,11 +635,14 @@ class CoffeeScriptTraverser extends object
         return ''.join(leading)+@indent(s)
 
     do_Pass: (node) ->
+
         leading=@leading_lines(node)
         return ''.join(leading)+@indent('pass\n')
+
     # Python 2.x only
 
     do_Print: (node) ->
+
         leading=@leading_lines(node)
         vals=[]
         for z in node.values:
@@ -592,6 +656,7 @@ class CoffeeScriptTraverser extends object
         return ''.join(leading)+@indent(s)
 
     do_Raise: (node) ->
+
         leading=@leading_lines(node)
         args=[]
         for attr in ('type', 'inst', 'tback'):
@@ -604,15 +669,18 @@ class CoffeeScriptTraverser extends object
         return ''.join(leading)+@indent(s)
 
     do_Return: (node) ->
+
         leading=@leading_lines(node)
         if node.value:
             s='return %s\n'%@visit(node.value).strip()
         else:
             s='return\n'
         return ''.join(leading)+@indent(s)
+
     # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
     do_Try: (node) ->
+
         result=@leading_lines(node)
         result.append(@indent('try:\n'))
         for z in node.body:
@@ -637,6 +705,7 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_TryExcept: (node) ->
+
         result=@leading_lines(node)
         result.append(@indent('try:\n'))
         for z in node.body:
@@ -655,6 +724,7 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_TryFinally: (node) ->
+
         result=@leading_lines(node)
         result.append(@indent('try:\n'))
         for z in node.body:
@@ -669,6 +739,7 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_While: (node) ->
+
         result=@leading_lines(node)
         result.append(@indent('while %s:\n'%@visit(node.test)))
         for z in node.body:
@@ -684,6 +755,7 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_With: (node) ->
+
         result=@leading_lines(node)
         result.append(@indent('with '))
         if hasattr(node,'context_expression'):
@@ -705,6 +777,7 @@ class CoffeeScriptTraverser extends object
         return ''.join(result)
 
     do_Yield: (node) ->
+
         leading=@leading_lines(node)
         if getattr(node,'value',None) is not None:
             s='yield %s\n'%@visit(node.value)
@@ -722,31 +795,22 @@ class LeoGlobals extends object
         An object that does nothing, and does it very well.
         From the Python cookbook, recipe 5.23
         """
-
         __init__: (*args, **keys) ->
             pass
-
         __call__: (*args, **keys) ->
             return @
-
         __repr__: ->
             return "NullObject"
-
         __str__: ->
             return "NullObject"
-
         __bool__: ->
             return False
-
         __nonzero__: ->
             return 0
-
         __delattr__: (attr) ->
             return @
-
         __getattr__: (attr) ->
             return @
-
         __setattr__: (attr, val) ->
             return @
 
@@ -767,6 +831,7 @@ class LeoGlobals extends object
                 line=''
             # g.trace(repr(line))
             return line
+
         __next__=next
 
     _callerName: (n=1, files=False) ->
@@ -908,6 +973,7 @@ class LeoGlobals extends object
             leo_g.trace(caller_level=2,*args,**keys)
         except ImportError:
             print((args, keys))
+
     if isPython3:
 
         u: (s) ->
@@ -916,6 +982,7 @@ class LeoGlobals extends object
         ue: (s, encoding) ->
             return s if g.isUnicode(s) else str(s,encoding)
     else:
+
 
         u: (s) ->
             return unicode(s)
@@ -927,9 +994,10 @@ class LeoGlobals extends object
 class MakeCoffeeScriptController extends object
     '''The controller class for python_to_coffeescript.py.'''
 
+
     __init__: ->
         '''Ctor for MakeCoffeeScriptController class.'''
-        @options={}
+        @options={        }
         # Ivars set on the command line...
         @config_fn=None
         @enable_unit_tests=False
@@ -1144,6 +1212,7 @@ class MakeCoffeeScriptController extends object
 
         munge: (s) ->
             return s.strip().lower().replace(' ','')
+
         s=s.strip()
         if s.startswith('[') and s.endswith(']'):
             s=munge(s[1:-1])
@@ -1162,6 +1231,7 @@ class ParseState extends object
 
     __repr__: ->
         return 'State: %10s %s'%(@kind, repr(@value))
+
     __str__=__repr__
 
 
@@ -1175,17 +1245,39 @@ class TokenSync extends object
         @s=s
         @first_leading_line=None
         @lines=z.rstrip() for z in g.splitLines(s)
+        # Order is important from here on...
+        @nl_token=@make_nl_token()
         @line_tokens=@make_line_tokens(tokens)
+        @blank_lines=@make_blank_lines()
         @string_tokens=@make_string_tokens()
-        @comment_lines=@make_comment_lines()
+        @ignored_lines=@make_ignored_lines()
 
-    make_comment_lines: ->
-        '''Return a copy of line_tokens containing only full-line comments.'''
+    make_blank_lines: ->
+        '''Return of list of line numbers of blank lines.'''
         result=[]
-        for aList in @line_tokens:
-            aList2=z for z in aList if @is_line_comment(z)
-            assert len(aList2)<2
-            result.append(aList2[0] if aList2 else None )
+        for (i, aList) in enumerate(@line_tokens):
+            # if any([self.token_kind(z) == 'nl' for z in aList]):
+            if len(aList)==1 and @token_kind(aList[0])=='nl':
+                result.append(i)
+        return result
+
+    make_ignored_lines: ->
+        '''
+        Return a copy of line_tokens containing ignored lines,
+        that is, full-line comments or blank lines.
+        These are the lines returned by leading_lines().
+        '''
+        result=[]
+        for (i, aList) in enumerate(@line_tokens):
+            for z in aList:
+                if @is_line_comment(z):
+                    result.append(z)
+                    break
+            else:
+                if i in @blank_lines:
+                    result.append(@nl_token)
+                else:
+                    result.append(None)
         assert len(result)==len(@line_tokens)
         for (i, aList) in enumerate(result):
             if aList:
@@ -1216,11 +1308,20 @@ class TokenSync extends object
         assert len(@lines)+1==len(result), len(result)
         return result
 
+    make_nl_token: ->
+        '''Return a newline token with '\n' as both val and raw_val.'''
+        t1=token_module.NEWLINE
+        t2='\n'
+        t3=(0, 0)
+        t4=(0, 0)
+        t5='\n'
+        return (t1, t2, t3, t4, t5)
+
     make_string_tokens: ->
         '''Return a copy of line_tokens containing only string tokens.'''
         result=[]
         for aList in @line_tokens:
-            result.append(z for z in aList if @token_type(z)=='string')
+            result.append(z for z in aList if @token_kind(z)=='string')
         assert len(result)==len(@line_tokens)
         return result
 
@@ -1247,7 +1348,7 @@ class TokenSync extends object
         if hasattr(node,'lineno'):
             (i, n)=(@first_leading_line, node.lineno)
             while i<n:
-                token=@comment_lines[i]
+                token=@ignored_lines[i]
                 if token:
                     s=@token_raw_val(token).rstrip()+'\n'
                     leading.append(s)
@@ -1290,7 +1391,7 @@ class TokenSync extends object
             g.trace('===== underflow',n,node.s)
             return node.s
 
-    token_type: (token) ->
+    token_kind: (token) ->
         '''Return the token's type.'''
         (t1, t2, t3, t4, t5)=token
         return g.toUnicode(token_module.tok_name[t1].lower())
@@ -1304,6 +1405,7 @@ class TokenSync extends object
         '''Return the raw value of the token.'''
         (t1, t2, t3, t4, t5)=token
         return g.toUnicode(t2)
+
 g=LeoGlobals()
 if __name__=="__main__":
     main()

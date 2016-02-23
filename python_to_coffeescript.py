@@ -146,12 +146,12 @@ class CoffeeScriptTraverser(object):
         result = self.leading_lines(node)
         name = node.name # Only a plain string is valid.
         bases = [self.visit(z) for z in node.bases] if node.bases else []
-        result.append('\n\n')
+        # result.append('\n\n')
         if bases:
-            # result.append(self.indent('class %s(%s):\n' % (name, ', '.join(bases))))
-            result.append(self.indent('class %s extends %s\n' % (name, ', '.join(bases))))
+            s = 'class %s extends %s\n' % (name, ', '.join(bases))
         else:
-            result.append(self.indent('class %s\n' % name))
+            s = 'class %s\n' % name
+        result.append(self.indent(s))
         self.class_stack.append(name)
         for i, z in enumerate(node.body):
             self.level += 1
@@ -175,7 +175,7 @@ class CoffeeScriptTraverser(object):
             args = args[1:]
         args = ', '.join(args)
         args = '(%s) ' % args if args else ''
-        result.append('\n')
+        # result.append('\n')
         sep = ': ' if self.class_stack else ' = '
         s = '%s%s%s->\n' % (name, sep, args)
         result.append(self.indent(s))
@@ -202,7 +202,6 @@ class CoffeeScriptTraverser(object):
     # CoffeeScriptTraverser expressions...
     #
 
-
     def do_Expr(self, node):
         '''An outer expression: must be indented.'''
         leading = self.leading_lines(node)
@@ -218,21 +217,6 @@ class CoffeeScriptTraverser(object):
         gens = [self.visit(z) for z in node.generators]
         gens = [z if z else '<**None**>' for z in gens] # Kludge: probable bug.
         return '<gen %s for %s>' % (elt, ','.join(gens))
-
-    def do_AugLoad(self, node):
-        return 'AugLoad'
-
-    def do_Del(self, node):
-        return 'Del'
-
-    def do_Load(self, node):
-        return 'Load'
-
-    def do_Param(self, node):
-        return 'Param'
-
-    def do_Store(self, node):
-        return 'Store'
 
     #
     # CoffeeScriptTraverser operands...
@@ -321,22 +305,24 @@ class CoffeeScriptTraverser(object):
         return ''.join(result)
 
     def do_Dict(self, node):
-        result = []
-        keys = [self.visit(z) for z in node.keys]
-        values = [self.visit(z) for z in node.values]
-        if len(keys) == len(values):
-            # result.append('{\n' if keys else '{')
-            result.append('{')
-            items = []
-            for i in range(len(keys)):
-                items.append('%s:%s' % (keys[i], values[i]))
-            result.append(', '.join(items))
-            result.append('}')
-            # result.append(',\n'.join(items))
-            # result.append('\n}' if keys else '}')
-        else:
-            print('Error: f.Dict: len(keys) != len(values)\nkeys: %s\nvals: %s' % (
-                repr(keys), repr(values)))
+        assert len(node.keys) == len(node.values)
+        items, result = [], []
+        result.append('{')
+        self.level += 1
+        for i, key in enumerate(node.keys):
+            leading = self.leading_lines(key)
+                # Prevents leading lines from being handled again.
+            leading = [z for z in leading if z.strip()]
+                # Ignore blank lines.
+            if leading:
+                items.extend('\n'+''.join(leading))
+            key = self.visit(node.keys[i])
+            value = self.visit(node.values[i])
+            s = '%s:%s\n' % (key, value)
+            items.append(self.indent(s))
+        self.level -= 1
+        result.extend(items)
+        result.append(self.indent('}'))
         return ''.join(result)
 
     def do_Ellipsis(self, node):
@@ -392,6 +378,8 @@ class CoffeeScriptTraverser(object):
     def do_Str(self, node):
         '''A string constant, including docstrings.'''
         if hasattr(node, 'lineno'):
+            # Do *not* handle leading lines here.
+            # leading = self.leading_lines(node)
             return self.sync_string(node)
         else:
             g.trace('==== no lineno', node.s)
@@ -1255,17 +1243,39 @@ class TokenSync(object):
         self.s = s
         self.first_leading_line = None
         self.lines = [z.rstrip() for z in g.splitLines(s)]
+        # Order is important from here on...
+        self.nl_token = self.make_nl_token()
         self.line_tokens = self.make_line_tokens(tokens)
+        self.blank_lines = self.make_blank_lines()
         self.string_tokens = self.make_string_tokens()
-        self.comment_lines = self.make_comment_lines()
+        self.ignored_lines = self.make_ignored_lines()
 
-    def make_comment_lines(self):
-        '''Return a copy of line_tokens containing only full-line comments.'''
+    def make_blank_lines(self):
+        '''Return of list of line numbers of blank lines.'''
         result = []
-        for aList in self.line_tokens:
-            aList2 = [z for z in aList if self.is_line_comment(z)]
-            assert len(aList2) < 2
-            result.append(aList2[0] if aList2 else None)
+        for i, aList in enumerate(self.line_tokens):
+            # if any([self.token_kind(z) == 'nl' for z in aList]):
+            if len(aList) == 1 and self.token_kind(aList[0]) == 'nl':
+                result.append(i)
+        return result
+
+    def make_ignored_lines(self):
+        '''
+        Return a copy of line_tokens containing ignored lines,
+        that is, full-line comments or blank lines.
+        These are the lines returned by leading_lines().
+        '''
+        result = []
+        for i, aList in enumerate(self.line_tokens):
+            for z in aList:
+                if self.is_line_comment(z):
+                    result.append(z)
+                    break
+            else:
+                if i in self.blank_lines:
+                    result.append(self.nl_token)
+                else:
+                    result.append(None)
         assert len(result) == len(self.line_tokens)
         for i, aList in enumerate(result):
             if aList:
@@ -1295,11 +1305,20 @@ class TokenSync(object):
         assert len(self.lines) + 1 == len(result), len(result)
         return result
 
+    def make_nl_token(self):
+        '''Return a newline token with '\n' as both val and raw_val.'''
+        t1 = token_module.NEWLINE
+        t2 = '\n'
+        t3 = (0, 0) # Not used.
+        t4 = (0, 0) # Not used.
+        t5 = '\n'
+        return t1, t2, t3, t4, t5
+
     def make_string_tokens(self):
         '''Return a copy of line_tokens containing only string tokens.'''
         result = []
         for aList in self.line_tokens:
-            result.append([z for z in aList if self.token_type(z) == 'string'])
+            result.append([z for z in aList if self.token_kind(z) == 'string'])
         assert len(result) == len(self.line_tokens)
         return result
 
@@ -1326,7 +1345,7 @@ class TokenSync(object):
         if hasattr(node, 'lineno'):
             i, n = self.first_leading_line, node.lineno
             while i < n:
-                token = self.comment_lines[i]
+                token = self.ignored_lines[i]
                 if token:
                     s = self.token_raw_val(token).rstrip()+'\n'
                     leading.append(s)
@@ -1367,7 +1386,7 @@ class TokenSync(object):
             g.trace('===== underflow', n, node.s)
             return node.s
 
-    def token_type(self, token):
+    def token_kind(self, token):
         '''Return the token's type.'''
         t1, t2, t3, t4, t5 = token
         return g.toUnicode(token_module.tok_name[t1].lower())

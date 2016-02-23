@@ -94,6 +94,7 @@
 </v>
 <v t="ekr.20160223014237.1"><vh>clean, defined in do_Str</vh></v>
 <v t="ekr.20160221151640.1"><vh>ts.sync_op</vh></v>
+<v t="ekr.20160220050433.28"><vh>cv.ctx nodes</vh></v>
 </v>
 </v>
 <v t="ekr.20160222041249.1"><vh>Docs</vh>
@@ -136,7 +137,6 @@
 <v t="ekr.20160220050433.25"><vh>cv.Expr</vh></v>
 <v t="ekr.20160220050433.26"><vh>cv.Expression</vh></v>
 <v t="ekr.20160220050433.27"><vh>cv.GeneratorExp</vh></v>
-<v t="ekr.20160220050433.28"><vh>cv.ctx nodes</vh></v>
 </v>
 <v t="ekr.20160220050433.29"><vh>cv.Operands</vh>
 <v t="ekr.20160220050433.30"><vh>cv.arguments</vh></v>
@@ -231,16 +231,18 @@
 <v t="ekr.20160220103223.3"><vh>class ParseState</vh></v>
 <v t="ekr.20160221143000.1"><vh>class TokenSync</vh>
 <v t="ekr.20160221143402.1"><vh> ts.ctor &amp; helpers</vh>
-<v t="ekr.20160222130449.1"><vh>ts.make_comment_lines</vh></v>
+<v t="ekr.20160223023354.1"><vh>ts.make_blank_lines</vh></v>
+<v t="ekr.20160222130449.1"><vh>ts.make_ignored_lines</vh></v>
 <v t="ekr.20160222084258.1"><vh>ts.make_line_tokens</vh></v>
+<v t="ekr.20160223031552.1"><vh>ts.make_nl_token</vh></v>
 <v t="ekr.20160222084401.1"><vh>ts.make_string_tokens</vh></v>
 </v>
 <v t="ekr.20160223013055.1"><vh>ts.dump_token</vh></v>
-<v t="ekr.20160222130731.1"><vh>ts.is_line_comment</vh></v>
+<v t="ekr.20160223022613.1"><vh>ts.is_line_comment</vh></v>
 <v t="ekr.20160222132448.1"><vh>ts.leading_lines</vh></v>
 <v t="ekr.20160222081027.1"><vh>ts.line_at</vh></v>
 <v t="ekr.20160222091644.1"><vh>ts.sync_string</vh></v>
-<v t="ekr.20160222124401.1"><vh>ts.token_type/raw_val/val</vh></v>
+<v t="ekr.20160222124401.1"><vh>ts.token_kind/raw_val/val</vh></v>
 </v>
 </v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
@@ -249,7 +251,13 @@
 <v t="ekr.20160222084258.1"></v>
 <v t="ekr.20160222091644.1"></v>
 </v>
-<v t="ekr.20160223021522.1"><vh>checkin log</vh></v>
+<v t="ekr.20160221143000.1"></v>
+<v t="ekr.20160220050433.20"></v>
+<v t="ekr.20160220050433.19"></v>
+<v t="ekr.20160220050433.37"></v>
+<v t="ekr.20160220050433.47"></v>
+<v t="ekr.20160220050433.83"></v>
+<v t="ekr.20160223024943.1"><vh>checkin log</vh></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -628,12 +636,12 @@ def do_ClassDef(self, node):
     result = self.leading_lines(node)
     name = node.name # Only a plain string is valid.
     bases = [self.visit(z) for z in node.bases] if node.bases else []
-    result.append('\n\n')
+    # result.append('\n\n')
     if bases:
-        # result.append(self.indent('class %s(%s):\n' % (name, ', '.join(bases))))
-        result.append(self.indent('class %s extends %s\n' % (name, ', '.join(bases))))
+        s = 'class %s extends %s\n' % (name, ', '.join(bases))
     else:
-        result.append(self.indent('class %s\n' % name))
+        s = 'class %s\n' % name
+    result.append(self.indent(s))
     self.class_stack.append(name)
     for i, z in enumerate(node.body):
         self.level += 1
@@ -696,7 +704,7 @@ def do_FunctionDef(self, node):
         args = args[1:]
     args = ', '.join(args)
     args = '(%s) ' % args if args else ''
-    result.append('\n')
+    # result.append('\n')
     sep = ': ' if self.class_stack else ' = '
     s = '%s%s%s-&gt;\n' % (name, sep, args)
     result.append(self.indent(s))
@@ -726,7 +734,6 @@ def do_Lambda(self, node):
 #
 # CoffeeScriptTraverser expressions...
 #
-
 </t>
 <t tx="ekr.20160220050433.25">
 def do_Expr(self, node):
@@ -858,22 +865,24 @@ def do_comprehension(self, node):
 </t>
 <t tx="ekr.20160220050433.37">
 def do_Dict(self, node):
-    result = []
-    keys = [self.visit(z) for z in node.keys]
-    values = [self.visit(z) for z in node.values]
-    if len(keys) == len(values):
-        # result.append('{\n' if keys else '{')
-        result.append('{')
-        items = []
-        for i in range(len(keys)):
-            items.append('%s:%s' % (keys[i], values[i]))
-        result.append(', '.join(items))
-        result.append('}')
-        # result.append(',\n'.join(items))
-        # result.append('\n}' if keys else '}')
-    else:
-        print('Error: f.Dict: len(keys) != len(values)\nkeys: %s\nvals: %s' % (
-            repr(keys), repr(values)))
+    assert len(node.keys) == len(node.values)
+    items, result = [], []
+    result.append('{')
+    self.level += 1
+    for i, key in enumerate(node.keys):
+        leading = self.leading_lines(key)
+            # Prevents leading lines from being handled again.
+        leading = [z for z in leading if z.strip()]
+            # Ignore blank lines.
+        if leading:
+            items.extend('\n'+''.join(leading))
+        key = self.visit(node.keys[i])
+        value = self.visit(node.values[i])
+        s = '%s:%s\n' % (key, value)
+        items.append(self.indent(s))
+    self.level -= 1
+    result.extend(items)
+    result.append(self.indent('}'))
     return ''.join(result)
 </t>
 <t tx="ekr.20160220050433.38">
@@ -939,6 +948,8 @@ def do_Slice(self, node):
 def do_Str(self, node):
     '''A string constant, including docstrings.'''
     if hasattr(node, 'lineno'):
+        # Do *not* handle leading lines here.
+        # leading = self.leading_lines(node)
         return self.sync_string(node)
     else:
         g.trace('==== no lineno', node.s)
@@ -2386,7 +2397,7 @@ class ReadLinesClass:
 @wrap
 
 *** Auto-move clones
-* Handle blank lines: don't add blank lines before class &amp; def.
+
 * Handle end-of-line comments.
 - Discuss TokenSync class in theory.md.
 - How to handle line breaks within statements?
@@ -2676,9 +2687,12 @@ def __init__(self, s, tokens):
     self.s = s
     self.first_leading_line = None
     self.lines = [z.rstrip() for z in g.splitLines(s)]
+    # Order is important from here on...
+    self.nl_token = self.make_nl_token()
     self.line_tokens = self.make_line_tokens(tokens)
+    self.blank_lines = self.make_blank_lines()
     self.string_tokens = self.make_string_tokens()
-    self.comment_lines = self.make_comment_lines()
+    self.ignored_lines = self.make_ignored_lines()
 </t>
 <t tx="ekr.20160221151640.1">
 def sync_op(self, node, op):
@@ -2700,12 +2714,18 @@ a = 1\
 
 def spam():
     b = 2
-    
+
+
 # Comment before TestClass.
 class TestClass(object):
     
-    # Comment before InnerClass.
+    def do_BinOp(self, node):
+        return '%s%s%s' % (
+            self.visit(node.left),
+            self.op_name(node.op),
+            self.visit(node.right))
 
+    # Comment before InnerClass.
     class InnerClass(object, str):
         # Comment.
         def __init__(self, a):
@@ -2713,6 +2733,7 @@ class TestClass(object):
             self.a = a
         def inner1(self):
             """inner1 docstring"""
+
     def test1(a):
         # Comment1 before print statement.
         # Comment2 before print statement.
@@ -2826,7 +2847,7 @@ def make_string_tokens(self):
     '''Return a copy of line_tokens containing only string tokens.'''
     result = []
     for aList in self.line_tokens:
-        result.append([z for z in aList if self.token_type(z) == 'string'])
+        result.append([z for z in aList if self.token_kind(z) == 'string'])
     assert len(result) == len(self.line_tokens)
     return result
 </t>
@@ -2852,7 +2873,7 @@ def sync_string(self, node):
         return node.s
 </t>
 <t tx="ekr.20160222124401.1">
-def token_type(self, token):
+def token_kind(self, token):
     '''Return the token's type.'''
     t1, t2, t3, t4, t5 = token
     return g.toUnicode(token_module.tok_name[t1].lower())
@@ -2868,13 +2889,23 @@ def token_val(self, token):
     return g.toUnicode(t2)
 </t>
 <t tx="ekr.20160222130449.1">
-def make_comment_lines(self):
-    '''Return a copy of line_tokens containing only full-line comments.'''
+def make_ignored_lines(self):
+    '''
+    Return a copy of line_tokens containing ignored lines,
+    that is, full-line comments or blank lines.
+    These are the lines returned by leading_lines().
+    '''
     result = []
-    for aList in self.line_tokens:
-        aList2 = [z for z in aList if self.is_line_comment(z)]
-        assert len(aList2) &lt; 2
-        result.append(aList2[0] if aList2 else None)
+    for i, aList in enumerate(self.line_tokens):
+        for z in aList:
+            if self.is_line_comment(z):
+                result.append(z)
+                break
+        else:
+            if i in self.blank_lines:
+                result.append(self.nl_token)
+            else:
+                result.append(None)
     assert len(result) == len(self.line_tokens)
     for i, aList in enumerate(result):
         if aList:
@@ -2883,14 +2914,6 @@ def make_comment_lines(self):
     else:
         self.first_leading_line = len(result)
     return result
-</t>
-<t tx="ekr.20160222130731.1">
-def is_line_comment(self, token):
-    '''Return True if the token represents a full-line comment.'''
-    t1, t2, t3, t4, t5 = token
-    kind = token_module.tok_name[t1].lower()
-    raw_val = t5
-    return kind == 'comment' and raw_val.lstrip().startswith('#')
 </t>
 <t tx="ekr.20160222132448.1">
 def leading_lines(self, node):
@@ -2901,7 +2924,7 @@ def leading_lines(self, node):
     if hasattr(node, 'lineno'):
         i, n = self.first_leading_line, node.lineno
         while i &lt; n:
-            token = self.comment_lines[i]
+            token = self.ignored_lines[i]
             if token:
                 s = self.token_raw_val(token).rstrip()+'\n'
                 leading.append(s)
@@ -2927,12 +2950,40 @@ def clean(s):
         .replace('\\t','').replace('\t','')
         .replace('\\','').replace('\\',''))</t>
 <t tx="ekr.20160223014745.1"></t>
-<t tx="ekr.20160223021522.1">@language rest
+<t tx="ekr.20160223022613.1">
+def is_line_comment(self, token):
+    '''Return True if the token represents a full-line comment.'''
+    t1, t2, t3, t4, t5 = token
+    kind = token_module.tok_name[t1].lower()
+    raw_val = t5
+    return kind == 'comment' and raw_val.lstrip().startswith('#')
+</t>
+<t tx="ekr.20160223023354.1">
+def make_blank_lines(self):
+    '''Return of list of line numbers of blank lines.'''
+    result = []
+    for i, aList in enumerate(self.line_tokens):
+        # if any([self.token_kind(z) == 'nl' for z in aList]):
+        if len(aList) == 1 and self.token_kind(aList[0]) == 'nl':
+            result.append(i)
+    return result
+</t>
+<t tx="ekr.20160223024943.1">@language rest
 @wrap
-
-Cleaned up leading-lines code, preparing to handle blank lines.
-- Renamed both ts.sync_node &amp; ts.sync_op to ts.leading_lines
-- Don't special case 'orelse' clauses
+Handle leading blank lines.
+- Add blank lines to leading lines.
+- don't add blank lines before class &amp; def.
+- Handle leading lines in do_Dict.
+- Do *not*</t>
+<t tx="ekr.20160223031552.1">
+def make_nl_token(self):
+    '''Return a newline token with '\n' as both val and raw_val.'''
+    t1 = token_module.NEWLINE
+    t2 = '\n'
+    t3 = (0, 0) # Not used.
+    t4 = (0, 0) # Not used.
+    t5 = '\n'
+    return t1, t2, t3, t4, t5
 </t>
 </tnodes>
 </leo_file>
