@@ -97,6 +97,7 @@ class CoffeeScriptTraverser(object):
         self.class_stack = []
         # Redirection. Set in format.
         self.sync_string = None
+        self.last_node = None
         self.leading_lines = None
         self.leading_string = None
         self.trailing_comment = None
@@ -108,6 +109,7 @@ class CoffeeScriptTraverser(object):
         self.level = 0
         sync = TokenSync(s, tokens)
         self.sync_string = sync.sync_string
+        self.last_node = sync.last_node
         self.leading_lines = sync.leading_lines
         self.leading_string = sync.leading_string
         self.trailing_comment = sync.trailing_comment
@@ -501,6 +503,23 @@ class CoffeeScriptTraverser(object):
     # CoffeeScriptTraverser statements...
     #
 
+    def tail_after_body(self, body, aList, result):
+        '''
+        Return the tail of the 'else' or 'finally' statement following the given body.
+        aList is the node.orelse or node.finalbody list.
+        '''
+        node = self.last_node(body)
+        if node:
+            max_n = node.lineno
+            leading = self.leading_lines(aList[0])
+            if leading:
+                result.extend(leading)
+                max_n += len(leading)
+            tail = self.trailing_comment_at_lineno(max_n + 1)
+        else:
+            tail = '\n'
+        return tail
+
     def do_Assert(self, node):
         
         head = self.leading_string(node)
@@ -596,22 +615,13 @@ class CoffeeScriptTraverser(object):
             self.visit(node.target),
             self.visit(node.iter))
         result.append(self.indent(s + tail))
-        max_n = -1
         for z in node.body:
             self.level += 1
-            max_n = max(max_n, node.lineno)
             result.append(self.visit(z))
             self.level -= 1
         if node.orelse:
-            leading = self.leading_lines(node.orelse[0])
-            if leading:
-                result.extend(leading)
-                max_n += len(leading)
-            if max_n > -1:
-                tail = self.trailing_comment_at_lineno(max_n + 2)
-            else:
-                tail = '\n'
-            result.append(self.indent('else:\n'))
+            tail = self.tail_after_body(node.body, node.orelse, result)
+            result.append(self.indent('else:' + tail))
             for z in node.orelse:
                 self.level += 1
                 result.append(self.visit(z))
@@ -631,21 +641,12 @@ class CoffeeScriptTraverser(object):
         tail = self.trailing_comment(node)
         s = 'if %s:%s' % (self.visit(node.test), tail)
         result.append(self.indent(s))
-        max_n = -1
         for z in node.body:
             self.level += 1
-            max_n = max(max_n, node.lineno)
             result.append(self.visit(z))
             self.level -= 1
         if node.orelse:
-            leading = self.leading_lines(node.orelse[0])
-            if leading:
-                result.extend(leading)
-                max_n += len(leading)
-            if max_n > -1:
-                tail = self.trailing_comment_at_lineno(max_n + 2)
-            else:
-                tail = '\n'
+            tail = self.tail_after_body(node.body, node.orelse, result)
             result.append(self.indent('else:' + tail))
             for z in node.orelse:
                 self.level += 1
@@ -792,20 +793,11 @@ class CoffeeScriptTraverser(object):
         result = self.leading_lines(node)
         tail = self.trailing_comment(node)
         result.append(self.indent('try:' + tail))
-        max_n = -1
         for z in node.body:
             self.level += 1
-            max_n = max(max_n, node.lineno)
             result.append(self.visit(z))
             self.level -= 1
-        leading = self.leading_lines(node.orelse[0])
-        if leading:
-            result.extend(leading)
-            max_n += len(leading)
-        if max_n > -1:
-            tail = self.trailing_comment_at_lineno(max_n + 2)
-        else:
-            tail = '\n'
+        tail = self.tail_after_body(node.body, node.finalbody, result)
         result.append(self.indent('finally:' + tail))
         for z in node.finalbody:
             self.level += 1
@@ -1407,6 +1399,33 @@ class TokenSync(object):
         kind = token_module.tok_name[t1].lower()
         raw_val = t5
         return kind == 'comment' and raw_val.lstrip().startswith('#')
+
+    def last_node(self, node):
+        '''Return the node of node's tree with the largest lineno field.'''
+
+        class LineWalker(ast.NodeVisitor):
+            
+            def __init__ (self):
+                '''Ctor for LineWalker class.'''
+                self.node = None
+                self.lineno = -1
+                
+            def visit(self, node):
+                '''LineWalker.visit.'''
+                if hasattr(node, 'lineno'):
+                    if node.lineno > self.lineno:
+                        self.lineno = node.lineno
+                        self.node = node
+                if isinstance(node, list):
+                    for z in node:
+                        self.visit(z)
+                else:
+                    self.generic_visit(node)
+     
+        w = LineWalker()
+        w.visit(node)
+        return w.node
+                
 
     def leading_lines(self, node):
         '''Return a list of the preceding comment and blank lines'''

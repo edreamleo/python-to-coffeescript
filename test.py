@@ -28,8 +28,12 @@ class TestClass(object):
             '''Ctor for InnerClass'''
             if a: # after if
                 self.a = a
-
             else: # after else
+                pass
+                
+            for i in range(10): # after for.
+                pass
+            else: # after for-else.
                 pass
 
         def inner1(self):

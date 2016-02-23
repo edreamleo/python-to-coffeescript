@@ -1,4 +1,4 @@
-# python_to_coffeescript: Tue 23 Feb 2016 at 07:01:44
+# python_to_coffeescript: Tue 23 Feb 2016 at 10:15:10
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -98,6 +98,7 @@ class CoffeeScriptTraverser extends object
         @class_stack=[]
         # Redirection. Set in format.
         @sync_string=None
+        @last_node=None
         @leading_lines=None
         @leading_string=None
         @trailing_comment=None
@@ -109,6 +110,7 @@ class CoffeeScriptTraverser extends object
         @level=0
         sync=TokenSync(s,tokens)
         @sync_string=sync.sync_string
+        @last_node=sync.last_node
         @leading_lines=sync.leading_lines
         @leading_string=sync.leading_string
         @trailing_comment=sync.trailing_comment
@@ -498,6 +500,23 @@ class CoffeeScriptTraverser extends object
     # CoffeeScriptTraverser statements...
     #
 
+    tail_after_body: (body, aList, result) ->
+        '''
+        Return the tail of the 'else' or 'finally' statement following the given body.
+        aList is the node.orelse or node.finalbody list.
+        '''
+        node=@last_node(body)
+        if node:
+            max_n=node.lineno
+            leading=@leading_lines(aList[0])
+            if leading:
+                result.extend(leading)
+                max_n+=len(leading)
+            tail=@trailing_comment_at_lineno(max_n+1)
+        else:
+            tail='\n'
+        return tail
+
     do_Assert: (node) ->
 
         head=@leading_string(node)
@@ -586,22 +605,13 @@ class CoffeeScriptTraverser extends object
         tail=@trailing_comment(node)
         s='for %s in %s:'%(@visit(node.target), @visit(node.iter))
         result.append(@indent(s+tail))
-        max_n=-1
         for z in node.body:
             @level+=1
-            max_n=max(max_n,node.lineno)
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            leading=@leading_lines(node.orelse[0])
-            if leading:
-                result.extend(leading)
-                max_n+=len(leading)
-            if max_n>-1:
-                tail=@trailing_comment_at_lineno(max_n+2)
-            else:
-                tail='\n'
-            result.append(@indent('else:\n'))
+            tail=@tail_after_body(node.body,node.orelse,result)
+            result.append(@indent('else:'+tail))
             for z in node.orelse:
                 @level+=1
                 result.append(@visit(z))
@@ -621,21 +631,12 @@ class CoffeeScriptTraverser extends object
         tail=@trailing_comment(node)
         s='if %s:%s'%(@visit(node.test), tail)
         result.append(@indent(s))
-        max_n=-1
         for z in node.body:
             @level+=1
-            max_n=max(max_n,node.lineno)
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            leading=@leading_lines(node.orelse[0])
-            if leading:
-                result.extend(leading)
-                max_n+=len(leading)
-            if max_n>-1:
-                tail=@trailing_comment_at_lineno(max_n+2)
-            else:
-                tail='\n'
+            tail=@tail_after_body(node.body,node.orelse,result)
             result.append(@indent('else:'+tail))
             for z in node.orelse:
                 @level+=1
@@ -782,20 +783,11 @@ class CoffeeScriptTraverser extends object
         result=@leading_lines(node)
         tail=@trailing_comment(node)
         result.append(@indent('try:'+tail))
-        max_n=-1
         for z in node.body:
             @level+=1
-            max_n=max(max_n,node.lineno)
             result.append(@visit(z))
             @level-=1
-        leading=@leading_lines(node.orelse[0])
-        if leading:
-            result.extend(leading)
-            max_n+=len(leading)
-        if max_n>-1:
-            tail=@trailing_comment_at_lineno(max_n+2)
-        else:
-            tail='\n'
+        tail=@tail_after_body(node.body,node.finalbody,result)
         result.append(@indent('finally:'+tail))
         for z in node.finalbody:
             @level+=1
@@ -963,7 +955,7 @@ class LeoGlobals extends object
                 tabs=int(width/tab_width)
                 blanks=int(width%tab_width)
                 return '\t'*tabs+' '*blanks
-            else:
+            else: # Negative tab width always gets converted to blanks.
                 return ' '*width
 
     computeLeadingWhitespaceWidth: (s, tab_width) ->
@@ -1409,6 +1401,33 @@ class TokenSync extends object
         kind=token_module.tok_name[t1].lower()
         raw_val=t5
         return kind=='comment' and raw_val.lstrip().startswith('#')
+
+    last_node: (node) ->
+        '''Return the node of node's tree with the largest lineno field.'''
+
+        class LineWalker extends ast.NodeVisitor
+
+            __init__: ->
+                '''Ctor for LineWalker class.'''
+                @node=None
+                @lineno=-1
+
+            visit: (node) ->
+                '''LineWalker.visit.'''
+                if hasattr(node,'lineno'):
+                    if node.lineno>@lineno:
+                        @lineno=node.lineno
+                        @node=node
+                if isinstance(node,list):
+                    for z in node:
+                        @visit(z)
+                else:
+                    @generic_visit(node)
+
+        w=LineWalker()
+        w.visit(node)
+        return w.node
+
 
     leading_lines: (node) ->
         '''Return a list of the preceding comment and blank lines'''
