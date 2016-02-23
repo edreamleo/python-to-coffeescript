@@ -92,6 +92,7 @@
 <v t="ekr.20160220103223.35"><vh>ct.gen_word &amp; gen_word_op</vh></v>
 </v>
 </v>
+<v t="ekr.20160223014237.1"><vh>clean, defined in do_Str</vh></v>
 </v>
 </v>
 <v t="ekr.20160222041249.1"><vh>Docs</vh>
@@ -233,6 +234,7 @@
 <v t="ekr.20160222084258.1"><vh>ts.make_line_tokens</vh></v>
 <v t="ekr.20160222084401.1"><vh>ts.make_string_tokens</vh></v>
 </v>
+<v t="ekr.20160223013055.1"><vh>ts.dump_token</vh></v>
 <v t="ekr.20160222130731.1"><vh>ts.is_line_comment</vh></v>
 <v t="ekr.20160222081027.1"><vh>ts.line_at</vh></v>
 <v t="ekr.20160222132448.1"><vh>ts.show_comments</vh></v>
@@ -950,17 +952,8 @@ def do_Slice(self, node):
 <t tx="ekr.20160220050433.47">
 def do_Str(self, node):
     '''A string constant, including docstrings.'''
-    
-    def clean(s):
-        return (
-            s.replace('"','').replace("'",'')
-            .replace('\\n','').replace('\n','')
-            .replace('\\t','').replace('\t','')
-            .replace('\\','').replace('\\',''))
     if hasattr(node, 'lineno'):
-        s = self.sync_string(node)
-        # assert clean(s) == clean(node.s), (clean(s), clean(node.s), node.s)
-        return s
+        return self.sync_string(node)
     else:
         g.trace('==== no lineno', node.s)
         return node.s
@@ -2410,20 +2403,12 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-*** Hanldle multi-line docstrings properly.
+- Replace imports by pass
 * Handle end-of-line comments.
 - Discuss TokenSync class in theory.md.
 - How to handle line breaks within statements?
 - Output trailing comments at the end of the traversal.
 - tv.visit should check that ts.comment_lines is empty at end.
-
-Log:
-The script now handles itself with minimal problems.
-- Rewrote ts.make_line_tokens.
-- Made tv.indent more permissive.
-Problems:
-- Multi-line docstrings not handled properly.
-- No attempt yet made to handle end-of-line comments.
 
 Later:
 - Respond here:
@@ -2727,7 +2712,10 @@ def sync_op(self, node, op):
     # g.trace('  %-12s %2s: %s' % (op, node.lineno, self.line_at(node)))
     return aList
 </t>
-<t tx="ekr.20160222023117.1">'''Test file illustrating difficulties of tokenizing.'''
+<t tx="ekr.20160222023117.1">'''
+Test file illustrating difficulties of tokenizing.
+At present, multi-line docstrings cause problems.
+'''
 # lineno: line number of source text (first line is line 1).
 # col_offset: the UTF-8 byte offset of the first token that generated the node.
 # http://joao.npimentel.net/2015/07/23/python-2-vs-python-3-ast-differences/
@@ -2843,14 +2831,18 @@ def make_line_tokens(self, tokens):
     Return a list of lists of tokens for each list in self.lines.
     The strings in self.lines may end in a backslash, so care is needed.
     '''
+    trace = False
     n, result = len(self.lines), []
     for i in range(0, n+1):
         result.append([])
     for token in tokens:
         t1, t2, t3, t4, t5 = token
+        kind = token_module.tok_name[t1].lower()
         srow, scol = t3
-        line = srow-1
+        erow, ecol = t4
+        line = erow-1 if kind == 'string' else srow-1 
         result[line].append(token)
+        if trace: g.trace('%3s %s' % (line, self.dump_token(token)))
     assert len(self.lines) + 1 == len(result), len(result)
     return result
 </t>
@@ -2882,7 +2874,7 @@ def sync_string(self, node):
         self.string_tokens[n-1] = tokens
         return self.token_val(token)
     else:
-        g.trace('===== string_tokend underflow', node.s)
+        g.trace('===== underflow', n, node.s)
         return node.s
 </t>
 <t tx="ekr.20160222124401.1">
@@ -2944,5 +2936,21 @@ def show_comments(self, node):
         self.first_comment_line = i
     return comments
 </t>
+<t tx="ekr.20160223013055.1">
+def dump_token(self, token):
+    '''Dump the token for debugging.'''
+    t1, t2, t3, t4, t5 = token
+    kind = g.toUnicode(token_module.tok_name[t1].lower())
+    raw_val = g.toUnicode(t5)
+    val = g.toUnicode(t2)
+    return 'token: %10s %r' % (kind, val)
+</t>
+<t tx="ekr.20160223014237.1">
+def clean(s):
+    return (
+        s.replace('"','').replace("'",'')
+        .replace('\\n','').replace('\n','')
+        .replace('\\t','').replace('\t','')
+        .replace('\\','').replace('\\',''))</t>
 </tnodes>
 </leo_file>

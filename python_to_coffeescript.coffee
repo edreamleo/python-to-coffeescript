@@ -1,6 +1,6 @@
-# python_to_coffeescript: Mon 22 Feb 2016 at 18:03:31
+# python_to_coffeescript: Tue 23 Feb 2016 at 01:41:36
 #!/usr/bin/env python
-
+'''
 This script makes a coffeescript file for every python source file listed
 on the command line (wildcard file names are supported).
 
@@ -9,7 +9,7 @@ For full details, see README.md.
 Released under the MIT Licence.
 
 Written by Edward K. Ream.
-
+'''
 # All parts of this script are distributed under the following copyright. This is intended to be the same as the MIT license, namely that this script is absolutely free, even for commercial use, including resale. There is no GNU-like "copyleft" restriction. This license is compatible with the GPL.
 #
 # **Copyright 2016 by Edward K. Ream. All Rights Reserved.**
@@ -50,10 +50,10 @@ else:
     # import io # Python 3
 
 main = ->
-
-        The driver for the stand-alone version of make-stub-files.
+    '''
+    The driver for the stand-alone version of make-stub-files.
     All options come from ~/stubs/make_stub_files.cfg.
-    
+    '''
     # g.cls()
     controller=MakeCoffeeScriptController()
     controller.scan_command_line()
@@ -742,10 +742,10 @@ class LeoGlobals extends object
 
 
     class NullObject
-
-                An object that does nothing, and does it very well.
+        """
+        An object that does nothing, and does it very well.
         From the Python cookbook, recipe 5.23
-        
+        """
 
         __init__: (*args, **keys) ->
             pass
@@ -813,12 +813,12 @@ class LeoGlobals extends object
             return ''
 
     callers: (n=4, count=0, excludeCaller=True, files=False) ->
-        Return a list containing the callers of the function that called g.callerList.
+        '''Return a list containing the callers of the function that called g.callerList.
 
         If the excludeCaller keyword is True (the default), g.callers is not on the list.
 
         If the files keyword argument is True, filenames are included in the list.
-        
+        '''
         # sys._getframe throws ValueError in both cpython and jython if there are less than i entries.
         # The jython stack often has less than 8 entries,
         # so we must be careful to call g._callerName with smaller values of i first.
@@ -972,10 +972,10 @@ class MakeCoffeeScriptController extends object
         return fn
 
     make_coffeescript_file: (fn) ->
-
-                Make a stub file in the output directory for all source files mentioned
+        '''
+        Make a stub file in the output directory for all source files mentioned
         in the [Source Files] section of the configuration file.
-        
+        '''
         if  not fn.endswith('.py'):
             print(('not a python file', fn))
             return
@@ -1011,10 +1011,10 @@ class MakeCoffeeScriptController extends object
         f.write('# python_to_coffeescript: %s\n'%time.strftime("%a %d %b %Y at %H:%M:%S"))
 
     run: ->
-
-                Make stub files for all files.
+        '''
+        Make stub files for all files.
         Do nothing if the output directory does not exist.
-        
+        '''
         if @enable_unit_tests:
             @run_all_unit_tests()
         if @files:
@@ -1221,21 +1221,23 @@ class TokenSync extends object
         return result
 
     make_line_tokens: (tokens) ->
-
-                Return a list of lists of tokens for each list in self.lines.
+        '''
+        Return a list of lists of tokens for each list in self.lines.
         The strings in self.lines may end in a backslash, so care is needed.
-        
+        '''
+        trace=False
         (n, result)=(len(@lines), [])
         for i in range(0,n+1):
             result.append([])
         for token in tokens:
             (t1, t2, t3, t4, t5)=token
+            kind=token_module.tok_name[t1].lower()
             (srow, scol)=t3
-            line=srow-1
+            (erow, ecol)=t4
+            line=erow-1 if kind=='string' else srow-1 
             result[line].append(token)
-            # aList = result[line]
-            # aList.append(token)
-            # result[line] = aList
+            if trace:
+                g.trace('%3s %s'%(line, @dump_token(token)))
         assert len(@lines)+1==len(result), len(result)
         return result
 
@@ -1246,6 +1248,14 @@ class TokenSync extends object
             result.append(z for z in aList if @token_type(z)=='string')
         assert len(result)==len(@line_tokens)
         return result
+
+    dump_token: (token) ->
+        '''Dump the token for debugging.'''
+        (t1, t2, t3, t4, t5)=token
+        kind=g.toUnicode(token_module.tok_name[t1].lower())
+        raw_val=g.toUnicode(t5)
+        val=g.toUnicode(t2)
+        return 'token: %10s %r'%(kind, val)
 
     is_line_comment: (token) ->
         '''Return True if the token represents a full-line comment.'''
@@ -1308,7 +1318,7 @@ class TokenSync extends object
             @string_tokens[n-1]=tokens
             return @token_val(token)
         else:
-            g.trace('===== string_tokend underflow',node.s)
+            g.trace('===== underflow',n,node.s)
             return node.s
 
     sync_node: (node, name) ->

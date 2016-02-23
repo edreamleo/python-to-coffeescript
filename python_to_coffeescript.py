@@ -405,17 +405,8 @@ class CoffeeScriptTraverser(object):
 
     def do_Str(self, node):
         '''A string constant, including docstrings.'''
-        
-        def clean(s):
-            return (
-                s.replace('"','').replace("'",'')
-                .replace('\\n','').replace('\n','')
-                .replace('\\t','').replace('\t','')
-                .replace('\\','').replace('\\',''))
         if hasattr(node, 'lineno'):
-            s = self.sync_string(node)
-            # assert clean(s) == clean(node.s), (clean(s), clean(node.s), node.s)
-            return s
+            return self.sync_string(node)
         else:
             g.trace('==== no lineno', node.s)
             return node.s
@@ -1308,14 +1299,18 @@ class TokenSync(object):
         Return a list of lists of tokens for each list in self.lines.
         The strings in self.lines may end in a backslash, so care is needed.
         '''
+        trace = False
         n, result = len(self.lines), []
         for i in range(0, n+1):
             result.append([])
         for token in tokens:
             t1, t2, t3, t4, t5 = token
+            kind = token_module.tok_name[t1].lower()
             srow, scol = t3
-            line = srow-1
+            erow, ecol = t4
+            line = erow-1 if kind == 'string' else srow-1 
             result[line].append(token)
+            if trace: g.trace('%3s %s' % (line, self.dump_token(token)))
         assert len(self.lines) + 1 == len(result), len(result)
         return result
 
@@ -1326,6 +1321,14 @@ class TokenSync(object):
             result.append([z for z in aList if self.token_type(z) == 'string'])
         assert len(result) == len(self.line_tokens)
         return result
+
+    def dump_token(self, token):
+        '''Dump the token for debugging.'''
+        t1, t2, t3, t4, t5 = token
+        kind = g.toUnicode(token_module.tok_name[t1].lower())
+        raw_val = g.toUnicode(t5)
+        val = g.toUnicode(t2)
+        return 'token: %10s %r' % (kind, val)
 
     def is_line_comment(self, token):
         '''Return True if the token represents a full-line comment.'''
@@ -1386,7 +1389,7 @@ class TokenSync(object):
             self.string_tokens[n-1] = tokens
             return self.token_val(token)
         else:
-            g.trace('===== string_tokend underflow', node.s)
+            g.trace('===== underflow', n, node.s)
             return node.s
 
     def sync_node(self, node, name):
