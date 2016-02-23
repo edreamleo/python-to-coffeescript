@@ -244,35 +244,10 @@
 </v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160222170506.1"><vh>Found:sync_node</vh>
-<v t="ekr.20160220050433.16"></v>
-<v t="ekr.20160220050433.57"></v>
-<v t="ekr.20160220050433.60"></v>
-<v t="ekr.20160220050433.19"></v>
-<v t="ekr.20160220050433.61"></v>
-<v t="ekr.20160220050433.62"></v>
-<v t="ekr.20160220050433.63"></v>
-<v t="ekr.20160220050433.64"></v>
-<v t="ekr.20160220050433.25"></v>
-<v t="ekr.20160220050433.65"></v>
-<v t="ekr.20160220050433.20"></v>
-<v t="ekr.20160220050433.66"></v>
-<v t="ekr.20160220050433.67"></v>
-<v t="ekr.20160220050433.68"></v>
-<v t="ekr.20160220050433.70"></v>
-<v t="ekr.20160220050433.71"></v>
-<v t="ekr.20160220050433.72"></v>
-<v t="ekr.20160220050433.73"></v>
-<v t="ekr.20160220050433.74"></v>
-<v t="ekr.20160220094909.1"></v>
-<v t="ekr.20160220050433.75"></v>
-<v t="ekr.20160220050433.76"></v>
-<v t="ekr.20160220050433.77"></v>
-<v t="ekr.20160220050433.78"></v>
-<v t="ekr.20160220050433.79"></v>
-<v t="ekr.20160221145254.1"></v>
-</v>
 <v t="ekr.20160221143000.1"></v>
+<v t="ekr.20160222084258.1"></v>
+<v t="ekr.20160222091644.1"></v>
+<v t="ekr.20160220050433.47"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -977,11 +952,18 @@ def do_Str(self, node):
     '''A string constant, including docstrings.'''
     
     def clean(s):
-        return s.replace('"','').replace("'",'')
-
-    s = self.sync_string(node)
-    assert clean(s) == clean(node.s), (clean(s), clean(node.s))
-    return s
+        return (
+            s.replace('"','').replace("'",'')
+            .replace('\\n','').replace('\n','')
+            .replace('\\t','').replace('\t','')
+            .replace('\\','').replace('\\',''))
+    if hasattr(node, 'lineno'):
+        s = self.sync_string(node)
+        # assert clean(s) == clean(node.s), (clean(s), clean(node.s), node.s)
+        return s
+    else:
+        g.trace('==== no lineno', node.s)
+        return node.s
 </t>
 <t tx="ekr.20160220050433.48">
 # Subscript(expr value, slice slice, expr_context ctx)
@@ -1058,23 +1040,20 @@ def do_Assert(self, node):
 <t tx="ekr.20160220050433.58">
 def do_Assign(self, node):
     
-    self.sync_op(node, '=')
-    s = self.indent('%s=%s\n' % (
-                    '='.join([self.visit(z) for z in node.targets]),
-                    self.visit(node.value)))
-    return s
+    comments = self.sync_op(node, '=')
+    targets = '='.join([self.visit(z) for z in node.targets])
+    s = '%s=%s\n' % (targets, self.visit(node.value))
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.59">
 def do_AugAssign(self, node):
     
     op = self.op_name(node.op)
-    self.sync_op(node, op)
-    s = self.indent('%s%s=%s\n' % (
-        self.visit(node.target),
-        op,
-        self.visit(node.value)))
-    g.trace(s)
-    return s
+    comments = self.sync_op(node, op)
+    target = self.visit(node.target)
+    value = self.visit(node.value)
+    s = '%s%s=%s\n' % (target, op, value)
+    return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.60">
 def do_Break(self, node):
@@ -1145,7 +1124,7 @@ def do_For(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        result.extend(self.sync_node(node.orelse, 'orelse'))
+        result.extend(self.sync_node(node.orelse[0], 'orelse'))
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
@@ -1171,7 +1150,7 @@ def do_If(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        result.extend(self.sync_node(node.orelse, 'orelse'))
+        result.extend(self.sync_node(node.orelse[0], 'orelse'))
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
@@ -1279,7 +1258,7 @@ def do_TryExcept(self, node):
         for z in node.handlers:
             result.append(self.visit(z))
     if node.orelse:
-        result.extend(self.sync_node(node.orelse, 'orelse'))
+        result.extend(self.sync_node(node.orelse[0], 'orelse'))
         result.append('else:\n')
         for z in node.orelse:
             self.level += 1
@@ -1315,7 +1294,7 @@ def do_While(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        result.extend(self.sync_node(node.orelse, 'orelse'))
+        result.extend(self.sync_node(node.orelse[0], 'orelse'))
         result.append('else:\n')
         for z in node.orelse:
             self.level += 1
@@ -1366,8 +1345,12 @@ def dump(title, s=None):
 <t tx="ekr.20160220050433.82">
 def indent(self, s):
     '''Return s, properly indented.'''
-    assert not s.startswith('\n'), g.callers()
-    return '%s%s' % (' ' * 4 * self.level, s)
+    # assert not s.startswith('\n'), (g.callers(), repr(s))
+    n = 0
+    while s and s.startswith('\n'):
+        n += 1
+        s = s[1:]
+    return '%s%s%s' % ('\n' * n, ' ' * 4 * self.level, s)
 </t>
 <t tx="ekr.20160220050433.83">
 def op_name (self,node,strict=True):
@@ -1759,7 +1742,7 @@ def do_Try(self, node): # Python 3
         for z in node.handlers:
             result.append(self.visit(z))
     if node.orelse:
-        result.extend(self.sync_node(node.orelse, 'orelse'))
+        result.extend(self.sync_node(node.orelse[0], 'orelse'))
         result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
@@ -2427,19 +2410,20 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-*** Rewrite ts.make_line_tokens:
-    - can't compile multi-line docstrings line by line.
+*** Hanldle multi-line docstrings properly.
+* Handle end-of-line comments.
 - Discuss TokenSync class in theory.md.
 - How to handle line breaks within statements?
 - Output trailing comments at the end of the traversal.
 - tv.visit should check that ts.comment_lines is empty at end.
 
-Done:
-- Retired the CoffeeScriptTokenizer class.
-- Removed the use_tree switch.
-- Converted self to @ and @. to @.
-- Statement visitors now output reasonable coffeescript.
-- Statements now call sync_node to get leading comments.
+Log:
+The script now handles itself with minimal problems.
+- Rewrote ts.make_line_tokens.
+- Made tv.indent more permissive.
+Problems:
+- Multi-line docstrings not handled properly.
+- No attempt yet made to handle end-of-line comments.
 
 Later:
 - Respond here:
@@ -2732,14 +2716,16 @@ def __init__(self, s, tokens):
 def sync_node(self, node, name):
     '''Advance tokens until the given keyword is found.'''
     comments = self.show_comments(node)
-    g.trace('%-12s %2s: %s' % (name, node.lineno, self.line_at(node)))
+    n = node.lineno if hasattr(node, 'lineno') else -1
+    # g.trace('%-12s %2s: %s' % (name, n, self.line_at(node)))
     return comments
 </t>
 <t tx="ekr.20160221151640.1">
 def sync_op(self, node, op):
     '''Advance tokens until the given keyword is found.'''
-    self.show_comments(node)
-    g.trace('  %-12s %2s: %s' % (op, node.lineno, self.line_at(node)))
+    aList = self.show_comments(node)
+    # g.trace('  %-12s %2s: %s' % (op, node.lineno, self.line_at(node)))
+    return aList
 </t>
 <t tx="ekr.20160222023117.1">'''Test file illustrating difficulties of tokenizing.'''
 # lineno: line number of source text (first line is line 1).
@@ -2857,19 +2843,15 @@ def make_line_tokens(self, tokens):
     Return a list of lists of tokens for each list in self.lines.
     The strings in self.lines may end in a backslash, so care is needed.
     '''
-
-    def readlines(s):
-        return g.ReadLinesClass(s).next
-
-    result = []
-    for s in self.lines:
-        try:
-            # Fails for multi-line triple-quoted strings.
-            result.append(list(tokenize.generate_tokens(readlines(s))))
-        except tokenize.TokenError:
-            g.trace(repr(s))
-            raise
-    assert len(self.lines) == len(result), len(result)
+    n, result = len(self.lines), []
+    for i in range(0, n+1):
+        result.append([])
+    for token in tokens:
+        t1, t2, t3, t4, t5 = token
+        srow, scol = t3
+        line = srow-1
+        result[line].append(token)
+    assert len(self.lines) + 1 == len(result), len(result)
     return result
 </t>
 <t tx="ekr.20160222084401.1">
@@ -2892,7 +2874,7 @@ def __init__(self, controller):
 <t tx="ekr.20160222091644.1">
 def sync_string(self, node):
     '''Return the spelling of the string at the given node.'''
-    g.trace('%-10s %2s: %s' % (' ', node.lineno, self.line_at(node)))
+    # g.trace('%-10s %2s: %s' % (' ', node.lineno, self.line_at(node)))
     n = node.lineno
     tokens = self.string_tokens[n-1]
     if tokens:
@@ -2900,7 +2882,8 @@ def sync_string(self, node):
         self.string_tokens[n-1] = tokens
         return self.token_val(token)
     else:
-        return '&lt;can not happen: no lineno&gt;'
+        g.trace('===== string_tokend underflow', node.s)
+        return node.s
 </t>
 <t tx="ekr.20160222124401.1">
 def token_type(self, token):
@@ -2946,18 +2929,20 @@ def is_line_comment(self, token):
 <t tx="ekr.20160222132448.1">
 def show_comments(self, node):
     '''Show the comments preceding the node.'''
+    # This can be called on arbitrary nodes.
+    trace = False
     comments = []
-    i, n = self.first_comment_line, node.lineno
-    while i &lt; n:
-        token = self.comment_lines[i]
-        if token:
-            s = self.token_raw_val(token).rstrip()+'\n'
-            comments.append(s)
-            g.trace('%11s: %s' % (i, s.rstrip()))
-        i += 1
-    self.first_comment_line = i
+    if hasattr(node, 'lineno'):
+        i, n = self.first_comment_line, node.lineno
+        while i &lt; n:
+            token = self.comment_lines[i]
+            if token:
+                s = self.token_raw_val(token).rstrip()+'\n'
+                comments.append(s)
+                if trace: g.trace('%11s: %s' % (i, s.rstrip()))
+            i += 1
+        self.first_comment_line = i
     return comments
 </t>
-<t tx="ekr.20160222170506.1"># flattened, word, ignore-case, head, body</t>
 </tnodes>
 </leo_file>
