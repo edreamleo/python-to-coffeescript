@@ -246,10 +246,14 @@
 </v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160221143000.1"></v>
+<v t="ekr.20160223014745.1"><vh>recent</vh>
 <v t="ekr.20160222084258.1"></v>
 <v t="ekr.20160222091644.1"></v>
 <v t="ekr.20160220050433.47"></v>
+<v t="ekr.20160220050433.68"></v>
+<v t="ekr.20160220050433.70"></v>
+</v>
+<v t="ekr.20160221143000.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -272,6 +276,7 @@ Written by Edward K. Ream.
 '''
 &lt;&lt; license &gt;&gt;
 &lt;&lt; imports &gt;&gt;
+isPython3 = sys.version_info &gt;= (3, 0, 0)
 @others
 
 g = LeoGlobals() # For ekr.
@@ -499,8 +504,7 @@ def scan_options(self):
 <t tx="ekr.20160220050433.127">
 def create_parser(self):
     '''Create a RawConfigParser and return it.'''
-    parser = configparser.RawConfigParser(dict_type=OrderedDict)
-        # Requires Python 2.7
+    parser = configparser.RawConfigParser()
     parser.optionxform = str
     return parser
 </t>
@@ -663,36 +667,23 @@ def return_two_lists(s):
     else:
         return list(self.regex.finditer(s))
 </t>
-<t tx="ekr.20160220050433.2">from collections import OrderedDict
-    # Requires Python 2.7 or above. Without OrderedDict
-    # the configparser will give random order for patterns.
-
-import ast
+<t tx="ekr.20160220050433.2">import ast
 import glob
 import optparse
 import os
-# import re
 import sys
 import time
 import token as token_module
 import tokenize
 import types
-isPython3 = sys.version_info &gt;= (3, 0, 0)
-# Avoid try/except here during development.
-if isPython3:
-    import configparser
-    import io
-else:
-    import ConfigParser as configparser
-    import StringIO as io
-# try:
-    # import ConfigParser as configparser # Python 2
-# except ImportError:
-    # import configparser # Python 3
-# try:
-    # import StringIO as io # Python 2
-# except ImportError:
-    # import io # Python 3
+try:
+    import ConfigParser as configparser # Python 2
+except ImportError:
+    import configparser # Python 3
+try:
+    import StringIO as io # Python 2
+except ImportError:
+    import io # Python 3
 </t>
 <t tx="ekr.20160220050433.20">
 # FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
@@ -1162,6 +1153,7 @@ def do_Import(self, node):
         else:
             names.append(fn)
     s = 'import %s\n' % ','.join(names)
+    s = 'pass # ' + s
     return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.69">
@@ -1189,6 +1181,7 @@ def do_ImportFrom(self, node):
         else:
             names.append(fn)
     s = 'from %s import %s\n' % (node.module, ','.join(names))
+    s = 'pass # ' + s
     return ''.join(comments) + self.indent(s)
 </t>
 <t tx="ekr.20160220050433.71">
@@ -2403,7 +2396,7 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-- Replace imports by pass
+* Handle blank lines: don't add blank lines before class &amp; def.
 * Handle end-of-line comments.
 - Discuss TokenSync class in theory.md.
 - How to handle line breaks within statements?
@@ -2952,5 +2945,6 @@ def clean(s):
         .replace('\\n','').replace('\n','')
         .replace('\\t','').replace('\t','')
         .replace('\\','').replace('\\',''))</t>
+<t tx="ekr.20160223014745.1"></t>
 </tnodes>
 </leo_file>

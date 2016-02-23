@@ -18,36 +18,24 @@ Written by Edward K. Ream.
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 # 
 # **THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
-from collections import OrderedDict
-    # Requires Python 2.7 or above. Without OrderedDict
-    # the configparser will give random order for patterns.
-
 import ast
 import glob
 import optparse
 import os
-# import re
 import sys
 import time
 import token as token_module
 import tokenize
 import types
+try:
+    import ConfigParser as configparser # Python 2
+except ImportError:
+    import configparser # Python 3
+try:
+    import StringIO as io # Python 2
+except ImportError:
+    import io # Python 3
 isPython3 = sys.version_info >= (3, 0, 0)
-# Avoid try/except here during development.
-if isPython3:
-    import configparser
-    import io
-else:
-    import ConfigParser as configparser
-    import StringIO as io
-# try:
-    # import ConfigParser as configparser # Python 2
-# except ImportError:
-    # import configparser # Python 3
-# try:
-    # import StringIO as io # Python 2
-# except ImportError:
-    # import io # Python 3
 
 def main():
     '''
@@ -644,6 +632,7 @@ class CoffeeScriptTraverser(object):
             else:
                 names.append(fn)
         s = 'import %s\n' % ','.join(names)
+        s = 'pass # ' + s
         return ''.join(comments) + self.indent(s)
 
     def get_import_names(self, node):
@@ -665,6 +654,7 @@ class CoffeeScriptTraverser(object):
             else:
                 names.append(fn)
         s = 'from %s import %s\n' % (node.module, ','.join(names))
+        s = 'pass # ' + s
         return ''.join(comments) + self.indent(s)
 
     def do_Pass(self, node):
@@ -1201,8 +1191,7 @@ class MakeCoffeeScriptController(object):
 
     def create_parser(self):
         '''Create a RawConfigParser and return it.'''
-        parser = configparser.RawConfigParser(dict_type=OrderedDict)
-            # Requires Python 2.7
+        parser = configparser.RawConfigParser()
         parser.optionxform = str
         return parser
 

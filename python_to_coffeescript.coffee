@@ -1,4 +1,4 @@
-# python_to_coffeescript: Tue 23 Feb 2016 at 01:41:36
+# python_to_coffeescript: Tue 23 Feb 2016 at 01:53:28
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -19,35 +19,24 @@ Written by Edward K. Ream.
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 #
 # **THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
-from collections import OrderedDict
-    # Requires Python 2.7 or above. Without OrderedDict
-    # the configparser will give random order for patterns.
-import ast
-import glob
-import optparse
-import os
-# import re
-import sys
-import time
-import token as token_module
-import tokenize
-import types
+pass # import ast
+pass # import glob
+pass # import optparse
+pass # import os
+pass # import sys
+pass # import time
+pass # import token as token_module
+pass # import tokenize
+pass # import types
+try:
+    pass # import ConfigParser as configparser
+except ImportError:
+    pass # import configparser
+try:
+    pass # import StringIO as io
+except ImportError:
+    pass # import io
 isPython3=sys.version_info>=(3, 0, 0)
-# Avoid try/except here during development.
-if isPython3:
-    import configparser
-    import io
-else:
-    import ConfigParser as configparser
-    import StringIO as io
-# try:
-    # import ConfigParser as configparser # Python 2
-# except ImportError:
-    # import configparser # Python 3
-# try:
-    # import StringIO as io # Python 2
-# except ImportError:
-    # import io # Python 3
 
 main = ->
     '''
@@ -387,13 +376,8 @@ class CoffeeScriptTraverser extends object
 
     do_Str: (node) ->
         '''A string constant, including docstrings.'''
-
-        clean: (s) ->
-            return s.replace('"','').replace("'",'').replace('\\n','').replace('\n','').replace('\\t','').replace('\t','').replace('\\','').replace('\\','')
         if hasattr(node,'lineno'):
-            s=@sync_string(node)
-            # assert clean(s) == clean(node.s), (clean(s), clean(node.s), node.s)
-            return s
+            return @sync_string(node)
         else:
             g.trace('==== no lineno',node.s)
             return node.s
@@ -570,6 +554,7 @@ class CoffeeScriptTraverser extends object
             else:
                 names.append(fn)
         s='import %s\n'%','.join(names)
+        s='pass # '+s
         return ''.join(comments)+@indent(s)
 
     get_import_names: (node) ->
@@ -590,6 +575,7 @@ class CoffeeScriptTraverser extends object
             else:
                 names.append(fn)
         s='from %s import %s\n'%(node.module, ','.join(names))
+        s='pass # '+s
         return ''.join(comments)+@indent(s)
 
     do_Pass: (node) ->
@@ -884,10 +870,10 @@ class LeoGlobals extends object
 
     pdb: ->
         try:
-            import leo.core.leoGlobals as leo_g
+            pass # import leo.core.leoGlobals as leo_g
             leo_g.pdb()
         except ImportError:
-            import pdb
+            pass # import pdb
             pdb.set_trace()
 
     shortFileName: (fileName, n=None) ->
@@ -928,7 +914,7 @@ class LeoGlobals extends object
 
     trace: (*args, **keys) ->
         try:
-            import leo.core.leoGlobals as leo_g
+            pass # import leo.core.leoGlobals as leo_g
             leo_g.trace(caller_level=2,*args,**keys)
         except ImportError:
             print((args, keys))
@@ -1033,7 +1019,7 @@ class MakeCoffeeScriptController extends object
 
     run_all_unit_tests: ->
         '''Run all unit tests in the python-to-coffeescript/test directory.'''
-        import unittest
+        pass # import unittest
         loader=unittest.TestLoader()
         suite=loader.discover(os.path.abspath('.'),pattern='test*.py',top_level_dir=None)
         unittest.TextTestRunner(verbosity=1).run(suite)
@@ -1125,8 +1111,7 @@ class MakeCoffeeScriptController extends object
 
     create_parser: ->
         '''Create a RawConfigParser and return it.'''
-        parser=configparser.RawConfigParser(dict_type=OrderedDict)
-            # Requires Python 2.7
+        parser=configparser.RawConfigParser()
         parser.optionxform=str
         return parser
 
