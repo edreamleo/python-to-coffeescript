@@ -1,4 +1,4 @@
-# python_to_coffeescript: Tue 23 Feb 2016 at 04:14:31
+# python_to_coffeescript: Tue 23 Feb 2016 at 05:22:14
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -97,9 +97,13 @@ class CoffeeScriptTraverser extends object
     __init__: (controller) ->
         '''Ctor for CoffeeScriptFormatter class.'''
         @controller=controller
+        @class_stack=[]
+        # Redirection. Set in format.
         @sync_string=None
         @leading_lines=None
-        @class_stack=[]
+        @leading_string=None
+        @trailing_comment=None
+
 
     format: (node, s, tokens) ->
         '''Format the node (or list of nodes) and its descendants.'''
@@ -107,6 +111,8 @@ class CoffeeScriptTraverser extends object
         sync=TokenSync(s,tokens)
         @sync_string=sync.sync_string
         @leading_lines=sync.leading_lines
+        @leading_string=sync.leading_string
+        @trailing_comment=sync.trailing_comment
         val=@visit(node)
         return val or ''
 
@@ -146,14 +152,14 @@ class CoffeeScriptTraverser extends object
     do_ClassDef: (node) ->
 
         result=@leading_lines(node)
+        tail=@trailing_comment(node)
         name=node.name
         bases=@visit(z) for z in node.bases if node.bases else [] 
-        # result.append('\n\n')
         if bases:
-            s='class %s extends %s\n'%(name, ', '.join(bases))
+            s='class %s extends %s'%(name, ', '.join(bases))
         else:
-            s='class %s\n'%name
-        result.append(@indent(s))
+            s='class %s'%name
+        result.append(@indent(s+tail))
         @class_stack.append(name)
         for (i, z) in enumerate(node.body):
             @level+=1
@@ -167,9 +173,12 @@ class CoffeeScriptTraverser extends object
     do_FunctionDef: (node) ->
         '''Format a FunctionDef node.'''
         result=@leading_lines(node)
+        tail=@trailing_comment(node)
         if node.decorator_list:
             for z in node.decorator_list:
-                result.append(@indent('@%s\n'%@visit(z)))
+                tail=@trailing_comment(z)
+                s='@%s'%@visit(z)
+                result.append(@indent(s+tail))
         name=node.name
         args=@visit(node.args) if node.args else '' 
         args=z.strip() for z in args.split(',')
@@ -179,7 +188,8 @@ class CoffeeScriptTraverser extends object
         args='(%s) '%args if args else '' 
         # result.append('\n')
         sep=': ' if @class_stack else ' = ' 
-        s='%s%s%s->\n'%(name, sep, args)
+        tail=@trailing_comment(node)
+        s='%s%s%s->%s'%(name, sep, args, tail)
         result.append(@indent(s))
         for (i, z) in enumerate(node.body):
             @level+=1
@@ -204,9 +214,10 @@ class CoffeeScriptTraverser extends object
 
     do_Expr: (node) ->
         '''An outer expression: must be indented.'''
-        leading=@leading_lines(node)
-        s='%s\n'%@visit(node.value)
-        return ''.join(leading)+@indent(s)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
+        s='%s'%@visit(node.value)
+        return head+@indent(s)+tail
 
     do_Expression: (node) ->
         '''An inner expression: do not indent.'''
@@ -310,19 +321,23 @@ class CoffeeScriptTraverser extends object
         result.append('{')
         @level+=1
         for (i, key) in enumerate(node.keys):
-            leading=@leading_lines(key)
+            head=@leading_lines(key)
                 # Prevents leading lines from being handled again.
-            leading=z for z in leading if z.strip()
+            head=z for z in head if z.strip()
                 # Ignore blank lines.
-            if leading:
-                items.extend('\n'+''.join(leading))
+            if head:
+                items.extend('\n'+''.join(head))
+            tail=@trailing_comment(node.values[i])
             key=@visit(node.keys[i])
             value=@visit(node.values[i])
-            s='%s:%s\n'%(key, value)
+            s='%s:%s%s'%(key, value, tail)
             items.append(@indent(s))
         @level-=1
         result.extend(items)
-        result.append(@indent('}'))
+        if items:
+            result.append(@indent('}'))
+        else:
+            result.append('}')
         return ''.join(result)
 
     do_Ellipsis: (node) ->
@@ -379,7 +394,7 @@ class CoffeeScriptTraverser extends object
         '''A string constant, including docstrings.'''
         if hasattr(node,'lineno'):
             # Do *not* handle leading lines here.
-            # leading = self.leading_lines(node)
+            # leading = self.leading_string(node)
             return @sync_string(node)
         else:
             g.trace('==== no lineno',node.s)
@@ -486,49 +501,53 @@ class CoffeeScriptTraverser extends object
 
     do_Assert: (node) ->
 
-        leading=@leading_lines(node)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
         test=@visit(node.test)
         if getattr(node,'msg',None) is not None:
-            s='assert %s, %s\n'%(test, @visit(node.msg))
+            s='assert %s, %s'%(test, @visit(node.msg))
         else:
-            s='assert %s\n'%test
-        return ''.join(leading)+@indent(s)
+            s='assert %s'%test
+        return head+@indent(s)+tail
 
     do_Assign: (node) ->
 
-        leading=@leading_lines(node)
-        s='%s=%s\n'%('='.join(@visit(z) for z in node.targets), @visit(node.value))
-        return ''.join(leading)+@indent(s)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
+        s='%s=%s'%('='.join(@visit(z) for z in node.targets), @visit(node.value))
+        return head+@indent(s)+tail
 
     do_AugAssign: (node) ->
 
-        op=@op_name(node.op)
-        leading=@leading_lines(node)
-        target=@visit(node.target)
-        value=@visit(node.value)
-        s='%s%s=%s\n'%(target, op, value)
-        return ''.join(leading)+@indent(s)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
+        s='%s%s=%s'%(@visit(node.target), @op_name(node.op), @visit(node.value))
+        return head+@indent(s)+tail
 
     do_Break: (node) ->
 
-        leading=@leading_lines(node)
-        return ''.join(leading)+@indent('break\n')
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
+        return head+@indent('break')+tail
 
     do_Continue: (node) ->
 
-        leading=@leading_lines(node)
-        return ''.join(leading)+@indent('continue\n')
+        head=@leading_lines(node)
+        tail=@trailing_comment(node)
+        return head+@indent('continue')+tail
 
     do_Delete: (node) ->
 
-        leading=@leading_lines(node)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
         targets=@visit(z) for z in node.targets
-        s='del %s\n'%','.join(targets)
-        return ''.join(leading)+@indent(s)
+        s='del %s'%','.join(targets)
+        return head+@indent(s)+tail
 
     do_ExceptHandler: (node) ->
 
         result=@leading_lines(node)
+        tail=@trailing_comment(node)
         result.append(@indent('except'))
         if getattr(node,'type',None):
             result.append(' %s'%@visit(node.type))
@@ -537,7 +556,7 @@ class CoffeeScriptTraverser extends object
                 result.append(' as %s'%@visit(node.name))
             else:
                 result.append(' as %s'%node.name)
-        result.append(':\n')
+        result.append(':'+tail)
         for z in node.body:
             @level+=1
             result.append(@visit(z))
@@ -548,7 +567,8 @@ class CoffeeScriptTraverser extends object
 
     do_Exec: (node) ->
 
-        leading=@leading_lines(node)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
         body=@visit(node.body)
         args=[]
         if getattr(node,'globals',None):
@@ -556,21 +576,24 @@ class CoffeeScriptTraverser extends object
         if getattr(node,'locals',None):
             args.append(@visit(node.locals))
         if args:
-            s='exec %s in %s\n'%(body, ','.join(args))
+            s='exec %s in %s'%(body, ','.join(args))
         else:
-            s='exec %s\n'%body
-        return ''.join(leading)+@indent(s)
+            s='exec %s'%body
+        return head+@indent(s)+tail
 
     do_For: (node) ->
 
         result=@leading_lines(node)
-        result.append(@indent('for %s in %s:\n'%(@visit(node.target), @visit(node.iter))))
+        tail=@trailing_comment(node)
+        s='for %s in %s:'%(@visit(node.target), @visit(node.iter))
+        result.append(@indent(s+tail))
         for z in node.body:
             @level+=1
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            result.append(@indent('else:\n'))
+            tail=@trailing_comment(node.orelse)
+            result.append(@indent('else:'+tail))
             for z in node.orelse:
                 @level+=1
                 result.append(@visit(z))
@@ -579,20 +602,24 @@ class CoffeeScriptTraverser extends object
 
     do_Global: (node) ->
 
-        leading=@leading_lines(node)
-        s='global %s\n'%','.join(node.names)
-        return ''.join(leading)+@indent(s)
+        head=@leading_lines(node)
+        tail=@trailing_comment(node)
+        s='global %s'%','.join(node.names)
+        return head+@indent(s)+tail
 
     do_If: (node) ->
 
         result=@leading_lines(node)
-        result.append(@indent('if %s:\n'%@visit(node.test)))
+        tail=@trailing_comment(node)
+        s='if %s:%s'%(@visit(node.test), tail)
+        result.append(@indent(s))
         for z in node.body:
             @level+=1
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            result.append(@indent('else:\n'))
+            tail=@trailing_comment(node.orelse)
+            result.append(@indent('else:'+tail))
             for z in node.orelse:
                 @level+=1
                 result.append(@visit(z))
@@ -601,16 +628,16 @@ class CoffeeScriptTraverser extends object
 
     do_Import: (node) ->
 
-        leading=@leading_lines(node)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
         names=[]
         for (fn, asname) in @get_import_names(node):
             if asname:
                 names.append('%s as %s'%(fn, asname))
             else:
                 names.append(fn)
-        s='import %s\n'%','.join(names)
-        s='pass # '+s
-        return ''.join(leading)+@indent(s)
+        s='pass # import %s'%','.join(names)
+        return head+@indent(s)+tail
 
     get_import_names: (node) ->
         '''Return a list of the the full file names in the import statement.'''
@@ -623,27 +650,29 @@ class CoffeeScriptTraverser extends object
 
     do_ImportFrom: (node) ->
 
-        leading=@leading_lines(node)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
         names=[]
         for (fn, asname) in @get_import_names(node):
             if asname:
                 names.append('%s as %s'%(fn, asname))
             else:
                 names.append(fn)
-        s='from %s import %s\n'%(node.module, ','.join(names))
-        s='pass # '+s
-        return ''.join(leading)+@indent(s)
+        s='pass # from %s import %s'%(node.module, ','.join(names))
+        return head+@indent(s)+tail
 
     do_Pass: (node) ->
 
-        leading=@leading_lines(node)
-        return ''.join(leading)+@indent('pass\n')
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
+        return head+@indent('pass')+tail
 
     # Python 2.x only
 
     do_Print: (node) ->
 
-        leading=@leading_lines(node)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
         vals=[]
         for z in node.values:
             vals.append(@visit(z))
@@ -652,37 +681,38 @@ class CoffeeScriptTraverser extends object
         if getattr(node,'nl',None) is not None:
             if node.nl=='False':
                 vals.append('nl=%s'%node.nl)
-        s='print(%s)\n'%','.join(vals)
-        return ''.join(leading)+@indent(s)
+        s='print(%s)'%','.join(vals)
+        return head+@indent(s)+tail
 
     do_Raise: (node) ->
 
-        leading=@leading_lines(node)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
         args=[]
         for attr in ('type', 'inst', 'tback'):
             if getattr(node,attr,None) is not None:
                 args.append(@visit(getattr(node,attr)))
-        if args:
-            s='raise %s\n'%', '.join(args)
-        else:
-            s='raise\n'
-        return ''.join(leading)+@indent(s)
+        s='raise %s'%', '.join(args) if args else 'raise' 
+        return head+@indent(s)+tail
 
     do_Return: (node) ->
 
-        leading=@leading_lines(node)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
         if node.value:
-            s='return %s\n'%@visit(node.value).strip()
+            s='return %s'%@visit(node.value).strip()
         else:
-            s='return\n'
-        return ''.join(leading)+@indent(s)
+            s='return'
+        return head+@indent(s)+tail
 
     # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
     do_Try: (node) ->
 
         result=@leading_lines(node)
-        result.append(@indent('try:\n'))
+        tail=@trailing_comment(node)
+        s='try'+tail
+        result.append(@indent(s))
         for z in node.body:
             @level+=1
             result.append(@visit(z))
@@ -691,13 +721,16 @@ class CoffeeScriptTraverser extends object
             for z in node.handlers:
                 result.append(@visit(z))
         if node.orelse:
-            result.append(@indent('else:\n'))
+            tail=@trailing_comment(node.orelse)
+            result.append(@indent('else:'+tail))
             for z in node.orelse:
                 @level+=1
                 result.append(@visit(z))
                 @level-=1
         if node.finalbody:
-            result.append(@indent('finally:\n'))
+            tail=@trailing_comment(node.finalbody)
+            s='finally:'+tail
+            result.append(@indent(s))
             for z in node.finalbody:
                 @level+=1
                 result.append(@visit(z))
@@ -707,7 +740,9 @@ class CoffeeScriptTraverser extends object
     do_TryExcept: (node) ->
 
         result=@leading_lines(node)
-        result.append(@indent('try:\n'))
+        tail=@trailing_comment(node)
+        s='try:'+tail
+        result.append(@indent(s))
         for z in node.body:
             @level+=1
             result.append(@visit(z))
@@ -716,7 +751,9 @@ class CoffeeScriptTraverser extends object
             for z in node.handlers:
                 result.append(@visit(z))
         if node.orelse:
-            result.append('else:\n')
+            tail=@trailing_comment(node.orelse)
+            s='else:'+tail
+            result.append(@indent(s))
             for z in node.orelse:
                 @level+=1
                 result.append(@visit(z))
@@ -726,11 +763,13 @@ class CoffeeScriptTraverser extends object
     do_TryFinally: (node) ->
 
         result=@leading_lines(node)
-        result.append(@indent('try:\n'))
+        tail=@trailing_comment(node)
+        result.append(@indent('try:'+tail))
         for z in node.body:
             @level+=1
             result.append(@visit(z))
             @level-=1
+        # TODO: how to attach comments that appear after 'finally'?
         result.append(@indent('finally:\n'))
         for z in node.finalbody:
             @level+=1
@@ -741,13 +780,16 @@ class CoffeeScriptTraverser extends object
     do_While: (node) ->
 
         result=@leading_lines(node)
-        result.append(@indent('while %s:\n'%@visit(node.test)))
+        tail=@trailing_comment(node)
+        s='while %s:'%@visit(node.test)
+        result.append(@indent(s+tail))
         for z in node.body:
             @level+=1
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            result.append('else:\n')
+            tail=@trailing_comment(node)
+            result.append(@indent('else:'+tail))
             for z in node.orelse:
                 @level+=1
                 result.append(@visit(z))
@@ -757,6 +799,7 @@ class CoffeeScriptTraverser extends object
     do_With: (node) ->
 
         result=@leading_lines(node)
+        tail=@trailing_comment(node)
         result.append(@indent('with '))
         if hasattr(node,'context_expression'):
             result.append(@visit(node.context_expresssion))
@@ -768,7 +811,7 @@ class CoffeeScriptTraverser extends object
             except TypeError:
                 vars_list.append(@visit(node.optional_vars))
         result.append(','.join(vars_list))
-        result.append(':\n')
+        result.append(':'+tail)
         for z in node.body:
             @level+=1
             result.append(@visit(z))
@@ -778,12 +821,13 @@ class CoffeeScriptTraverser extends object
 
     do_Yield: (node) ->
 
-        leading=@leading_lines(node)
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
         if getattr(node,'value',None) is not None:
-            s='yield %s\n'%@visit(node.value)
+            s='yield %s'%@visit(node.value)
         else:
-            s='yield\n'
-        return ''.join(leading)+@indent(s)
+            s='yield'
+        return head+@indent(s)+tail
 
 
 class LeoGlobals extends object
@@ -997,7 +1041,7 @@ class MakeCoffeeScriptController extends object
 
     __init__: ->
         '''Ctor for MakeCoffeeScriptController class.'''
-        @options={        }
+        @options={}
         # Ivars set on the command line...
         @config_fn=None
         @enable_unit_tests=False
@@ -1358,6 +1402,10 @@ class TokenSync extends object
             @first_leading_line=i
         return leading
 
+    leading_string: (node) ->
+        '''Return a string containing all lines preceding node.'''
+        return ''.join(@leading_lines(node))
+
     line_at: (node, continued_lines=True) ->
         '''Return the lines at the node, possibly including continuation lines.'''
         n=getattr(node,'lineno',None)
@@ -1405,6 +1453,13 @@ class TokenSync extends object
         '''Return the raw value of the token.'''
         (t1, t2, t3, t4, t5)=token
         return g.toUnicode(t2)
+
+    trailing_comment: (node) ->
+        '''
+        Return a string containing the trailing comment for the node, if any.
+        The string always ends with a newline.
+        '''
+        return '\n'
 
 g=LeoGlobals()
 if __name__=="__main__":

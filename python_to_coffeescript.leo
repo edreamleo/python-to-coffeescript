@@ -93,7 +93,6 @@
 </v>
 </v>
 <v t="ekr.20160223014237.1"><vh>clean, defined in do_Str</vh></v>
-<v t="ekr.20160221151640.1"><vh>ts.sync_op</vh></v>
 <v t="ekr.20160220050433.28"><vh>cv.ctx nodes</vh></v>
 </v>
 </v>
@@ -240,24 +239,46 @@
 <v t="ekr.20160223013055.1"><vh>ts.dump_token</vh></v>
 <v t="ekr.20160223022613.1"><vh>ts.is_line_comment</vh></v>
 <v t="ekr.20160222132448.1"><vh>ts.leading_lines</vh></v>
+<v t="ekr.20160223043329.1"><vh>ts.leading_string</vh></v>
 <v t="ekr.20160222081027.1"><vh>ts.line_at</vh></v>
 <v t="ekr.20160222091644.1"><vh>ts.sync_string</vh></v>
 <v t="ekr.20160222124401.1"><vh>ts.token_kind/raw_val/val</vh></v>
+<v t="ekr.20160223042247.1"><vh>ts.trailing_comment</vh></v>
 </v>
 </v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160223014745.1"><vh>recent</vh>
-<v t="ekr.20160222084258.1"></v>
-<v t="ekr.20160222091644.1"></v>
-</v>
 <v t="ekr.20160221143000.1"></v>
-<v t="ekr.20160220050433.20"></v>
+<v t="ekr.20160223042247.1"></v>
+<v t="ekr.20160223041901.1"><vh>Found:leading_lines</vh>
+<v t="ekr.20160220050433.57"></v>
+<v t="ekr.20160220050433.58"></v>
+<v t="ekr.20160220050433.59"></v>
+<v t="ekr.20160220050433.60"></v>
 <v t="ekr.20160220050433.19"></v>
+<v t="ekr.20160220050433.61"></v>
+<v t="ekr.20160220050433.62"></v>
 <v t="ekr.20160220050433.37"></v>
-<v t="ekr.20160220050433.47"></v>
-<v t="ekr.20160220050433.83"></v>
-<v t="ekr.20160223024943.1"><vh>checkin log</vh></v>
+<v t="ekr.20160220050433.63"></v>
+<v t="ekr.20160220050433.64"></v>
+<v t="ekr.20160220050433.25"></v>
+<v t="ekr.20160220050433.65"></v>
+<v t="ekr.20160220050433.20"></v>
+<v t="ekr.20160220050433.66"></v>
+<v t="ekr.20160220050433.67"></v>
+<v t="ekr.20160220050433.68"></v>
+<v t="ekr.20160220050433.70"></v>
+<v t="ekr.20160220050433.71"></v>
+<v t="ekr.20160220050433.72"></v>
+<v t="ekr.20160220050433.73"></v>
+<v t="ekr.20160220050433.74"></v>
+<v t="ekr.20160220094909.1"></v>
+<v t="ekr.20160220050433.75"></v>
+<v t="ekr.20160220050433.76"></v>
+<v t="ekr.20160220050433.77"></v>
+<v t="ekr.20160220050433.78"></v>
+<v t="ekr.20160220050433.79"></v>
+</v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -578,6 +599,8 @@ def format(self, node, s, tokens):
     sync = TokenSync(s, tokens)
     self.sync_string = sync.sync_string
     self.leading_lines = sync.leading_lines
+    self.leading_string = sync.leading_string
+    self.trailing_comment = sync.trailing_comment
     val = self.visit(node)
     return val or ''
 </t>
@@ -634,14 +657,14 @@ def parse_group(group):
 def do_ClassDef(self, node):
 
     result = self.leading_lines(node)
+    tail = self.trailing_comment(node)
     name = node.name # Only a plain string is valid.
     bases = [self.visit(z) for z in node.bases] if node.bases else []
-    # result.append('\n\n')
     if bases:
-        s = 'class %s extends %s\n' % (name, ', '.join(bases))
+        s = 'class %s extends %s' % (name, ', '.join(bases))
     else:
-        s = 'class %s\n' % name
-    result.append(self.indent(s))
+        s = 'class %s' % name
+    result.append(self.indent(s + tail))
     self.class_stack.append(name)
     for i, z in enumerate(node.body):
         self.level += 1
@@ -694,9 +717,12 @@ except ImportError:
 def do_FunctionDef(self, node):
     '''Format a FunctionDef node.'''
     result = self.leading_lines(node)
+    tail = self.trailing_comment(node)
     if node.decorator_list:
         for z in node.decorator_list:
-            result.append(self.indent('@%s\n' % self.visit(z)))
+            tail = self.trailing_comment(z)
+            s = '@%s' % self.visit(z)
+            result.append(self.indent(s + tail))
     name = node.name # Only a plain string is valid.
     args = self.visit(node.args) if node.args else ''
     args = [z.strip() for z in args.split(',')]
@@ -706,7 +732,8 @@ def do_FunctionDef(self, node):
     args = '(%s) ' % args if args else ''
     # result.append('\n')
     sep = ': ' if self.class_stack else ' = '
-    s = '%s%s%s-&gt;\n' % (name, sep, args)
+    tail = self.trailing_comment(node)
+    s = '%s%s%s-&gt;%s' % (name, sep, args, tail)
     result.append(self.indent(s))
     for i, z in enumerate(node.body):
         self.level += 1
@@ -738,9 +765,10 @@ def do_Lambda(self, node):
 <t tx="ekr.20160220050433.25">
 def do_Expr(self, node):
     '''An outer expression: must be indented.'''
-    leading = self.leading_lines(node)
-    s = '%s\n' % self.visit(node.value)
-    return ''.join(leading) + self.indent(s)
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
+    s = '%s' % self.visit(node.value)
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.26">
 def do_Expression(self, node):
@@ -870,19 +898,23 @@ def do_Dict(self, node):
     result.append('{')
     self.level += 1
     for i, key in enumerate(node.keys):
-        leading = self.leading_lines(key)
+        head = self.leading_lines(key)
             # Prevents leading lines from being handled again.
-        leading = [z for z in leading if z.strip()]
+        head = [z for z in head if z.strip()]
             # Ignore blank lines.
-        if leading:
-            items.extend('\n'+''.join(leading))
+        if head:
+            items.extend('\n'+''.join(head))
+        tail = self.trailing_comment(node.values[i])
         key = self.visit(node.keys[i])
         value = self.visit(node.values[i])
-        s = '%s:%s\n' % (key, value)
+        s = '%s:%s%s' % (key, value, tail)
         items.append(self.indent(s))
     self.level -= 1
     result.extend(items)
-    result.append(self.indent('}'))
+    if items:
+        result.append(self.indent('}'))
+    else:
+        result.append('}')
     return ''.join(result)
 </t>
 <t tx="ekr.20160220050433.38">
@@ -949,7 +981,7 @@ def do_Str(self, node):
     '''A string constant, including docstrings.'''
     if hasattr(node, 'lineno'):
         # Do *not* handle leading lines here.
-        # leading = self.leading_lines(node)
+        # leading = self.leading_string(node)
         return self.sync_string(node)
     else:
         g.trace('==== no lineno', node.s)
@@ -1019,57 +1051,64 @@ def do_IfExp(self, node):
 <t tx="ekr.20160220050433.57">
 def do_Assert(self, node):
     
-    leading = self.leading_lines(node)
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
     test = self.visit(node.test)
     if getattr(node, 'msg', None) is not None:
-        s = 'assert %s, %s\n' % (test, self.visit(node.msg))
+        s = 'assert %s, %s' % (test, self.visit(node.msg))
     else:
-        s = 'assert %s\n' % test
-    return ''.join(leading) + self.indent(s)
+        s = 'assert %s' % test
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.58">
 def do_Assign(self, node):
-    
-    leading = self.leading_lines(node)
-    s = '%s=%s\n' % (
+
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
+    s = '%s=%s' % (
         '='.join([self.visit(z) for z in node.targets]),
         self.visit(node.value))
-    return ''.join(leading) + self.indent(s)
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.59">
 def do_AugAssign(self, node):
     
-    op = self.op_name(node.op)
-    leading = self.leading_lines(node)
-    target = self.visit(node.target)
-    value = self.visit(node.value)
-    s = '%s%s=%s\n' % (target, op, value)
-    return ''.join(leading) + self.indent(s)
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
+    s = '%s%s=%s' % (
+        self.visit(node.target),
+        self.op_name(node.op),
+        self.visit(node.value))
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.60">
 def do_Break(self, node):
     
-    leading = self.leading_lines(node)
-    return ''.join(leading) + self.indent('break\n')
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
+    return head + self.indent('break') + tail
 </t>
 <t tx="ekr.20160220050433.61">
 def do_Continue(self, node):
     
-    leading = self.leading_lines(node)
-    return ''.join(leading) + self.indent('continue\n')
+    head = self.leading_lines(node)
+    tail = self.trailing_comment(node)
+    return head + self.indent('continue') + tail
 </t>
 <t tx="ekr.20160220050433.62">
 def do_Delete(self, node):
     
-    leading = self.leading_lines(node)
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
     targets = [self.visit(z) for z in node.targets]
-    s = 'del %s\n' % ','.join(targets)
-    return ''.join(leading) + self.indent(s)
+    s = 'del %s' % ','.join(targets)
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.63">
 def do_ExceptHandler(self, node):
 
     result = self.leading_lines(node)
+    tail = self.trailing_comment(node)
     result.append(self.indent('except'))
     if getattr(node, 'type', None):
         result.append(' %s' % self.visit(node.type))
@@ -1078,7 +1117,7 @@ def do_ExceptHandler(self, node):
             result.append(' as %s' % self.visit(node.name))
         else:
             result.append(' as %s' % node.name) # Python 3.x.
-    result.append(':\n')
+    result.append(':' + tail)
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
@@ -1090,7 +1129,8 @@ def do_ExceptHandler(self, node):
 
 def do_Exec(self, node):
     
-    leading = self.leading_lines(node)
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
     body = self.visit(node.body)
     args = [] # Globals before locals.
     if getattr(node, 'globals', None):
@@ -1098,24 +1138,27 @@ def do_Exec(self, node):
     if getattr(node, 'locals', None):
         args.append(self.visit(node.locals))
     if args:
-        s = 'exec %s in %s\n' % (body, ','.join(args))
+        s = 'exec %s in %s' % (body, ','.join(args))
     else:
-        s = 'exec %s\n' % body
-    return ''.join(leading) + self.indent(s)
+        s = 'exec %s' % body
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.65">
 def do_For(self, node):
 
     result = self.leading_lines(node)
-    result.append(self.indent('for %s in %s:\n' % (
+    tail = self.trailing_comment(node)
+    s = 'for %s in %s:' % (
         self.visit(node.target),
-        self.visit(node.iter))))
+        self.visit(node.iter))
+    result.append(self.indent(s + tail))
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        result.append(self.indent('else:\n'))
+        tail = self.trailing_comment(node.orelse)
+        result.append(self.indent('else:' + tail))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
@@ -1125,22 +1168,25 @@ def do_For(self, node):
 <t tx="ekr.20160220050433.66">
 def do_Global(self, node):
     
-    leading = self.leading_lines(node)
-    s = 'global %s\n' % ','.join(node.names)
-    return ''.join(leading) + self.indent(s)
+    head = self.leading_lines(node)
+    tail = self.trailing_comment(node)
+    s = 'global %s' % ','.join(node.names)
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.67">
 def do_If(self, node):
 
     result = self.leading_lines(node)
-    result.append(self.indent('if %s:\n' % (
-        self.visit(node.test))))
+    tail = self.trailing_comment(node)
+    s = 'if %s:%s' % (self.visit(node.test), tail)
+    result.append(self.indent(s))
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        result.append(self.indent('else:\n'))
+        tail = self.trailing_comment(node.orelse)
+        result.append(self.indent('else:' + tail))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
@@ -1150,16 +1196,16 @@ def do_If(self, node):
 <t tx="ekr.20160220050433.68">
 def do_Import(self, node):
     
-    leading = self.leading_lines(node)
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
     names = []
     for fn, asname in self.get_import_names(node):
         if asname:
             names.append('%s as %s' % (fn, asname))
         else:
             names.append(fn)
-    s = 'import %s\n' % ','.join(names)
-    s = 'pass # ' + s
-    return ''.join(leading) + self.indent(s)
+    s = 'pass # import %s' % ','.join(names)
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.69">
 def get_import_names(self, node):
@@ -1178,29 +1224,31 @@ def get_import_names(self, node):
 <t tx="ekr.20160220050433.70">
 def do_ImportFrom(self, node):
 
-    leading = self.leading_lines(node)
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
     names = []
     for fn, asname in self.get_import_names(node):
         if asname:
             names.append('%s as %s' % (fn, asname))
         else:
             names.append(fn)
-    s = 'from %s import %s\n' % (node.module, ','.join(names))
-    s = 'pass # ' + s
-    return ''.join(leading) + self.indent(s)
+    s = 'pass # from %s import %s' % (node.module, ','.join(names))
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.71">
 def do_Pass(self, node):
     
-    leading = self.leading_lines(node)
-    return ''.join(leading) + self.indent('pass\n')
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
+    return head + self.indent('pass') + tail
 </t>
 <t tx="ekr.20160220050433.72">
 # Python 2.x only
 
 def do_Print(self, node):
     
-    leading = self.leading_lines(node)
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
     vals = []
     for z in node.values:
         vals.append(self.visit(z))
@@ -1209,38 +1257,39 @@ def do_Print(self, node):
     if getattr(node, 'nl', None) is not None:
         if node.nl == 'False':
             vals.append('nl=%s' % node.nl)
-    s = 'print(%s)\n' % ','.join(vals)
-    return ''.join(leading) + self.indent(s)
+    s = 'print(%s)' % ','.join(vals)
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.73">
 def do_Raise(self, node):
     
-    leading = self.leading_lines(node)
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
     args = []
     for attr in ('type', 'inst', 'tback'):
         if getattr(node, attr, None) is not None:
             args.append(self.visit(getattr(node, attr)))
-    if args:
-        s = 'raise %s\n' % ', '.join(args)
-    else:
-        s = 'raise\n'
-    return ''.join(leading) + self.indent(s)
+    s = 'raise %s' % ', '.join(args) if args else 'raise'
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.74">
 def do_Return(self, node):
     
-    leading = self.leading_lines(node)
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
     if node.value:
-        s = 'return %s\n' % self.visit(node.value).strip()
+        s = 'return %s' % self.visit(node.value).strip()
     else:
-        s = 'return\n'
-    return ''.join(leading) + self.indent(s)
+        s = 'return'
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.75">
 def do_TryExcept(self, node):
 
     result = self.leading_lines(node)
-    result.append(self.indent('try:\n'))
+    tail = self.trailing_comment(node)
+    s = 'try:' + tail
+    result.append(self.indent(s))
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
@@ -1249,7 +1298,9 @@ def do_TryExcept(self, node):
         for z in node.handlers:
             result.append(self.visit(z))
     if node.orelse:
-        result.append('else:\n')
+        tail = self.trailing_comment(node.orelse)
+        s = 'else:' + tail
+        result.append(self.indent(s))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
@@ -1260,11 +1311,13 @@ def do_TryExcept(self, node):
 def do_TryFinally(self, node):
     
     result = self.leading_lines(node)
-    result.append(self.indent('try:\n'))
+    tail = self.trailing_comment(node)
+    result.append(self.indent('try:' + tail))
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
         self.level -= 1
+    # TODO: how to attach comments that appear after 'finally'?
     result.append(self.indent('finally:\n'))
     for z in node.finalbody:
         self.level += 1
@@ -1276,14 +1329,16 @@ def do_TryFinally(self, node):
 def do_While(self, node):
     
     result = self.leading_lines(node)
-    result.append(self.indent('while %s:\n' % (
-        self.visit(node.test))))
+    tail = self.trailing_comment(node)
+    s = 'while %s:' % self.visit(node.test)
+    result.append(self.indent(s + tail))
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        result.append('else:\n')
+        tail = self.trailing_comment(node)
+        result.append(self.indent('else:' + tail))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
@@ -1294,6 +1349,7 @@ def do_While(self, node):
 def do_With(self, node):
 
     result = self.leading_lines(node)
+    tail = self.trailing_comment(node)
     result.append(self.indent('with '))
     if hasattr(node, 'context_expression'):
         result.append(self.visit(node.context_expresssion))
@@ -1305,7 +1361,7 @@ def do_With(self, node):
         except TypeError: # Not iterable.
             vars_list.append(self.visit(node.optional_vars))
     result.append(','.join(vars_list))
-    result.append(':\n')
+    result.append(':' + tail)
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
@@ -1316,12 +1372,13 @@ def do_With(self, node):
 <t tx="ekr.20160220050433.79">
 def do_Yield(self, node):
     
-    leading = self.leading_lines(node)
+    head = self.leading_string(node)
+    tail = self.trailing_comment(node)
     if getattr(node, 'value', None) is not None:
-        s = 'yield %s\n' % self.visit(node.value)
+        s = 'yield %s' % self.visit(node.value)
     else:
-        s ='yield\n'
-    return ''.join(leading) + self.indent(s)
+        s ='yield'
+    return head + self.indent(s) + tail
 </t>
 <t tx="ekr.20160220050433.8">
 def dump(title, s=None):
@@ -1721,7 +1778,9 @@ def output_time_stamp(self, f):
 def do_Try(self, node): # Python 3
 
     result = self.leading_lines(node)
-    result.append(self.indent('try:\n'))
+    tail = self.trailing_comment(node)
+    s = 'try' + tail
+    result.append(self.indent(s))
     for z in node.body:
         self.level += 1
         result.append(self.visit(z))
@@ -1730,13 +1789,16 @@ def do_Try(self, node): # Python 3
         for z in node.handlers:
             result.append(self.visit(z))
     if node.orelse:
-        result.append(self.indent('else:\n'))
+        tail = self.trailing_comment(node.orelse)
+        result.append(self.indent('else:' + tail))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
             self.level -= 1
     if node.finalbody:
-        result.append(self.indent('finally:\n'))
+        tail = self.trailing_comment(node.finalbody)
+        s = 'finally:' + tail
+        result.append(self.indent(s))
         for z in node.finalbody:
             self.level += 1
             result.append(self.visit(z))
@@ -2694,13 +2756,6 @@ def __init__(self, s, tokens):
     self.string_tokens = self.make_string_tokens()
     self.ignored_lines = self.make_ignored_lines()
 </t>
-<t tx="ekr.20160221151640.1">
-def sync_op(self, node, op):
-    '''Advance tokens until the given keyword is found.'''
-    aList = self.leading_lines(node)
-    # g.trace('  %-12s %2s: %s' % (op, node.lineno, self.line_at(node)))
-    return aList
-</t>
 <t tx="ekr.20160222023117.1">'''
 Test file illustrating difficulties of tokenizing.
 At present, multi-line docstrings cause problems.
@@ -2716,7 +2771,6 @@ def spam():
     b = 2
 
 
-# Comment before TestClass.
 class TestClass(object):
     
     def do_BinOp(self, node):
@@ -2725,7 +2779,7 @@ class TestClass(object):
             self.op_name(node.op),
             self.visit(node.right))
 
-    # Comment before InnerClass.
+
     class InnerClass(object, str):
         # Comment.
         def __init__(self, a):
@@ -2735,9 +2789,10 @@ class TestClass(object):
             """inner1 docstring"""
 
     def test1(a):
-        # Comment1 before print statement.
-        # Comment2 before print statement.
+        # Comment before print statement.
+        # Should be a comment on the print line.
         print(a) # comment
+
     def test2():
         pass
         
@@ -2855,9 +2910,13 @@ def make_string_tokens(self):
 def __init__(self, controller):
     '''Ctor for CoffeeScriptFormatter class.'''
     self.controller = controller
+    self.class_stack = []
+    # Redirection. Set in format.
     self.sync_string = None
     self.leading_lines = None
-    self.class_stack = []</t>
+    self.leading_string = None
+    self.trailing_comment = None
+    </t>
 <t tx="ekr.20160222091644.1">
 def sync_string(self, node):
     '''Return the spelling of the string at the given node.'''
@@ -2949,7 +3008,6 @@ def clean(s):
         .replace('\\n','').replace('\n','')
         .replace('\\t','').replace('\t','')
         .replace('\\','').replace('\\',''))</t>
-<t tx="ekr.20160223014745.1"></t>
 <t tx="ekr.20160223022613.1">
 def is_line_comment(self, token):
     '''Return True if the token represents a full-line comment.'''
@@ -2968,13 +3026,6 @@ def make_blank_lines(self):
             result.append(i)
     return result
 </t>
-<t tx="ekr.20160223024943.1">@language rest
-@wrap
-Handle leading blank lines.
-- Add blank lines to leading lines.
-- don't add blank lines before class &amp; def.
-- Handle leading lines in do_Dict.
-- Do *not*</t>
 <t tx="ekr.20160223031552.1">
 def make_nl_token(self):
     '''Return a newline token with '\n' as both val and raw_val.'''
@@ -2985,5 +3036,17 @@ def make_nl_token(self):
     t5 = '\n'
     return t1, t2, t3, t4, t5
 </t>
+<t tx="ekr.20160223041901.1"># flattened, ignore-case, head, body</t>
+<t tx="ekr.20160223042247.1">
+def trailing_comment(self, node):
+    '''
+    Return a string containing the trailing comment for the node, if any.
+    The string always ends with a newline.
+    '''
+    return '\n'</t>
+<t tx="ekr.20160223043329.1">
+def leading_string(self, node):
+    '''Return a string containing all lines preceding node.'''
+    return ''.join(self.leading_lines(node))</t>
 </tnodes>
 </leo_file>

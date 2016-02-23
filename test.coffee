@@ -1,4 +1,4 @@
-# python_to_coffeescript: Tue 23 Feb 2016 at 04:11:38
+# python_to_coffeescript: Tue 23 Feb 2016 at 05:21:24
 '''
 Test file illustrating difficulties of tokenizing.
 At present, multi-line docstrings cause problems.
@@ -13,13 +13,12 @@ spam = ->
     b=2
 
 
-# Comment before TestClass.
 class TestClass extends object
 
     do_BinOp: (node) ->
         return '%s%s%s'%(@visit(node.left), @op_name(node.op), @visit(node.right))
 
-    # Comment before InnerClass.
+
     class InnerClass extends object, str
         # Comment.
         __init__: (a) ->
@@ -29,9 +28,10 @@ class TestClass extends object
             """inner1 docstring"""
 
     test1: (a) ->
-        # Comment1 before print statement.
-        # Comment2 before print statement.
+        # Comment before print statement.
+        # Should be a comment on the print line.
         print(a)
+
     test2: ->
         pass
 

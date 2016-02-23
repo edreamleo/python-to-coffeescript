@@ -13,7 +13,6 @@ def spam():
     b = 2
 
 
-# Comment before TestClass.
 class TestClass(object):
     
     def do_BinOp(self, node):
@@ -22,7 +21,7 @@ class TestClass(object):
             self.op_name(node.op),
             self.visit(node.right))
 
-    # Comment before InnerClass.
+
     class InnerClass(object, str):
         # Comment.
         def __init__(self, a):
@@ -32,9 +31,10 @@ class TestClass(object):
             """inner1 docstring"""
 
     def test1(a):
-        # Comment1 before print statement.
-        # Comment2 before print statement.
+        # Comment before print statement.
+        # Should be a comment on the print line.
         print(a) # comment
+
     def test2():
         pass
         
