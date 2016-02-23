@@ -23,7 +23,7 @@ class TestClass(object):
 
 
     class InnerClass(object, str):
-        # Comment.
+        # Comment 1.
         def __init__(self, a):
             '''Ctor for InnerClass'''
             self.a = a
@@ -31,9 +31,7 @@ class TestClass(object):
             """inner1 docstring"""
 
     def test1(a):
-        # Comment before print statement.
-        # Should be a comment on the print line.
-        print(a) # comment
+        print(a) # trailing comment
 
     def test2():
         pass

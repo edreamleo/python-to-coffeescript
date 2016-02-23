@@ -75,14 +75,12 @@ def dump_list(title, aList):
 
 def pdb(self):
     '''Invoke a debugger during unit testing.'''
-    print('pdb')
-    # Avoid try/except during development.
-    # try:
-        # import leo.core.leoGlobals as leo_g
-        # leo_g.pdb()
-    # except ImportError:
-        # import pdb
-        # pdb.set_trace()
+    try:
+        import leo.core.leoGlobals as leo_g
+        leo_g.pdb()
+    except ImportError:
+        import pdb
+        pdb.set_trace()
 
 def truncate(s, n):
     '''Return s truncated to n characters.'''
@@ -171,7 +169,6 @@ class CoffeeScriptTraverser(object):
     def do_FunctionDef(self, node):
         '''Format a FunctionDef node.'''
         result = self.leading_lines(node)
-        tail = self.trailing_comment(node)
         if node.decorator_list:
             for z in node.decorator_list:
                 tail = self.trailing_comment(z)
@@ -185,8 +182,8 @@ class CoffeeScriptTraverser(object):
         args = ', '.join(args)
         args = '(%s) ' % args if args else ''
         # result.append('\n')
-        sep = ': ' if self.class_stack else ' = '
         tail = self.trailing_comment(node)
+        sep = ': ' if self.class_stack else ' = '
         s = '%s%s%s->%s' % (name, sep, args, tail)
         result.append(self.indent(s))
         for i, z in enumerate(node.body):
@@ -602,8 +599,8 @@ class CoffeeScriptTraverser(object):
             result.append(self.visit(z))
             self.level -= 1
         if node.orelse:
-            tail = self.trailing_comment(node.orelse)
-            result.append(self.indent('else:' + tail))
+            # TODO: how to get a comment following the else?
+            result.append(self.indent('else:\n'))
             for z in node.orelse:
                 self.level += 1
                 result.append(self.visit(z))
@@ -628,8 +625,8 @@ class CoffeeScriptTraverser(object):
             result.append(self.visit(z))
             self.level -= 1
         if node.orelse:
-            tail = self.trailing_comment(node.orelse)
-            result.append(self.indent('else:' + tail))
+            # TODO: how to get a comment following the else?
+            result.append(self.indent('else:\n'))
             for z in node.orelse:
                 self.level += 1
                 result.append(self.visit(z))
@@ -1455,6 +1452,19 @@ class TokenSync(object):
         Return a string containing the trailing comment for the node, if any.
         The string always ends with a newline.
         '''
+        n = getattr(node, 'lineno', None)
+        if n is not None:
+            tokens = self.line_tokens[node.lineno-1]
+            for token in tokens:
+                if self.token_kind(token) == 'comment':
+                    raw_val = self.token_raw_val(token).rstrip()
+                    if not raw_val.strip().startswith('#'):
+                        val = self.token_val(token).rstrip()
+                        s = ' %s\n' % val
+                        # g.trace(node.lineno, s.rstrip(), g.callers())
+                        return s
+            return '\n'
+        g.trace('no lineno', node.__class__.__name__, g.callers())
         return '\n'
 
 g = LeoGlobals() # For ekr.

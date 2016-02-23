@@ -1,4 +1,4 @@
-# python_to_coffeescript: Tue 23 Feb 2016 at 05:22:14
+# python_to_coffeescript: Tue 23 Feb 2016 at 06:09:34
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -29,13 +29,13 @@ pass # import token as token_module
 pass # import tokenize
 pass # import types
 try:
-    pass # import ConfigParser as configparser
+    pass # import ConfigParser as configparser # Python 2
 except ImportError:
-    pass # import configparser
+    pass # import configparser # Python 3
 try:
-    pass # import StringIO as io
+    pass # import StringIO as io # Python 2
 except ImportError:
-    pass # import io
+    pass # import io # Python 3
 isPython3=sys.version_info>=(3, 0, 0)
 
 main = ->
@@ -76,14 +76,12 @@ dump_list = (title, aList) ->
 
 pdb = (@) ->
     '''Invoke a debugger during unit testing.'''
-    print('pdb')
-    # Avoid try/except during development.
-    # try:
-        # import leo.core.leoGlobals as leo_g
-        # leo_g.pdb()
-    # except ImportError:
-        # import pdb
-        # pdb.set_trace()
+    try:
+        pass # import leo.core.leoGlobals as leo_g
+        leo_g.pdb()
+    except ImportError:
+        pass # import pdb
+        pdb.set_trace()
 
 truncate = (s, n) ->
     '''Return s truncated to n characters.'''
@@ -153,7 +151,7 @@ class CoffeeScriptTraverser extends object
 
         result=@leading_lines(node)
         tail=@trailing_comment(node)
-        name=node.name
+        name=node.name # Only a plain string is valid.
         bases=@visit(z) for z in node.bases if node.bases else [] 
         if bases:
             s='class %s extends %s'%(name, ', '.join(bases))
@@ -173,13 +171,12 @@ class CoffeeScriptTraverser extends object
     do_FunctionDef: (node) ->
         '''Format a FunctionDef node.'''
         result=@leading_lines(node)
-        tail=@trailing_comment(node)
         if node.decorator_list:
             for z in node.decorator_list:
                 tail=@trailing_comment(z)
                 s='@%s'%@visit(z)
                 result.append(@indent(s+tail))
-        name=node.name
+        name=node.name # Only a plain string is valid.
         args=@visit(node.args) if node.args else '' 
         args=z.strip() for z in args.split(',')
         if @class_stack and args and args[0]=='@':
@@ -187,8 +184,8 @@ class CoffeeScriptTraverser extends object
         args=', '.join(args)
         args='(%s) '%args if args else '' 
         # result.append('\n')
-        sep=': ' if @class_stack else ' = ' 
         tail=@trailing_comment(node)
+        sep=': ' if @class_stack else ' = ' 
         s='%s%s%s->%s'%(name, sep, args, tail)
         result.append(@indent(s))
         for (i, z) in enumerate(node.body):
@@ -226,7 +223,7 @@ class CoffeeScriptTraverser extends object
     do_GeneratorExp: (node) ->
         elt=@visit(node.elt) or ''
         gens=@visit(z) for z in node.generators
-        gens=z if z else '<**None**>'  for z in gens
+        gens=z if z else '<**None**>'  for z in gens # Kludge: probable bug.
         return '<gen %s for %s>'%(elt, ','.join(gens))
 
     #
@@ -278,7 +275,7 @@ class CoffeeScriptTraverser extends object
         val='@' if val=='@' else val+'.' 
         return val+node.attr
 
-    do_Bytes: (node) ->
+    do_Bytes: (node) -> # Python 3.x only.
         return str(node.s)
 
     # Call(expr func, expr* args, keyword* keywords, expr? starargs, expr? kwargs)
@@ -293,7 +290,7 @@ class CoffeeScriptTraverser extends object
             args.append('*%s'%@visit(node.starargs))
         if getattr(node,'kwargs',None):
             args.append('**%s'%@visit(node.kwargs))
-        args=z for z in args if z
+        args=z for z in args if z # Kludge: Defensive coding.
         s='%s(%s)'%(func, ','.join(args))
         return s
 
@@ -307,8 +304,8 @@ class CoffeeScriptTraverser extends object
 
     do_comprehension: (node) ->
         result=[]
-        name=@visit(node.target)
-        it=@visit(node.iter)
+        name=@visit(node.target) # A name.
+        it=@visit(node.iter) # An attribute.
         result.append('%s in %s'%(name, it))
         ifs=@visit(z) for z in node.ifs
         if ifs:
@@ -353,19 +350,19 @@ class CoffeeScriptTraverser extends object
         # Not used: list context.
         # self.visit(node.ctx)
         elts=@visit(z) for z in node.elts
-        elst=z for z in elts if z
+        elst=z for z in elts if z # Defensive.
         return '[%s]'%','.join(elts)
 
     do_ListComp: (node) ->
         elt=@visit(node.elt)
         gens=@visit(z) for z in node.generators
-        gens=z if z else '<**None**>'  for z in gens
+        gens=z if z else '<**None**>'  for z in gens # Kludge: probable bug.
         return '%s for %s'%(elt, ''.join(gens))
 
     do_Name: (node) ->
         return '@' if node.id=='self' else node.id
 
-    do_NameConstant: (node) ->
+    do_NameConstant: (node) -> # Python 3 only.
         s=repr(node.value)
         return 'bool' if s in ('True', 'False') else s
 
@@ -555,7 +552,7 @@ class CoffeeScriptTraverser extends object
             if isinstance(node.name,ast.AST):
                 result.append(' as %s'%@visit(node.name))
             else:
-                result.append(' as %s'%node.name)
+                result.append(' as %s'%node.name) # Python 3.x.
         result.append(':'+tail)
         for z in node.body:
             @level+=1
@@ -570,7 +567,7 @@ class CoffeeScriptTraverser extends object
         head=@leading_string(node)
         tail=@trailing_comment(node)
         body=@visit(node.body)
-        args=[]
+        args=[] # Globals before locals.
         if getattr(node,'globals',None):
             args.append(@visit(node.globals))
         if getattr(node,'locals',None):
@@ -592,8 +589,8 @@ class CoffeeScriptTraverser extends object
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            tail=@trailing_comment(node.orelse)
-            result.append(@indent('else:'+tail))
+            # TODO: how to get a comment following the else?
+            result.append(@indent('else:\n'))
             for z in node.orelse:
                 @level+=1
                 result.append(@visit(z))
@@ -618,8 +615,8 @@ class CoffeeScriptTraverser extends object
             result.append(@visit(z))
             @level-=1
         if node.orelse:
-            tail=@trailing_comment(node.orelse)
-            result.append(@indent('else:'+tail))
+            # TODO: how to get a comment following the else?
+            result.append(@indent('else:\n'))
             for z in node.orelse:
                 @level+=1
                 result.append(@visit(z))
@@ -707,7 +704,7 @@ class CoffeeScriptTraverser extends object
 
     # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
-    do_Try: (node) ->
+    do_Try: (node) -> # Python 3
 
         result=@leading_lines(node)
         tail=@trailing_comment(node)
@@ -808,7 +805,7 @@ class CoffeeScriptTraverser extends object
             try:
                 for z in node.optional_vars:
                     vars_list.append(@visit(z))
-            except TypeError:
+            except TypeError: # Not iterable.
                 vars_list.append(@visit(node.optional_vars))
         result.append(','.join(vars_list))
         result.append(':'+tail)
@@ -880,22 +877,22 @@ class LeoGlobals extends object
 
     _callerName: (n=1, files=False) ->
         # print('_callerName: %s %s' % (n,files))
-        try:
-            f1=sys._getframe(n)
-            code1=f1.f_code
+        try: # get the function name from the call stack.
+            f1=sys._getframe(n) # The stack frame, n levels up.
+            code1=f1.f_code # The code object
             name=code1.co_name
             if name=='__init__':
                 name='__init__(%s,line %s)'%(@shortFileName(code1.co_filename), code1.co_firstlineno)
             if files:
                 return '%s:%s'%(@shortFileName(code1.co_filename), name)
             else:
-                return name
+                return name # The code name
         except ValueError:
             # print('g._callerName: ValueError',n)
-            return ''
+            return '' # The stack is not deep enough.
         except Exception:
             # es_exception()
-            return ''
+            return '' # "<no caller name>"
 
     callers: (n=4, count=0, excludeCaller=True, files=False) ->
         '''Return a list containing the callers of the function that called g.callerList.
@@ -1045,12 +1042,12 @@ class MakeCoffeeScriptController extends object
         # Ivars set on the command line...
         @config_fn=None
         @enable_unit_tests=False
-        @files=[]
+        @files=[] # May also be set in the config file.
         @section_names=('Global')
         # Ivars set in the config file...
         @output_directory=@finalize('.')
         @overwrite=False
-        @verbose=False
+        @verbose=False # Trace config arguments.
 
     finalize: (fn) ->
         '''Finalize and regularize a filename.'''
@@ -1196,7 +1193,7 @@ class MakeCoffeeScriptController extends object
                     print('output directory: %s\n'%output_dir)
             else:
                 print('output directory not found: %s\n'%output_dir)
-                @output_directory=None
+                @output_directory=None # inhibit run().
         if 'prefix_lines' in parser.options('Global'):
             prefix=parser.get('Global','prefix_lines')
             @prefix_lines=prefix.split('\n')
@@ -1285,7 +1282,7 @@ class TokenSync extends object
 
     __init__: (s, tokens) ->
         '''Ctor for TokenSync class.'''
-        assert isinstance(tokens,list)
+        assert isinstance(tokens,list) # Not a generator.
         @s=s
         @first_leading_line=None
         @lines=z.rstrip() for z in g.splitLines(s)
@@ -1356,8 +1353,8 @@ class TokenSync extends object
         '''Return a newline token with '\n' as both val and raw_val.'''
         t1=token_module.NEWLINE
         t2='\n'
-        t3=(0, 0)
-        t4=(0, 0)
+        t3=(0, 0) # Not used.
+        t4=(0, 0) # Not used.
         t5='\n'
         return (t1, t2, t3, t4, t5)
 
@@ -1459,8 +1456,21 @@ class TokenSync extends object
         Return a string containing the trailing comment for the node, if any.
         The string always ends with a newline.
         '''
+        n=getattr(node,'lineno',None)
+        if n is not None:
+            tokens=@line_tokens[node.lineno-1]
+            for token in tokens:
+                if @token_kind(token)=='comment':
+                    raw_val=@token_raw_val(token).rstrip()
+                    if  not raw_val.strip().startswith('#'):
+                        val=@token_val(token).rstrip()
+                        s=' %s\n'%val
+                        # g.trace(node.lineno, s.rstrip(), g.callers())
+                        return s
+            return '\n'
+        g.trace('no lineno',node.__class__.__name__,g.callers())
         return '\n'
 
-g=LeoGlobals()
+g=LeoGlobals() # For ekr.
 if __name__=="__main__":
     main()

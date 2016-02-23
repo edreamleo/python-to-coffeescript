@@ -248,8 +248,7 @@
 </v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160221143000.1"></v>
-<v t="ekr.20160223042247.1"></v>
+<v t="ekr.20160223061031.1"><vh>Recent</vh>
 <v t="ekr.20160223041901.1"><vh>Found:leading_lines</vh>
 <v t="ekr.20160220050433.57"></v>
 <v t="ekr.20160220050433.58"></v>
@@ -279,6 +278,11 @@
 <v t="ekr.20160220050433.78"></v>
 <v t="ekr.20160220050433.79"></v>
 </v>
+<v t="ekr.20160222084258.1"></v>
+<v t="ekr.20160223042247.1"></v>
+<v t="ekr.20160220050433.72"></v>
+</v>
+<v t="ekr.20160221143000.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -353,14 +357,12 @@ def __init__(self):
 <t tx="ekr.20160220050433.12">
 def pdb(self):
     '''Invoke a debugger during unit testing.'''
-    print('pdb')
-    # Avoid try/except during development.
-    # try:
-        # import leo.core.leoGlobals as leo_g
-        # leo_g.pdb()
-    # except ImportError:
-        # import pdb
-        # pdb.set_trace()
+    try:
+        import leo.core.leoGlobals as leo_g
+        leo_g.pdb()
+    except ImportError:
+        import pdb
+        pdb.set_trace()
 </t>
 <t tx="ekr.20160220050433.120">
 def finalize(self, fn):
@@ -717,7 +719,6 @@ except ImportError:
 def do_FunctionDef(self, node):
     '''Format a FunctionDef node.'''
     result = self.leading_lines(node)
-    tail = self.trailing_comment(node)
     if node.decorator_list:
         for z in node.decorator_list:
             tail = self.trailing_comment(z)
@@ -731,8 +732,8 @@ def do_FunctionDef(self, node):
     args = ', '.join(args)
     args = '(%s) ' % args if args else ''
     # result.append('\n')
-    sep = ': ' if self.class_stack else ' = '
     tail = self.trailing_comment(node)
+    sep = ': ' if self.class_stack else ' = '
     s = '%s%s%s-&gt;%s' % (name, sep, args, tail)
     result.append(self.indent(s))
     for i, z in enumerate(node.body):
@@ -1157,8 +1158,8 @@ def do_For(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        tail = self.trailing_comment(node.orelse)
-        result.append(self.indent('else:' + tail))
+        # TODO: how to get a comment following the else?
+        result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
@@ -1185,8 +1186,8 @@ def do_If(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
-        tail = self.trailing_comment(node.orelse)
-        result.append(self.indent('else:' + tail))
+        # TODO: how to get a comment following the else?
+        result.append(self.indent('else:\n'))
         for z in node.orelse:
             self.level += 1
             result.append(self.visit(z))
@@ -2460,16 +2461,14 @@ class ReadLinesClass:
 
 *** Auto-move clones
 
-* Handle end-of-line comments.
-- Discuss TokenSync class in theory.md.
-- How to handle line breaks within statements?
 - Output trailing comments at the end of the traversal.
-- tv.visit should check that ts.comment_lines is empty at end.
+    - tv.visit should check that ts.comment_lines is empty at end.
 
 Later:
+- Discuss TokenSync class in theory.md.
 - Respond here:
 http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node
-- Maybe: remember blank lines.
+- How to handle line breaks within statements?
 - `###` means something (invalid) to coffeescript
 - Remove type hints from arg lists.
 - Change `is not` to `isnt`
@@ -2781,7 +2780,7 @@ class TestClass(object):
 
 
     class InnerClass(object, str):
-        # Comment.
+        # Comment 1.
         def __init__(self, a):
             '''Ctor for InnerClass'''
             self.a = a
@@ -2789,9 +2788,7 @@ class TestClass(object):
             """inner1 docstring"""
 
     def test1(a):
-        # Comment before print statement.
-        # Should be a comment on the print line.
-        print(a) # comment
+        print(a) # trailing comment
 
     def test2():
         pass
@@ -3043,10 +3040,24 @@ def trailing_comment(self, node):
     Return a string containing the trailing comment for the node, if any.
     The string always ends with a newline.
     '''
+    n = getattr(node, 'lineno', None)
+    if n is not None:
+        tokens = self.line_tokens[node.lineno-1]
+        for token in tokens:
+            if self.token_kind(token) == 'comment':
+                raw_val = self.token_raw_val(token).rstrip()
+                if not raw_val.strip().startswith('#'):
+                    val = self.token_val(token).rstrip()
+                    s = ' %s\n' % val
+                    # g.trace(node.lineno, s.rstrip(), g.callers())
+                    return s
+        return '\n'
+    g.trace('no lineno', node.__class__.__name__, g.callers())
     return '\n'</t>
 <t tx="ekr.20160223043329.1">
 def leading_string(self, node):
     '''Return a string containing all lines preceding node.'''
     return ''.join(self.leading_lines(node))</t>
+<t tx="ekr.20160223061031.1"></t>
 </tnodes>
 </leo_file>
