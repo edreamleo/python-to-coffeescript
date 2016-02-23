@@ -1,4 +1,4 @@
-# python_to_coffeescript: Tue 23 Feb 2016 at 06:37:05
+# python_to_coffeescript: Tue 23 Feb 2016 at 07:01:44
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -593,6 +593,10 @@ class CoffeeScriptTraverser extends object
             result.append(@visit(z))
             @level-=1
         if node.orelse:
+            leading=@leading_lines(node.orelse[0])
+            if leading:
+                result.extend(leading)
+                max_n+=len(leading)
             if max_n>-1:
                 tail=@trailing_comment_at_lineno(max_n+2)
             else:
@@ -624,6 +628,10 @@ class CoffeeScriptTraverser extends object
             result.append(@visit(z))
             @level-=1
         if node.orelse:
+            leading=@leading_lines(node.orelse[0])
+            if leading:
+                result.extend(leading)
+                max_n+=len(leading)
             if max_n>-1:
                 tail=@trailing_comment_at_lineno(max_n+2)
             else:
@@ -780,6 +788,10 @@ class CoffeeScriptTraverser extends object
             max_n=max(max_n,node.lineno)
             result.append(@visit(z))
             @level-=1
+        leading=@leading_lines(node.orelse[0])
+        if leading:
+            result.extend(leading)
+            max_n+=len(leading)
         if max_n>-1:
             tail=@trailing_comment_at_lineno(max_n+2)
         else:
@@ -1039,9 +1051,9 @@ class LeoGlobals extends object
 
         ue: (s, encoding) ->
             return s if g.isUnicode(s) else str(s,encoding)
+
+
     else:
-
-
         u: (s) ->
             return unicode(s)
 

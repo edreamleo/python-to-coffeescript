@@ -603,6 +603,10 @@ class CoffeeScriptTraverser(object):
             result.append(self.visit(z))
             self.level -= 1
         if node.orelse:
+            leading = self.leading_lines(node.orelse[0])
+            if leading:
+                result.extend(leading)
+                max_n += len(leading)
             if max_n > -1:
                 tail = self.trailing_comment_at_lineno(max_n + 2)
             else:
@@ -634,6 +638,10 @@ class CoffeeScriptTraverser(object):
             result.append(self.visit(z))
             self.level -= 1
         if node.orelse:
+            leading = self.leading_lines(node.orelse[0])
+            if leading:
+                result.extend(leading)
+                max_n += len(leading)
             if max_n > -1:
                 tail = self.trailing_comment_at_lineno(max_n + 2)
             else:
@@ -790,6 +798,10 @@ class CoffeeScriptTraverser(object):
             max_n = max(max_n, node.lineno)
             result.append(self.visit(z))
             self.level -= 1
+        leading = self.leading_lines(node.orelse[0])
+        if leading:
+            result.extend(leading)
+            max_n += len(leading)
         if max_n > -1:
             tail = self.trailing_comment_at_lineno(max_n + 2)
         else:

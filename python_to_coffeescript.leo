@@ -249,6 +249,7 @@
 </v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
+<v t="ekr.20160221143000.1"></v>
 <v t="ekr.20160223041901.1"><vh>Found:leading_lines</vh>
 <v t="ekr.20160220050433.57"></v>
 <v t="ekr.20160220050433.58"></v>
@@ -1156,6 +1157,10 @@ def do_For(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
+        leading = self.leading_lines(node.orelse[0])
+        if leading:
+            result.extend(leading)
+            max_n += len(leading)
         if max_n &gt; -1:
             tail = self.trailing_comment_at_lineno(max_n + 2)
         else:
@@ -1189,6 +1194,10 @@ def do_If(self, node):
         result.append(self.visit(z))
         self.level -= 1
     if node.orelse:
+        leading = self.leading_lines(node.orelse[0])
+        if leading:
+            result.extend(leading)
+            max_n += len(leading)
         if max_n &gt; -1:
             tail = self.trailing_comment_at_lineno(max_n + 2)
         else:
@@ -1326,6 +1335,10 @@ def do_TryFinally(self, node):
         max_n = max(max_n, node.lineno)
         result.append(self.visit(z))
         self.level -= 1
+    leading = self.leading_lines(node.orelse[0])
+    if leading:
+        result.extend(leading)
+        max_n += len(leading)
     if max_n &gt; -1:
         tail = self.trailing_comment_at_lineno(max_n + 2)
     else:
@@ -2470,8 +2483,6 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-*** Auto-move clones
-
 - Output trailing comments at the end of the traversal.
     - tv.visit should check that ts.comment_lines is empty at end.
 
@@ -2796,6 +2807,7 @@ class TestClass(object):
             '''Ctor for InnerClass'''
             if a: # after if
                 self.a = a
+
             else: # after else
                 pass
 

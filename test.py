@@ -28,6 +28,7 @@ class TestClass(object):
             '''Ctor for InnerClass'''
             if a: # after if
                 self.a = a
+
             else: # after else
                 pass
 
