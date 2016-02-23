@@ -108,13 +108,15 @@ class CoffeeScriptTraverser(object):
         '''Format the node (or list of nodes) and its descendants.'''
         self.level = 0
         sync = TokenSync(s, tokens)
+        # Create aliases here for convenience.
         self.sync_string = sync.sync_string
         self.last_node = sync.last_node
         self.leading_lines = sync.leading_lines
         self.leading_string = sync.leading_string
         self.trailing_comment = sync.trailing_comment
         self.trailing_comment_at_lineno = sync.trailing_comment_at_lineno
-        val = self.visit(node)
+        # Compute the result.
+        val = self.visit(node) + ''.join(sync.trailing_lines())
         return val or ''
 
     def indent(self, s):
@@ -1506,6 +1508,21 @@ class TokenSync(object):
             g.trace('no lineno', node.__class__.__name__, g.callers())
             return '\n'
 
+    def trailing_lines(self):
+        '''return any remaining ignored lines.'''
+        trace = True
+        trailing = []
+        i = self.first_leading_line
+        while i < len(self.ignored_lines):
+            token = self.ignored_lines[i]
+            if token:
+                s = self.token_raw_val(token).rstrip()+'\n'
+                trailing.append(s)
+                if trace: g.trace('%11s: %s' % (i, s.rstrip()))
+            i += 1
+        self.first_leading_line = i
+        return trailing
+
     def trailing_comment_at_lineno(self, lineno):
         '''Return any trailing comment at the given node.lineno.'''
         trace = False
@@ -1523,3 +1540,4 @@ class TokenSync(object):
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
     main()
+# A final comment for testing.

@@ -1,4 +1,4 @@
-# python_to_coffeescript: Tue 23 Feb 2016 at 10:15:10
+# python_to_coffeescript: Tue 23 Feb 2016 at 10:26:45
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -115,7 +115,8 @@ class CoffeeScriptTraverser extends object
         @leading_string=sync.leading_string
         @trailing_comment=sync.trailing_comment
         @trailing_comment_at_lineno=sync.trailing_comment_at_lineno
-        val=@visit(node)
+        val=@visit(node)+''.join(sync.trailing_lines())
+        sync.check_end()
         return val or ''
 
     indent: (s) ->
@@ -1387,6 +1388,10 @@ class TokenSync extends object
         assert len(result)==len(@line_tokens)
         return result
 
+    check_end: ->
+        '''Perform end-of-file checks.'''
+        g.trace()
+
     dump_token: (token) ->
         '''Dump the token for debugging.'''
         (t1, t2, t3, t4, t5)=token
@@ -1510,6 +1515,22 @@ class TokenSync extends object
             g.trace('no lineno',node.__class__.__name__,g.callers())
             return '\n'
 
+    trailing_lines: ->
+        '''return any remaining ignored lines.'''
+        trace=True
+        trailing=[]
+        i=@first_leading_line
+        while i<len(@ignored_lines):
+            token=@ignored_lines[i]
+            if token:
+                s=@token_raw_val(token).rstrip()+'\n'
+                trailing.append(s)
+                if trace:
+                    g.trace('%11s: %s'%(i, s.rstrip()))
+            i+=1
+        @first_leading_line=i
+        return trailing
+
     trailing_comment_at_lineno: (lineno) ->
         '''Return any trailing comment at the given node.lineno.'''
         trace=False
@@ -1528,3 +1549,4 @@ class TokenSync extends object
 g=LeoGlobals() # For ekr.
 if __name__=="__main__":
     main()
+# A final comment for testing.

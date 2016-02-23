@@ -246,6 +246,7 @@
 <v t="ekr.20160222091644.1"><vh>ts.sync_string</vh></v>
 <v t="ekr.20160222124401.1"><vh>ts.token_kind/raw_val/val</vh></v>
 <v t="ekr.20160223042247.1"><vh>ts.trailing_comment</vh></v>
+<v t="ekr.20160223102112.1"><vh>ts.trailing_lines</vh></v>
 <v t="ekr.20160223061445.1"><vh>trailing_comment_at_lineno</vh></v>
 </v>
 </v>
@@ -288,7 +289,9 @@
 <v t="ekr.20160220050433.78"></v>
 <v t="ekr.20160220050433.79"></v>
 </v>
-<v t="ekr.20160223101308.1"><vh>log</vh></v>
+<v t="ekr.20160222091458.1"></v>
+<v t="ekr.20160220050433.16"></v>
+<v t="ekr.20160223102112.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -317,6 +320,7 @@ isPython3 = sys.version_info &gt;= (3, 0, 0)
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
     main()
+# A final comment for testing.
 </t>
 <t tx="ekr.20160220050433.10">
 def dump_list(title, aList):
@@ -605,13 +609,15 @@ def format(self, node, s, tokens):
     '''Format the node (or list of nodes) and its descendants.'''
     self.level = 0
     sync = TokenSync(s, tokens)
+    # Create aliases here for convenience.
     self.sync_string = sync.sync_string
     self.last_node = sync.last_node
     self.leading_lines = sync.leading_lines
     self.leading_string = sync.leading_string
     self.trailing_comment = sync.trailing_comment
     self.trailing_comment_at_lineno = sync.trailing_comment_at_lineno
-    val = self.visit(node)
+    # Compute the result.
+    val = self.visit(node) + ''.join(sync.trailing_lines())
     return val or ''
 </t>
 <t tx="ekr.20160220050433.17">
@@ -2467,8 +2473,7 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-- Output trailing comments at the end of the traversal.
-    - tv.visit should check that ts.comment_lines is empty at end.
+*** Handle more coffeescript xforms.
 
 Later:
 - Discuss TokenSync class in theory.md.
@@ -3127,13 +3132,21 @@ def tail_after_body(self, body, aList, result):
     return tail
 </t>
 <t tx="ekr.20160223101119.1"></t>
-<t tx="ekr.20160223101308.1">@language rest
-@wrap
-
-Correctly add trailing comments in orelse and finalbody cases.
-- Added ts.last_node.
-- Added tv.tail_after_body.
-This is always going to be tricky code.
-Imo, this is about as transparent as possible.</t>
+<t tx="ekr.20160223102112.1">
+def trailing_lines(self):
+    '''return any remaining ignored lines.'''
+    trace = True
+    trailing = []
+    i = self.first_leading_line
+    while i &lt; len(self.ignored_lines):
+        token = self.ignored_lines[i]
+        if token:
+            s = self.token_raw_val(token).rstrip()+'\n'
+            trailing.append(s)
+            if trace: g.trace('%11s: %s' % (i, s.rstrip()))
+        i += 1
+    self.first_leading_line = i
+    return trailing
+</t>
 </tnodes>
 </leo_file>
