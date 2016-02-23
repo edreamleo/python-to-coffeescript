@@ -252,46 +252,6 @@
 </v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160221143000.1"></v>
-<v t="ekr.20160223101119.1"><vh>re: tails after missing nodes.</vh>
-<v t="ekr.20160223095542.1"></v>
-<v t="ekr.20160220050433.76"></v>
-<v t="ekr.20160220050433.65"></v>
-<v t="ekr.20160220050433.67"></v>
-<v t="ekr.20160222091458.1"></v>
-</v>
-<v t="ekr.20160223041901.1"><vh>Found:leading_lines</vh>
-<v t="ekr.20160220050433.57"></v>
-<v t="ekr.20160220050433.58"></v>
-<v t="ekr.20160220050433.59"></v>
-<v t="ekr.20160220050433.60"></v>
-<v t="ekr.20160220050433.19"></v>
-<v t="ekr.20160220050433.61"></v>
-<v t="ekr.20160220050433.62"></v>
-<v t="ekr.20160220050433.37"></v>
-<v t="ekr.20160220050433.63"></v>
-<v t="ekr.20160220050433.64"></v>
-<v t="ekr.20160220050433.25"></v>
-<v t="ekr.20160220050433.65"></v>
-<v t="ekr.20160220050433.20"></v>
-<v t="ekr.20160220050433.66"></v>
-<v t="ekr.20160220050433.67"></v>
-<v t="ekr.20160220050433.68"></v>
-<v t="ekr.20160220050433.70"></v>
-<v t="ekr.20160220050433.71"></v>
-<v t="ekr.20160220050433.72"></v>
-<v t="ekr.20160220050433.73"></v>
-<v t="ekr.20160220050433.74"></v>
-<v t="ekr.20160220094909.1"></v>
-<v t="ekr.20160220050433.75"></v>
-<v t="ekr.20160220050433.76"></v>
-<v t="ekr.20160220050433.77"></v>
-<v t="ekr.20160220050433.78"></v>
-<v t="ekr.20160220050433.79"></v>
-</v>
-<v t="ekr.20160222091458.1"></v>
-<v t="ekr.20160220050433.16"></v>
-<v t="ekr.20160223102112.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -2473,17 +2433,18 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
+*** Update theory.md and readme.md.
+    - Discuss TokenSync class in theory.md.
 *** Handle more coffeescript xforms.
+    - Peephole: last return from def.
+- Handle line breaks within statements?
+    - Probably easier to break lines automatically.
 
 Later:
-- Discuss TokenSync class in theory.md.
-- Respond here:
-http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node
-- How to handle line breaks within statements?
+- Respond here: http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node
 - `###` means something (invalid) to coffeescript
 - Remove type hints from arg lists.
 - Change `is not` to `isnt`
-- Peephole: last return of def.
 - Move TokenSync class into leoAst.py.
 </t>
 <t tx="ekr.20160220143251.1">
@@ -3055,7 +3016,6 @@ def make_nl_token(self):
     t5 = '\n'
     return t1, t2, t3, t4, t5
 </t>
-<t tx="ekr.20160223041901.1"># flattened, ignore-case, head, body</t>
 <t tx="ekr.20160223042247.1">
 def trailing_comment(self, node):
     '''
@@ -3131,7 +3091,6 @@ def tail_after_body(self, body, aList, result):
         tail = '\n'
     return tail
 </t>
-<t tx="ekr.20160223101119.1"></t>
 <t tx="ekr.20160223102112.1">
 def trailing_lines(self):
     '''return any remaining ignored lines.'''
