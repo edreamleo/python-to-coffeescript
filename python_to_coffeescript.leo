@@ -32,7 +32,8 @@
 </v>
 <v t="ekr.20160220051417.14"><vh>@button check-leading-lines</vh></v>
 </v>
-<v t="ekr.20160220051105.1"><vh>Unused</vh>
+<v t="ekr.20160223132520.1"><vh>@@clean test.py</vh></v>
+<v t="ekr.20160220051105.1"><vh>@ignore Unused</vh>
 <v t="ekr.20160221033247.1"><vh>stat vars</vh></v>
 <v t="ekr.20160220103223.39"><vh>cst.print_stats</vh></v>
 <v t="ekr.20160220050433.188"><vh>class TestClass</vh>
@@ -94,6 +95,41 @@
 </v>
 <v t="ekr.20160223014237.1"><vh>clean, defined in do_Str</vh></v>
 <v t="ekr.20160220050433.28"><vh>cv.ctx nodes</vh></v>
+<v t="ekr.20160224082000.1"><vh>old tokens_for_statement stuff</vh>
+<v t="ekr.20160224082013.1"><vh>OLD cv.visit</vh></v>
+<v t="ekr.20160224073722.1"><vh>OLD ts.tokens_for_statement &amp; helpers</vh>
+<v t="ekr.20160224050441.16"><vh> ts.get_import_names</vh></v>
+<v t="ekr.20160224065148.2"><vh>cv.ClassDef</vh></v>
+<v t="ekr.20160224065148.3"><vh>cv.FunctionDef</vh></v>
+<v t="ekr.20160224065148.6"><vh>cv.Lambda</vh></v>
+<v t="ekr.20160224065148.5"><vh>cv.Module</vh></v>
+<v t="ekr.20160224050441.3"><vh>ts.Assert</vh></v>
+<v t="ekr.20160224050441.4"><vh>ts.Assign</vh></v>
+<v t="ekr.20160224050441.5"><vh>ts.AugAssign</vh></v>
+<v t="ekr.20160224050441.6"><vh>ts.Break</vh></v>
+<v t="ekr.20160224050441.7"><vh>ts.Continue</vh></v>
+<v t="ekr.20160224050441.8"><vh>ts.Delete</vh></v>
+<v t="ekr.20160224050441.9"><vh>ts.ExceptHandler</vh></v>
+<v t="ekr.20160224050441.10"><vh>ts.Exec</vh></v>
+<v t="ekr.20160224050441.11"><vh>ts.Expr</vh></v>
+<v t="ekr.20160224050441.12"><vh>ts.For</vh></v>
+<v t="ekr.20160224050441.13"><vh>ts.Global</vh></v>
+<v t="ekr.20160224050441.14"><vh>ts.If</vh></v>
+<v t="ekr.20160224050441.15"><vh>ts.Import</vh></v>
+<v t="ekr.20160224050441.17"><vh>ts.ImportFrom</vh></v>
+<v t="ekr.20160224050441.18"><vh>ts.Pass</vh></v>
+<v t="ekr.20160224050441.19"><vh>ts.Print</vh></v>
+<v t="ekr.20160224050441.20"><vh>ts.Raise</vh></v>
+<v t="ekr.20160224050441.21"><vh>ts.Return</vh></v>
+<v t="ekr.20160224050441.22"><vh>ts.Try</vh></v>
+<v t="ekr.20160224050441.23"><vh>ts.TryExcept</vh></v>
+<v t="ekr.20160224050441.24"><vh>ts.TryFinally</vh></v>
+<v t="ekr.20160224050441.25"><vh>ts.While</vh></v>
+<v t="ekr.20160224050441.26"><vh>ts.With</vh></v>
+<v t="ekr.20160224050441.27"><vh>ts.Yield</vh></v>
+</v>
+</v>
+<v t="ekr.20160223132554.1"><vh>deleted test</vh></v>
 </v>
 </v>
 <v t="ekr.20160222041249.1"><vh>Docs</vh>
@@ -109,6 +145,7 @@
 <v t="ekr.20160222030015.1"><vh>2.1.5 Explicit line joining</vh></v>
 <v t="ekr.20160222030107.1"><vh>ast differences</vh></v>
 </v>
+<v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
 <v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
@@ -117,6 +154,7 @@
 <v t="ekr.20160220050433.8"><vh>dump</vh></v>
 <v t="ekr.20160220050433.9"><vh>dump_dict</vh></v>
 <v t="ekr.20160220050433.10"><vh>dump_list</vh></v>
+<v t="ekr.20160224052722.1"><vh>op_name</vh></v>
 <v t="ekr.20160220050433.12"><vh>pdb</vh></v>
 <v t="ekr.20160220050433.13"><vh>truncate</vh></v>
 </v>
@@ -133,7 +171,6 @@
 <v t="ekr.20160220050433.23"><vh>cv.Lambda</vh></v>
 </v>
 <v t="ekr.20160220050433.24"><vh>cv.Expressions</vh>
-<v t="ekr.20160220050433.25"><vh>cv.Expr</vh></v>
 <v t="ekr.20160220050433.26"><vh>cv.Expression</vh></v>
 <v t="ekr.20160220050433.27"><vh>cv.GeneratorExp</vh></v>
 </v>
@@ -161,7 +198,6 @@
 <v t="ekr.20160220050433.49"><vh>cv.Tuple</vh></v>
 </v>
 <v t="ekr.20160220050433.50"><vh>cv.Operators</vh>
-<v t="ekr.20160220050433.83"><vh> cv.op_name</vh></v>
 <v t="ekr.20160220050433.51"><vh>cv.BinOp</vh></v>
 <v t="ekr.20160220050433.52"><vh>cv.BoolOp</vh></v>
 <v t="ekr.20160220050433.53"><vh>cv.Compare</vh></v>
@@ -178,6 +214,7 @@
 <v t="ekr.20160220050433.62"><vh>cv.Delete</vh></v>
 <v t="ekr.20160220050433.63"><vh>cv.ExceptHandler</vh></v>
 <v t="ekr.20160220050433.64"><vh>cv.Exec</vh></v>
+<v t="ekr.20160220050433.25"><vh>cv.Expr (outer statement)</vh></v>
 <v t="ekr.20160220050433.65"><vh>cv.For</vh></v>
 <v t="ekr.20160220050433.66"><vh>cv.Global</vh></v>
 <v t="ekr.20160220050433.67"><vh>cv.If</vh></v>
@@ -237,21 +274,24 @@
 <v t="ekr.20160223031552.1"><vh>ts.make_nl_token</vh></v>
 <v t="ekr.20160222084401.1"><vh>ts.make_string_tokens</vh></v>
 </v>
+<v t="ekr.20160223061445.1"><vh>trailing_comment_at_lineno</vh></v>
 <v t="ekr.20160223013055.1"><vh>ts.dump_token</vh></v>
 <v t="ekr.20160223022613.1"><vh>ts.is_line_comment</vh></v>
+<v t="ekr.20160224053149.1"><vh>ts.join</vh></v>
 <v t="ekr.20160223093155.1"><vh>ts.last_node</vh></v>
 <v t="ekr.20160222132448.1"><vh>ts.leading_lines</vh></v>
 <v t="ekr.20160223043329.1"><vh>ts.leading_string</vh></v>
 <v t="ekr.20160222081027.1"><vh>ts.line_at</vh></v>
 <v t="ekr.20160222091644.1"><vh>ts.sync_string</vh></v>
 <v t="ekr.20160222124401.1"><vh>ts.token_kind/raw_val/val</vh></v>
+<v t="ekr.20160224044823.1"><vh>ts.tokens_for_statement</vh></v>
 <v t="ekr.20160223042247.1"><vh>ts.trailing_comment</vh></v>
 <v t="ekr.20160223102112.1"><vh>ts.trailing_lines</vh></v>
-<v t="ekr.20160223061445.1"><vh>trailing_comment_at_lineno</vh></v>
 </v>
 </v>
-<v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
+<v t="ekr.20160221143000.1"></v>
+<v t="ekr.20160220050433.17"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -568,16 +608,20 @@ class CoffeeScriptTraverser(object):
 def format(self, node, s, tokens):
     '''Format the node (or list of nodes) and its descendants.'''
     self.level = 0
-    sync = TokenSync(s, tokens)
+    self.sync = sync = TokenSync(s, tokens)
     # Create aliases here for convenience.
     self.sync_string = sync.sync_string
     self.last_node = sync.last_node
     self.leading_lines = sync.leading_lines
     self.leading_string = sync.leading_string
+    self.tokens_for_statment = sync.tokens_for_statement
     self.trailing_comment = sync.trailing_comment
     self.trailing_comment_at_lineno = sync.trailing_comment_at_lineno
     # Compute the result.
-    val = self.visit(node) + ''.join(sync.trailing_lines())
+    val = self.visit(node)
+    # if isinstance(val, list): # testing:
+        # val = ' '.join(val)
+    val += ''.join(sync.trailing_lines())
     return val or ''
 </t>
 <t tx="ekr.20160220050433.17">
@@ -983,20 +1027,19 @@ def do_Tuple(self, node):
 def do_BinOp(self, node):
     return '%s%s%s' % (
         self.visit(node.left),
-        self.op_name(node.op),
+        op_name(node.op),
         self.visit(node.right))
 </t>
 <t tx="ekr.20160220050433.52">
 def do_BoolOp(self, node):
-    op_name = self.op_name(node.op)
     values = [self.visit(z) for z in node.values]
-    return op_name.join(values)
+    return op_name(node.op).join(values)
 </t>
 <t tx="ekr.20160220050433.53">
 def do_Compare(self, node):
     result = []
     lt = self.visit(node.left)
-    ops = [self.op_name(z) for z in node.ops]
+    ops = [op_name(z) for z in node.ops]
     comps = [self.visit(z) for z in node.comparators]
     result.append(lt)
     if len(ops) == len(comps):
@@ -1009,7 +1052,7 @@ def do_Compare(self, node):
 <t tx="ekr.20160220050433.54">
 def do_UnaryOp(self, node):
     return '%s%s' % (
-        self.op_name(node.op),
+        op_name(node.op),
         self.visit(node.operand))
 </t>
 <t tx="ekr.20160220050433.55">
@@ -1052,7 +1095,7 @@ def do_AugAssign(self, node):
     tail = self.trailing_comment(node)
     s = '%s%s=%s' % (
         self.visit(node.target),
-        self.op_name(node.op),
+        op_name(node.op),
         self.visit(node.value))
     return head + self.indent(s) + tail
 </t>
@@ -1341,8 +1384,7 @@ def do_With(self, node):
         self.level += 1
         result.append(self.visit(z))
         self.level -= 1
-    result.append('\n')
-    return ''.join(result)
+    return ''.join(result) + tail
 </t>
 <t tx="ekr.20160220050433.79">
 def do_Yield(self, node):
@@ -1371,55 +1413,6 @@ def indent(self, s):
         n += 1
         s = s[1:]
     return '%s%s%s' % ('\n' * n, ' ' * 4 * self.level, s)
-</t>
-<t tx="ekr.20160220050433.83">
-def op_name (self,node,strict=True):
-    '''Return the print name of an operator node.'''
-    d = {
-        # Binary operators. 
-        'Add':       '+',
-        'BitAnd':    '&amp;',
-        'BitOr':     '|',
-        'BitXor':    '^',
-        'Div':       '/',
-        'FloorDiv':  '//',
-        'LShift':    '&lt;&lt;',
-        'Mod':       '%',
-        'Mult':      '*',
-        'Pow':       '**',
-        'RShift':    '&gt;&gt;',
-        'Sub':       '-',
-        # Boolean operators.
-        'And':   ' and ',
-        'Or':    ' or ',
-        # Comparison operators
-        'Eq':    '==',
-        'Gt':    '&gt;',
-        'GtE':   '&gt;=',
-        'In':    ' in ',
-        'Is':    ' is ',
-        'IsNot': ' is not ',
-        'Lt':    '&lt;',
-        'LtE':   '&lt;=',
-        'NotEq': '!=',
-        'NotIn': ' not in ',
-        # Context operators.
-        'AugLoad':  '&lt;AugLoad&gt;',
-        'AugStore': '&lt;AugStore&gt;',
-        'Del':      '&lt;Del&gt;',
-        'Load':     '&lt;Load&gt;',
-        'Param':    '&lt;Param&gt;',
-        'Store':    '&lt;Store&gt;',
-        # Unary operators.
-        'Invert':   '~',
-        'Not':      ' not ',
-        'UAdd':     '+',
-        'USub':     '-',
-    }
-    kind = node.__class__.__name__
-    name = d.get(kind,'&lt;%s&gt;' % kind)
-    if strict: assert name, kind
-    return name
 </t>
 <t tx="ekr.20160220050433.86">
 
@@ -2433,8 +2426,13 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
+replace getattr with hasattr where possible.
+
 *** Update theory.md and readme.md.
     - Discuss TokenSync class in theory.md.
+- ts.tokens_for_statement:
+    - Multiple returns for compound statements.
+    - test for orelse, body, finalbody, etc.
 *** Handle more coffeescript xforms.
     - Peephole: last return from def.
 - Handle line breaks within statements?
@@ -2727,17 +2725,7 @@ def __init__(self, s, tokens):
     self.string_tokens = self.make_string_tokens()
     self.ignored_lines = self.make_ignored_lines()
 </t>
-<t tx="ekr.20160222023117.1">'''
-Test file illustrating difficulties of tokenizing.
-At present, multi-line docstrings cause problems.
-'''
-# lineno: line number of source text (first line is line 1).
-# col_offset: the UTF-8 byte offset of the first token that generated the node.
-# http://joao.npimentel.net/2015/07/23/python-2-vs-python-3-ast-differences/
-
-a = 1\
-+2
-
+<t tx="ekr.20160222023117.1">
 def spam():
     b = 2
 
@@ -2751,31 +2739,7 @@ class TestClass(object):
             self.visit(node.right))
 
 
-    class InnerClass(object, str):
-        # Comment 1.
-        def __init__(self, a):
-            '''Ctor for InnerClass'''
-            if a: # after if
-                self.a = a
-            else: # after else
-                pass
-                
-            for i in range(10): # after for.
-                pass
-            else: # after for-else.
-                pass
-
-        def inner1(self):
-            """inner1 docstring"""
-
-    def test1(a):
-        print(a) # trailing comment
-
-    def test2():
-        pass
-        
-def eggs():
-    pass</t>
+</t>
 <t tx="ekr.20160222030015.1">@language rest
 @wrap
 
@@ -2894,6 +2858,7 @@ def __init__(self, controller):
     self.last_node = None
     self.leading_lines = None
     self.leading_string = None
+    self.tokens_for_statement = None
     self.trailing_comment = None
     self.trailing_comment_at_lineno = None
     </t>
@@ -2973,13 +2938,19 @@ def leading_lines(self, node):
     return leading
 </t>
 <t tx="ekr.20160223013055.1">
-def dump_token(self, token):
-    '''Dump the token for debugging.'''
-    t1, t2, t3, t4, t5 = token
-    kind = g.toUnicode(token_module.tok_name[t1].lower())
-    raw_val = g.toUnicode(t5)
-    val = g.toUnicode(t2)
-    return 'token: %10s %r' % (kind, val)
+def dump_token(self, token, verbose=False):
+    '''Dump the token. It is either a string or a 5-tuple.'''
+    if g.isString(token):
+        return token
+    else:
+        t1, t2, t3, t4, t5 = token
+        kind = g.toUnicode(token_module.tok_name[t1].lower())
+        raw_val = g.toUnicode(t5)
+        val = g.toUnicode(t2)
+        if verbose:
+            return 'token: %10s %r' % (kind, val)
+        else:
+            return val
 </t>
 <t tx="ekr.20160223014237.1">
 def clean(s):
@@ -3094,7 +3065,7 @@ def tail_after_body(self, body, aList, result):
 <t tx="ekr.20160223102112.1">
 def trailing_lines(self):
     '''return any remaining ignored lines.'''
-    trace = True
+    trace = False
     trailing = []
     i = self.first_leading_line
     while i &lt; len(self.ignored_lines):
@@ -3106,6 +3077,526 @@ def trailing_lines(self):
         i += 1
     self.first_leading_line = i
     return trailing
+</t>
+<t tx="ekr.20160223132520.1">'''
+Test file illustrating difficulties of tokenizing.
+At present, multi-line docstrings cause problems.
+'''
+# lineno: line number of source text (first line is line 1).
+# col_offset: the UTF-8 byte offset of the first token that generated the node.
+# http://joao.npimentel.net/2015/07/23/python-2-vs-python-3-ast-differences/
+
+a = 1\
++2
+
+def spam():
+    b = 2
+
+
+class TestClass(object):
+    
+    def do_BinOp(self, node):
+        return '%s%s%s' % (
+            self.visit(node.left),
+            self.op_name(node.op),
+            self.visit(node.right))
+
+
+    class InnerClass(object, str):
+        # Comment 1.
+        def __init__(self, a):
+            '''Ctor for InnerClass'''
+            if a: # after if
+                self.a = a
+            else: # after else
+                pass
+                
+            for i in range(10): # after for.
+                pass
+            else: # after for-else.
+                pass
+
+        def inner1(self):
+            """inner1 docstring"""
+
+    def test1(a):
+        print(a) # trailing comment
+
+    def test2():
+        pass
+        
+def eggs():
+    pass</t>
+<t tx="ekr.20160223132554.1">    # class InnerClass(object, str):
+        # # Comment 1.
+        # def __init__(self, a):
+            # '''Ctor for InnerClass'''
+            # if a: # after if
+                # self.a = a
+            # else: # after else
+                # pass
+                
+            # for i in range(10): # after for.
+                # pass
+            # else: # after for-else.
+                # pass
+
+        # def inner1(self):
+            # """inner1 docstring"""
+
+    # def test1(a):
+        # print(a) # trailing comment
+
+    # def test2():
+        # pass
+        
+# def eggs():
+    # pass
+</t>
+<t tx="ekr.20160224044823.1">
+def tokens_for_statement(self, node):
+    
+    assert isinstance(node, ast.AST), node
+    name = node.__class__.__name__
+    if hasattr(node, 'lineno'):
+        tokens = self.line_tokens[node.lineno-1]
+        g.trace(' '.self.dump_token(z) for z in tokens)
+    else:
+        g.trace('no lineno', name)
+
+    
+    
+</t>
+<t tx="ekr.20160224050441.10">
+# Python 2.x only
+
+def Exec(self, node):
+    
+    tokens = ['exec']
+    globals_ = hasattr(node, 'globals') and self.visit(node.globals)
+    locals_ = hasattr(node, 'locals') and self.visit(node.locals)
+    if globals_:
+        tokens.extend(globals_)
+    if globals_ and locals_:
+        tokens.append(',')
+    if locals_:
+        tokens.extend(locals_)
+    return tokens</t>
+<t tx="ekr.20160224050441.11">
+def Expr(self, node):
+    '''An outer expression.'''
+    return self.visit(node.value)
+</t>
+<t tx="ekr.20160224050441.12">
+def For(self, node):
+    
+    tokens = ['for']
+    tokens.extend(self.visit(node.target))
+    tokens.append('in')
+    tokens.extend(self.visit(node.iter))
+    for z in node.body:
+        tokens.extend(self.visit(z))
+    if node.orelse:
+        tokens.append('else')
+        for z in node.orelse:
+            tokens.extend(self.visit(z))
+    return tokens
+</t>
+<t tx="ekr.20160224050441.13">
+def Global(self, node):
+
+    return ['global'] + self.join(node.names)
+</t>
+<t tx="ekr.20160224050441.14">
+def If(self, node):
+
+    tokens = ['if']
+    tokens.extend(self.visit(node.test))
+    for z in node.body:
+        tokens.extend(self.visit(z))
+    if node.orelse:
+        tokens.append('else:')
+        for z in node.orelse:
+            tokens.extend(self.visit(z))
+    return tokens
+</t>
+<t tx="ekr.20160224050441.15">
+def Import(self, node):
+
+    names = []
+    for fn, asname in self.get_import_names(node):
+        if asname:
+            names.append(fn + 'as' + asname)
+        else:
+            names.append(fn)
+    return ['import'] + self.join(names)
+</t>
+<t tx="ekr.20160224050441.16">
+def get_import_names(self, node):
+    '''Return a list of the the full file names in the import statement.'''
+    # This is a helper: it does not return tokens.
+    result = []
+    for ast2 in node.names:
+        assert isinstance(ast2, ast.alias)
+        data = ast2.name, ast2.asname
+        result.append(data)
+    return result
+</t>
+<t tx="ekr.20160224050441.17">
+def ImportFrom(self, node):
+
+    tokens = ['from', node.module, 'import']
+    names = []
+    for fn, asname in self.get_import_names(node):
+        if asname:
+            names.append(fn + 'as' + asname)
+        else:
+            names.append(fn)
+    return tokens + self.join(names)
+</t>
+<t tx="ekr.20160224050441.18">
+def Pass(self, node):
+    
+    return ['pass']
+</t>
+<t tx="ekr.20160224050441.19">
+# Python 2.x only
+
+def Print(self, node):
+    
+    tokens, vals = [], []
+    for z in node.values:
+        vals.extend(self.visit(z))
+    if getattr(node, 'dest', None) is not None:
+        vals.extend('dest', '=')
+        vals.extend(self.visit(node.dest))
+    if hasattr(node, 'nl') and node.nl == 'False':
+        vals.extend(['nl', '=', 'False'])
+    if vals:
+        tokens.extend(self.join(vals))
+    return tokens
+</t>
+<t tx="ekr.20160224050441.20">
+def Raise(self, node):
+    
+    args = []
+    for attr in ('type', 'inst', 'tback'):
+        if hasattr(node, attr, None) is not None:
+            args.extend(self.visit(getattr(node, attr)))
+    return ['raise'] + self.join(args)
+</t>
+<t tx="ekr.20160224050441.21">
+def Return(self, node):
+
+    return ['return'] + self.visit(node.value)
+</t>
+<t tx="ekr.20160224050441.22">
+# Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
+
+def Try(self, node): # Python 3
+
+    tokens = ['try']
+    for z in node.body:
+        tokens.extend(self.visit(z))
+    for z in node.handlers or []:
+        tokens.extend(self.visit(z))
+    if node.orelse:
+        tokens.append('else:')
+        for z in node.orelse:
+            tokens.extend(self.visit(z))
+    if node.finalbody:
+        tokens.append('finally')
+        for z in node.finalbody:
+            tokens.extend(self.visit(z))
+    return tokens
+</t>
+<t tx="ekr.20160224050441.23">
+def TryExcept(self, node):
+
+    tokens = ['try:']
+    for z in node.body:
+        tokens.extend(self.visit(z))
+    for z in node.handlers or []:
+        tokens.extend(self.visit(z))
+    if node.orelse:
+        tokens.append('else:')
+        for z in node.orelse:
+            tokens.extend(self.visit(z))
+    return tokens
+</t>
+<t tx="ekr.20160224050441.24">
+def TryFinally(self, node):
+    
+    tokens = ['try:']
+    for z in node.body:
+        tokens.extend(self.visit(z))
+    tokens.append('finally:')
+    for z in node.finalbody:
+        tokens.extend(self.visit(z))
+    return tokens
+</t>
+<t tx="ekr.20160224050441.25">
+def While(self, node):
+
+    tokens = ['while']
+    tokens.extend(self.visit(node.test))
+    for z in node.body:
+        tokens.extend(self.visit(z))
+    if node.orelse:
+        tokens.append('else:')
+        for z in node.orelse:
+            tokens.extend(self.visit(z))
+    return tokens
+</t>
+<t tx="ekr.20160224050441.26">
+def With(self, node):
+
+    tokens = ['with']
+    if getattr(node, 'context_expression', None) is not None:
+        tokens.extend(self.visit(node.context_expresssion))
+    vars_list = []
+    if getattr(node, 'optional_vars', None) is not None:
+        try:
+            for z in node.optional_vars:
+                vars_list.append(self.visit(z))
+        except TypeError: # Not iterable.
+            vars_list.append(self.visit(node.optional_vars))
+    tokens.extend(self.join(vars_list))
+    tokens.append(':' )
+    for z in node.body:
+        tokens.extend(self.visit(z))
+    return tokens
+</t>
+<t tx="ekr.20160224050441.27">
+def Yield(self, node):
+    
+    if getattr(node, 'value', None) is not None:
+        return ['yield'] + self.visit(node.value)
+    else:
+        return ['yield']
+</t>
+<t tx="ekr.20160224050441.3">
+def Assert(self, node):
+
+    tokens = ['assign']
+    tokens.extend(self.visit(node.test))
+    if getattr(node, 'msg', None) is not None:
+        tokens.append(',')
+        tokens.extend(self.visit(node.msg))
+    return tokens
+</t>
+<t tx="ekr.20160224050441.4">
+def Assign(self, node):
+
+    targets = []
+    for z in targets:
+        targets.extend(self.visit(z))
+    tokens = self.join(targets, '=')
+    tokens.append('=')
+    tokens.extend(self.visit(node.value))
+    return tokens
+</t>
+<t tx="ekr.20160224050441.5">
+def AugAssign(self, node):
+
+    tokens = [self.visit(node.target)]
+    tokens.append(op_name(node.op)+'=')
+    tokens.extend(self.visit(node.value))
+    return tokens
+</t>
+<t tx="ekr.20160224050441.6">
+def Break(self, node):
+
+    return ['break']
+    </t>
+<t tx="ekr.20160224050441.7">
+def Continue(self, node):
+
+    return ['continue']
+</t>
+<t tx="ekr.20160224050441.8">
+def Delete(self, node):
+    
+    targets = []
+    for z in node.targets:
+        targets.extend(self.visit(z))
+    return ['del'] + self.join(targets)
+</t>
+<t tx="ekr.20160224050441.9">
+def ExceptHandler(self, node):
+    
+    tokens = ['except']
+    if getattr(node, 'type', None) is not None:
+        tokens.extend(self.visit(node.type))
+    if getattr(node, 'name', None) is not None:
+        tokens.append('as')
+        if isinstance(node.name, ast.AST):
+            tokens.extend(self.visit(node.name))
+        else:
+            tokens.append(node.name) # Python 3.x.
+    tokens.append(':')
+    for z in node.body:
+        tokens.extend(self.visit(z))
+    return tokens
+</t>
+<t tx="ekr.20160224052722.1">
+def op_name(node,strict=True):
+    '''Return the print name of an operator node.'''
+    d = {
+        # Binary operators. 
+        'Add':       '+',
+        'BitAnd':    '&amp;',
+        'BitOr':     '|',
+        'BitXor':    '^',
+        'Div':       '/',
+        'FloorDiv':  '//',
+        'LShift':    '&lt;&lt;',
+        'Mod':       '%',
+        'Mult':      '*',
+        'Pow':       '**',
+        'RShift':    '&gt;&gt;',
+        'Sub':       '-',
+        # Boolean operators.
+        'And':   ' and ',
+        'Or':    ' or ',
+        # Comparison operators
+        'Eq':    '==',
+        'Gt':    '&gt;',
+        'GtE':   '&gt;=',
+        'In':    ' in ',
+        'Is':    ' is ',
+        'IsNot': ' is not ',
+        'Lt':    '&lt;',
+        'LtE':   '&lt;=',
+        'NotEq': '!=',
+        'NotIn': ' not in ',
+        # Context operators.
+        'AugLoad':  '&lt;AugLoad&gt;',
+        'AugStore': '&lt;AugStore&gt;',
+        'Del':      '&lt;Del&gt;',
+        'Load':     '&lt;Load&gt;',
+        'Param':    '&lt;Param&gt;',
+        'Store':    '&lt;Store&gt;',
+        # Unary operators.
+        'Invert':   '~',
+        'Not':      ' not ',
+        'UAdd':     '+',
+        'USub':     '-',
+    }
+    kind = node.__class__.__name__
+    name = d.get(kind,'&lt;%s&gt;' % kind)
+    if strict: assert name, kind
+    return name
+</t>
+<t tx="ekr.20160224053149.1">
+def join(self, aList, sep=','):
+    '''return the items of the list joined by sep string.'''
+    tokens = []
+    for i, token in enumerate(aList or []):
+        tokens.append(token)
+        if i &lt; len(aList) -1:
+            tokens.append(sep)
+    return tokens
+</t>
+<t tx="ekr.20160224065148.2">
+# ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
+
+def ClassDef(self, node, include_body=True):
+
+    tokens = ['class', node.name]
+    if node.bases:
+        tokens.append('(')
+        for z in node.bases:
+            tokens.extend(self.visit(z))
+        tokens.append(')')
+    tokens.append('\n')
+    if include_body:
+        for z in node.body:
+            tokens.extend(self.visit(z))
+    return tokens
+</t>
+<t tx="ekr.20160224065148.3">
+# FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
+
+def FunctionDef(self, node, include_body=True):
+    '''Format a FunctionDef node.'''
+    tokens = []
+    for z in node.decorator_list or []:
+        tokens.extend(['@'] + self.visit(z) + ['\n'])
+    tokens.extend(['def', node.name, '('])
+    if node.args:
+        tokens.extend(self.join(self.visit(node.args)))
+    tokens.extend([':', '\n'])
+    if include_body:
+        for z in node.body:
+            tokens.extend(self.visit(z))
+    return tokens
+</t>
+<t tx="ekr.20160224065148.5">
+def Module(self, node):
+    
+    tokens = []
+    for z in node.body:
+        tokens.extend(self.visit(z))
+    return tokens
+</t>
+<t tx="ekr.20160224065148.6">
+# def Lambda(self, node):
+    # return self.indent('lambda %s: %s' % (
+        # self.visit(node.args),
+        # self.visit(node.body)))
+</t>
+<t tx="ekr.20160224073722.1">
+def tokens_for_statement(self, node):
+    
+    if node is None:
+        return []
+    else:
+        assert isinstance(node, ast.AST), node
+        name = node.__class__.__name__
+        func = getattr(self, name, None)
+        g.trace('%12s' % (name))
+        tokens = func(node) if func else []
+        g.trace('%12s %s' % (name,
+            ' '.join([self.dump_token(z) for z in tokens])))
+        return tokens
+        
+visit = tokens_for_statement
+
+
+</t>
+<t tx="ekr.20160224082000.1"></t>
+<t tx="ekr.20160224082013.1">
+def visit(self, node):
+    '''Return the formatted version of an Ast node, or list of Ast nodes.'''
+    testing = False
+    name = node.__class__.__name__
+    if testing:
+        if isinstance(node, (list, tuple)):
+            tokens = []
+            for z in node:
+                tokens.extend(self.sync.tokens_for_statement(z))
+            return tokens
+        elif node is None:
+            return []
+        else:
+            assert isinstance(node, ast.AST), name
+            tokens = self.sync.tokens_for_statement(node)
+            return tokens
+    else: # Normal.
+        if isinstance(node, (list, tuple)):
+            return ', '.join([self.visit(z) for z in node])
+        elif node is None:
+            return 'None'
+        else:
+            assert isinstance(node, ast.AST), name
+            method = getattr(self, 'do_' + name)
+            s = method(node)
+            if isPython3:
+                assert isinstance(s, str)
+            else:
+                assert isinstance(s, (str, unicode))
+            return s
 </t>
 </tnodes>
 </leo_file>

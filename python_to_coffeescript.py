@@ -73,6 +73,54 @@ def dump_list(title, aList):
         print(z)
     print('')
 
+def op_name(node,strict=True):
+    '''Return the print name of an operator node.'''
+    d = {
+        # Binary operators. 
+        'Add':       '+',
+        'BitAnd':    '&',
+        'BitOr':     '|',
+        'BitXor':    '^',
+        'Div':       '/',
+        'FloorDiv':  '//',
+        'LShift':    '<<',
+        'Mod':       '%',
+        'Mult':      '*',
+        'Pow':       '**',
+        'RShift':    '>>',
+        'Sub':       '-',
+        # Boolean operators.
+        'And':   ' and ',
+        'Or':    ' or ',
+        # Comparison operators
+        'Eq':    '==',
+        'Gt':    '>',
+        'GtE':   '>=',
+        'In':    ' in ',
+        'Is':    ' is ',
+        'IsNot': ' is not ',
+        'Lt':    '<',
+        'LtE':   '<=',
+        'NotEq': '!=',
+        'NotIn': ' not in ',
+        # Context operators.
+        'AugLoad':  '<AugLoad>',
+        'AugStore': '<AugStore>',
+        'Del':      '<Del>',
+        'Load':     '<Load>',
+        'Param':    '<Param>',
+        'Store':    '<Store>',
+        # Unary operators.
+        'Invert':   '~',
+        'Not':      ' not ',
+        'UAdd':     '+',
+        'USub':     '-',
+    }
+    kind = node.__class__.__name__
+    name = d.get(kind,'<%s>' % kind)
+    if strict: assert name, kind
+    return name
+
 def pdb(self):
     '''Invoke a debugger during unit testing.'''
     try:
@@ -100,6 +148,7 @@ class CoffeeScriptTraverser(object):
         self.last_node = None
         self.leading_lines = None
         self.leading_string = None
+        self.tokens_for_statement = None
         self.trailing_comment = None
         self.trailing_comment_at_lineno = None
         
@@ -107,16 +156,20 @@ class CoffeeScriptTraverser(object):
     def format(self, node, s, tokens):
         '''Format the node (or list of nodes) and its descendants.'''
         self.level = 0
-        sync = TokenSync(s, tokens)
+        self.sync = sync = TokenSync(s, tokens)
         # Create aliases here for convenience.
         self.sync_string = sync.sync_string
         self.last_node = sync.last_node
         self.leading_lines = sync.leading_lines
         self.leading_string = sync.leading_string
+        self.tokens_for_statment = sync.tokens_for_statement
         self.trailing_comment = sync.trailing_comment
         self.trailing_comment_at_lineno = sync.trailing_comment_at_lineno
         # Compute the result.
-        val = self.visit(node) + ''.join(sync.trailing_lines())
+        val = self.visit(node)
+        # if isinstance(val, list): # testing:
+            # val = ' '.join(val)
+        val += ''.join(sync.trailing_lines())
         return val or ''
 
     def indent(self, s):
@@ -214,13 +267,6 @@ class CoffeeScriptTraverser(object):
     #
     # CoffeeScriptTraverser expressions...
     #
-
-    def do_Expr(self, node):
-        '''An outer expression: must be indented.'''
-        head = self.leading_string(node)
-        tail = self.trailing_comment(node)
-        s = '%s' % self.visit(node.value)
-        return head + self.indent(s) + tail
 
     def do_Expression(self, node):
         '''An inner expression: do not indent.'''
@@ -418,69 +464,20 @@ class CoffeeScriptTraverser(object):
     # CoffeeScriptTraverser operators...
     #
 
-    def op_name (self,node,strict=True):
-        '''Return the print name of an operator node.'''
-        d = {
-            # Binary operators. 
-            'Add':       '+',
-            'BitAnd':    '&',
-            'BitOr':     '|',
-            'BitXor':    '^',
-            'Div':       '/',
-            'FloorDiv':  '//',
-            'LShift':    '<<',
-            'Mod':       '%',
-            'Mult':      '*',
-            'Pow':       '**',
-            'RShift':    '>>',
-            'Sub':       '-',
-            # Boolean operators.
-            'And':   ' and ',
-            'Or':    ' or ',
-            # Comparison operators
-            'Eq':    '==',
-            'Gt':    '>',
-            'GtE':   '>=',
-            'In':    ' in ',
-            'Is':    ' is ',
-            'IsNot': ' is not ',
-            'Lt':    '<',
-            'LtE':   '<=',
-            'NotEq': '!=',
-            'NotIn': ' not in ',
-            # Context operators.
-            'AugLoad':  '<AugLoad>',
-            'AugStore': '<AugStore>',
-            'Del':      '<Del>',
-            'Load':     '<Load>',
-            'Param':    '<Param>',
-            'Store':    '<Store>',
-            # Unary operators.
-            'Invert':   '~',
-            'Not':      ' not ',
-            'UAdd':     '+',
-            'USub':     '-',
-        }
-        kind = node.__class__.__name__
-        name = d.get(kind,'<%s>' % kind)
-        if strict: assert name, kind
-        return name
-
     def do_BinOp(self, node):
         return '%s%s%s' % (
             self.visit(node.left),
-            self.op_name(node.op),
+            op_name(node.op),
             self.visit(node.right))
 
     def do_BoolOp(self, node):
-        op_name = self.op_name(node.op)
         values = [self.visit(z) for z in node.values]
-        return op_name.join(values)
+        return op_name(node.op).join(values)
 
     def do_Compare(self, node):
         result = []
         lt = self.visit(node.left)
-        ops = [self.op_name(z) for z in node.ops]
+        ops = [op_name(z) for z in node.ops]
         comps = [self.visit(z) for z in node.comparators]
         result.append(lt)
         if len(ops) == len(comps):
@@ -498,7 +495,7 @@ class CoffeeScriptTraverser(object):
 
     def do_UnaryOp(self, node):
         return '%s%s' % (
-            self.op_name(node.op),
+            op_name(node.op),
             self.visit(node.operand))
 
     #
@@ -548,7 +545,7 @@ class CoffeeScriptTraverser(object):
         tail = self.trailing_comment(node)
         s = '%s%s=%s' % (
             self.visit(node.target),
-            self.op_name(node.op),
+            op_name(node.op),
             self.visit(node.value))
         return head + self.indent(s) + tail
 
@@ -607,6 +604,13 @@ class CoffeeScriptTraverser(object):
             s = 'exec %s in %s' % (body, ','.join(args))
         else:
             s = 'exec %s' % body
+        return head + self.indent(s) + tail
+
+    def do_Expr(self, node):
+        '''An outer expression: must be indented.'''
+        head = self.leading_string(node)
+        tail = self.trailing_comment(node)
+        s = '%s' % self.visit(node.value)
         return head + self.indent(s) + tail
 
     def do_For(self, node):
@@ -846,8 +850,7 @@ class CoffeeScriptTraverser(object):
             self.level += 1
             result.append(self.visit(z))
             self.level -= 1
-        result.append('\n')
-        return ''.join(result)
+        return ''.join(result) + tail
 
     def do_Yield(self, node):
         
@@ -1387,13 +1390,33 @@ class TokenSync(object):
         assert len(result) == len(self.line_tokens)
         return result
 
-    def dump_token(self, token):
-        '''Dump the token for debugging.'''
-        t1, t2, t3, t4, t5 = token
-        kind = g.toUnicode(token_module.tok_name[t1].lower())
-        raw_val = g.toUnicode(t5)
-        val = g.toUnicode(t2)
-        return 'token: %10s %r' % (kind, val)
+    def trailing_comment_at_lineno(self, lineno):
+        '''Return any trailing comment at the given node.lineno.'''
+        trace = False
+        tokens = self.line_tokens[lineno-1]
+        for token in tokens:
+            if self.token_kind(token) == 'comment':
+                raw_val = self.token_raw_val(token).rstrip()
+                if not raw_val.strip().startswith('#'):
+                    val = self.token_val(token).rstrip()
+                    s = ' %s\n' % val
+                    if trace: g.trace(lineno, s.rstrip(), g.callers())
+                    return s
+        return '\n'
+
+    def dump_token(self, token, verbose=False):
+        '''Dump the token. It is either a string or a 5-tuple.'''
+        if g.isString(token):
+            return token
+        else:
+            t1, t2, t3, t4, t5 = token
+            kind = g.toUnicode(token_module.tok_name[t1].lower())
+            raw_val = g.toUnicode(t5)
+            val = g.toUnicode(t2)
+            if verbose:
+                return 'token: %10s %r' % (kind, val)
+            else:
+                return val
 
     def is_line_comment(self, token):
         '''Return True if the token represents a full-line comment.'''
@@ -1401,6 +1424,15 @@ class TokenSync(object):
         kind = token_module.tok_name[t1].lower()
         raw_val = t5
         return kind == 'comment' and raw_val.lstrip().startswith('#')
+
+    def join(self, aList, sep=','):
+        '''return the items of the list joined by sep string.'''
+        tokens = []
+        for i, token in enumerate(aList or []):
+            tokens.append(token)
+            if i < len(aList) -1:
+                tokens.append(sep)
+        return tokens
 
     def last_node(self, node):
         '''Return the node of node's tree with the largest lineno field.'''
@@ -1497,6 +1529,19 @@ class TokenSync(object):
         t1, t2, t3, t4, t5 = token
         return g.toUnicode(t2)
 
+    def tokens_for_statement(self, node):
+        
+        assert isinstance(node, ast.AST), node
+        name = node.__class__.__name__
+        if hasattr(node, 'lineno'):
+            tokens = self.line_tokens[node.lineno-1]
+            g.trace(' '.self.dump_token(z) for z in tokens)
+        else:
+            g.trace('no lineno', name)
+
+        
+        
+
     def trailing_comment(self, node):
         '''
         Return a string containing the trailing comment for the node, if any.
@@ -1510,7 +1555,7 @@ class TokenSync(object):
 
     def trailing_lines(self):
         '''return any remaining ignored lines.'''
-        trace = True
+        trace = False
         trailing = []
         i = self.first_leading_line
         while i < len(self.ignored_lines):
@@ -1522,20 +1567,6 @@ class TokenSync(object):
             i += 1
         self.first_leading_line = i
         return trailing
-
-    def trailing_comment_at_lineno(self, lineno):
-        '''Return any trailing comment at the given node.lineno.'''
-        trace = False
-        tokens = self.line_tokens[lineno-1]
-        for token in tokens:
-            if self.token_kind(token) == 'comment':
-                raw_val = self.token_raw_val(token).rstrip()
-                if not raw_val.strip().startswith('#'):
-                    val = self.token_val(token).rstrip()
-                    s = ' %s\n' % val
-                    if trace: g.trace(lineno, s.rstrip(), g.callers())
-                    return s
-        return '\n'
 
 g = LeoGlobals() # For ekr.
 if __name__ == "__main__":
