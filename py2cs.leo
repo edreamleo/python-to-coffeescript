@@ -291,6 +291,7 @@
 </v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
 <v t="ekr.20160222040422.1"></v>
+<v t="ekr.20160224100419.1"><vh>** Discuss TokenSync class in design.md</vh></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -2425,15 +2426,16 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-*** Update theory.md and readme.md.
-    - Discuss TokenSync class in theory.md.
-*** Handle more coffeescript xforms.
+* Update theory.md and readme.md.
+- Respond to http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node
+- cv.format should check that all strings have been consumed.
+
+Later:
+- Unit tests.
+* Handle more coffeescript xforms.
     - Peephole: last return from def.
 - Handle line breaks within statements?
     - Probably easier to break lines automatically.
-
-Later:
-- Respond here: http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node
 - `###` means something (invalid) to coffeescript
 - Remove type hints from arg lists.
 - Change `is not` to `isnt`
@@ -3592,5 +3594,6 @@ def visit(self, node):
                 assert isinstance(s, (str, unicode))
             return s
 </t>
+<t tx="ekr.20160224100419.1"># Should TokenSync be mentioned in Ast docs?</t>
 </tnodes>
 </leo_file>
