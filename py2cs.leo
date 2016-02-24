@@ -290,8 +290,7 @@
 </v>
 </v>
 <v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160221143000.1"></v>
-<v t="ekr.20160220050433.17"></v>
+<v t="ekr.20160222040422.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -2426,13 +2425,8 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-replace getattr with hasattr where possible.
-
 *** Update theory.md and readme.md.
     - Discuss TokenSync class in theory.md.
-- ts.tokens_for_statement:
-    - Multiple returns for compound statements.
-    - test for orelse, body, finalbody, etc.
 *** Handle more coffeescript xforms.
     - Peephole: last return from def.
 - Handle line breaks within statements?
