@@ -146,7 +146,7 @@
 <v t="ekr.20160222030107.1"><vh>ast differences</vh></v>
 </v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
-<v t="ekr.20160220050321.1"><vh>@clean python_to_coffeescript.py</vh>
+<v t="ekr.20160220050321.1"><vh>@clean py2cs.py</vh>
 <v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.11"><vh>  main</vh></v>
