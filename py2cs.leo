@@ -3566,9 +3566,9 @@ Stripped of defensive code, the do_Str visitor is just:
         
 #### Recovering otherwise ignored nodes
 
-ts.leading_lines(node) returns a list of otherwise ignored lines that
+**ts.leading_lines(node)** returns a list of otherwise ignored lines that
 precede the node's line that have not already been returned.
-ts.leading_string is a convenience method that returns ''.join(self.leading_lines). The visitors of the CoffeeScriptTraverser class show how to use these methods.
+**ts.leading_string(node)** is a convenience method that returns ''.join(ts.leading_lines(node)). The visitors of the CoffeeScriptTraverser class show how to use these methods.
 </t>
 <t tx="ekr.20160225122323.1"></t>
 </tnodes>
