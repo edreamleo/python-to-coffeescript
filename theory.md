@@ -29,11 +29,11 @@ At startup, the TokenSync ctor assigns all the incoming tokens to various lists.
     ts.string_tokens[i]: all string tokens on line i
     st.ignored_lines: the blank or comment line on line i
     
-It is very easy to create these lists. The code does not depend on any arcane details. In addition, ts.blank_lines contains a list of the line numbers of all blank lines.
+It is very easy to create these lists. The code does not depend on any arcane details.
 
 #### Recovering the exact spelling of stings.
 
-ts.synch_string returns the *next* string on the line. To make this work, it must be called in **string order**. In practice, it would be hard *not* to call st.sync_string out of order. Here it is, stripped of defensive code:
+ts.synch_string returns the *next* string on the line. Here it is, stripped of defensive code:
 
     def sync_string(self, node):
         '''Return the spelling of the string at the given node.'''
@@ -50,9 +50,8 @@ Stripped of defensive code, the do_Str visitor is just:
         
 #### Recovering otherwise ignored nodes
 
-ts.leading_lines returns a list of otherwise ignored that
-a) preceded a given line and
-b) have not already been returned.
+ts.leading_lines(node) returns a list of otherwise ignored lines that
+precede the node's line that have not already been returned.
 ts.leading_string is a convenience method that returns ''.join(self.leading_lines). The visitors of the CoffeeScriptTraverser class show how to use these methods.
 
 ### Using the TokenSync class
