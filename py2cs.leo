@@ -32,17 +32,7 @@
 </v>
 <v t="ekr.20160220051417.14"><vh>@button check-leading-lines</vh></v>
 </v>
-<v t="ekr.20160223132520.1"><vh>@@clean test.py</vh></v>
 <v t="ekr.20160220051105.1"><vh>@ignore Unused</vh>
-<v t="ekr.20160221033247.1"><vh>stat vars</vh></v>
-<v t="ekr.20160220103223.39"><vh>cst.print_stats</vh></v>
-<v t="ekr.20160220050433.188"><vh>class TestClass</vh>
-<v t="ekr.20160220050433.189"><vh>parse_group (Guido)</vh></v>
-<v t="ekr.20160220050433.190"><vh>return_all</vh></v>
-<v t="ekr.20160220050433.191"><vh>return_array</vh></v>
-<v t="ekr.20160220050433.192"><vh>return_list</vh></v>
-<v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
-</v>
 <v t="ekr.20160220103223.1"><vh>class CoffeeScriptTokenizer</vh>
 <v t="ekr.20160220103223.2"><vh>class OutputToken</vh></v>
 <v t="ekr.20160221024549.1"><vh>class StateStack</vh>
@@ -93,8 +83,6 @@
 <v t="ekr.20160220103223.35"><vh>ct.gen_word &amp; gen_word_op</vh></v>
 </v>
 </v>
-<v t="ekr.20160223014237.1"><vh>clean, defined in do_Str</vh></v>
-<v t="ekr.20160220050433.28"><vh>cv.ctx nodes</vh></v>
 <v t="ekr.20160224082000.1"><vh>old tokens_for_statement stuff</vh>
 <v t="ekr.20160224082013.1"><vh>OLD cv.visit</vh></v>
 <v t="ekr.20160224073722.1"><vh>OLD ts.tokens_for_statement &amp; helpers</vh>
@@ -129,10 +117,20 @@
 <v t="ekr.20160224050441.27"><vh>ts.Yield</vh></v>
 </v>
 </v>
+</v>
+</v>
+<v t="ekr.20160225122323.1"><vh>Testing</vh>
+<v t="ekr.20160220050433.188"><vh>class TestClass</vh>
+<v t="ekr.20160220050433.189"><vh>parse_group (Guido)</vh></v>
+<v t="ekr.20160220050433.190"><vh>return_all</vh></v>
+<v t="ekr.20160220050433.191"><vh>return_array</vh></v>
+<v t="ekr.20160220050433.192"><vh>return_list</vh></v>
+<v t="ekr.20160220050433.193"><vh>return_two_lists (fails)</vh></v>
+</v>
 <v t="ekr.20160223132554.1"><vh>deleted test</vh></v>
+<v t="ekr.20160223132520.1"><vh>@@clean test.py</vh></v>
+<v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 </v>
-</v>
-<v t="ekr.20160222041249.1"><vh>Docs</vh>
 <v t="ekr.20160220050053.2"><vh>@clean README.md</vh>
 <v t="ekr.20160221071334.1"><vh>Overview</vh></v>
 <v t="ekr.20160221071354.1"><vh>Rationale</vh></v>
@@ -146,11 +144,6 @@
 <v t="ekr.20160225103047.1"><vh>Using TokenSync class</vh></v>
 <v t="ekr.20160225103215.1"><vh>Summary</vh></v>
 </v>
-<v t="ekr.20160222030015.1"><vh>2.1.5 Explicit line joining</vh></v>
-<v t="ekr.20160222030107.1"><vh>ast differences</vh></v>
-</v>
-<v t="ekr.20160220131008.1"><vh>** To do</vh></v>
-<v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220050321.1"><vh>@clean py2cs.py</vh>
 <v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
@@ -295,8 +288,6 @@
 <v t="ekr.20160223102112.1"><vh>ts.trailing_lines</vh></v>
 </v>
 </v>
-<v t="ekr.20160220050053.2"></v>
-<v t="ekr.20160222040422.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language rest
@@ -805,22 +796,6 @@ def do_GeneratorExp(self, node):
     gens = [self.visit(z) for z in node.generators]
     gens = [z if z else '&lt;**None**&gt;' for z in gens] # Kludge: probable bug.
     return '&lt;gen %s for %s&gt;' % (elt, ','.join(gens))
-</t>
-<t tx="ekr.20160220050433.28">
-def do_AugLoad(self, node):
-    return 'AugLoad'
-
-def do_Del(self, node):
-    return 'Del'
-
-def do_Load(self, node):
-    return 'Load'
-
-def do_Param(self, node):
-    return 'Param'
-
-def do_Store(self, node):
-    return 'Store'
 </t>
 <t tx="ekr.20160220050433.29">
 #
@@ -2213,19 +2188,6 @@ def gen_word_op(self, s):
     self.add_token('word-op', s)
     self.gen_blank()
 </t>
-<t tx="ekr.20160220103223.39">
-def print_stats(self):
-    print('==================== stats')
-    print('changed nodes  %s' % self.n_changed_nodes)
-    print('tokens         %s' % self.n_input_tokens)
-    print('len(code_list) %s' % self.n_output_tokens)
-    print('len(s)         %s' % self.n_strings)
-    print('parse          %4.2f sec.' % self.parse_time)
-    print('tokenize       %4.2f sec.' % self.tokenize_time)
-    print('format         %4.2f sec.' % self.beautify_time)
-    print('check          %4.2f sec.' % self.check_time)
-    print('total          %4.2f sec.' % self.total_time)
-</t>
 <t tx="ekr.20160220103223.4">
 def __init__(self, controller):
     '''Ctor for CoffeeScriptTokenizer class.'''
@@ -2428,21 +2390,6 @@ class ReadLinesClass:
 
     __next__ = next
 </t>
-<t tx="ekr.20160220131008.1">@language rest
-@wrap
-
-- Respond to http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node
-
-Later or never:
-- Unit tests.
-* Handle more coffeescript xforms.
-    - Peephole: last return from def.
-- Handle line breaks within statements?
-    - Probably easier to break lines automatically.
-- `###` means something (invalid) to coffeescript
-- Remove type hints from arg lists.
-- Change `is not` to `isnt`
-</t>
 <t tx="ekr.20160220143251.1">
 def gen_class_or_def(self, name):
     
@@ -2608,17 +2555,6 @@ class StateStack(object):
 def pop(self):
     '''Pop the state on the stack and return it.'''
     return self.stack.pop()</t>
-<t tx="ekr.20160221033247.1">
-    # Statistics
-    self.n_changed_nodes = 0
-    self.n_input_tokens = 0
-    self.n_output_tokens = 0
-    self.n_strings = 0
-    self.parse_time = 0.0
-    self.tokenize_time = 0.0
-    self.beautify_time = 0.0
-    self.check_time = 0.0
-    self.total_time = 0.0</t>
 <t tx="ekr.20160221070924.1">
 ### Quick Start
 
@@ -2674,9 +2610,7 @@ This script already does much of the grunt work of converting python to coffeesc
 <t tx="ekr.20160221071354.1">
 ### Rationale
 
-The proximate cause for this script were the notes from a [DropBox sprint](https://blogs.dropbox.com/tech/2012/09/dropbox-dives-into-coffeescript/). Coffeescript is obviously successful. Numerous python-to-javascript systems seem unlikely ever to gain traction.
-
-Googling 'python to javascript' or 'python to coffeescript' yields no similar tools, despite many similar searches. This script will be useful to me.
+The proximate cause for this script were the notes from a [DropBox sprint](https://blogs.dropbox.com/tech/2012/09/dropbox-dives-into-coffeescript/). Coffeescript is obviously successful. Numerous python-to-javascript systems seem unlikely ever to gain traction. Googling 'python to javascript' or 'python to coffeescript' yields no similar tools, despite many similar searches. This script will be useful to me.
 </t>
 <t tx="ekr.20160221071735.1">
 ### Summary
@@ -2722,18 +2656,6 @@ class TestClass(object):
 
 
 </t>
-<t tx="ekr.20160222030015.1">@language rest
-@wrap
-
-Lines can be continued using backslash-newlines. Here are the detailed rules from section `2.1.5. Explicit line joining` of the reference. (Same in Python 2 and 3).
-
-Two or more physical lines may be joined into logical lines using backslash characters (\), as follows: when a physical line ends in a backslash that is not part of a string literal or comment, it is joined with the following forming a single logical line, deleting the backslash and the following end-of-line character...
-
-A line ending in a backslash cannot carry a comment. A backslash does not continue a comment. A backslash does not continue a token except for string literals (i.e., tokens other than string literals cannot be split across physical lines using a backslash). A backslash is illegal elsewhere on a line outside a string literal.
-</t>
-<t tx="ekr.20160222030107.1">http://joao.npimentel.net/2015/07/23/python-2-vs-python-3-ast-differences/
-discusses the differences in ast trees between Python 2 and 3. Helpful, but possibly not complete.
-</t>
 <t tx="ekr.20160222040422.1">@language rest
 @wrap
 
@@ -2744,7 +2666,6 @@ This is the theory of operation document for py2cs.py.
 
 
 </t>
-<t tx="ekr.20160222041249.1"></t>
 <t tx="ekr.20160222081027.1">
 def line_at(self, node, continued_lines=True):
     '''Return the lines at the node, possibly including continuation lines.'''
@@ -2899,13 +2820,6 @@ def dump_token(self, token, verbose=False):
         else:
             return val
 </t>
-<t tx="ekr.20160223014237.1">
-def clean(s):
-    return (
-        s.replace('"','').replace("'",'')
-        .replace('\\n','').replace('\n','')
-        .replace('\\t','').replace('\t','')
-        .replace('\\','').replace('\\',''))</t>
 <t tx="ekr.20160223022613.1">
 def is_line_comment(self, token):
     '''Return True if the token represents a full-line comment.'''
@@ -3587,19 +3501,9 @@ The leading_string and trailing_comment methods simply redirect to the correspon
 
 The line:
 
-   tail = self.tail_after_body(node.body, node.orelse, result)
+        tail = self.tail_after_body(node.body, node.orelse, result)
 
 is a hack needed to compensate for the lack of an actual ast.Else node.
-
-The TokenSync.sync_string method deserves special mention. It ensures that the do_Str visitor gets the proper spelling of strings. It is a completely solid alternative to using the ast.col_offset field, which is a big deal, imo.
-
-    def do_Str(self, node):
-        '''A string constant, including docstrings.'''
-        if hasattr(node, 'lineno'):
-            return self.sync_string(node)
-        else: # never happens.
-            g.trace('==== no lineno', node.s)
-            return node.s
 </t>
 <t tx="ekr.20160225103140.1">
 ### The problem
@@ -3665,7 +3569,7 @@ Stripped of defensive code, the do_Str visitor is just:
 ts.leading_lines returns a list of otherwise ignored that
 a) preceded a given line and
 b) have not already been returned.
-
-It is straightforward. ts.leading_string is a convenience method that returns ''.join(self.leading_lines). The visitors of the CoffeeScriptTraverser class show how to use these methods.</t>
+ts.leading_string is a convenience method that returns ''.join(self.leading_lines). The visitors of the CoffeeScriptTraverser class show how to use these methods.</t>
+<t tx="ekr.20160225122323.1"></t>
 </tnodes>
 </leo_file>

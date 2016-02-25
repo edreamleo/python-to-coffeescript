@@ -53,8 +53,7 @@ Stripped of defensive code, the do_Str visitor is just:
 ts.leading_lines returns a list of otherwise ignored that
 a) preceded a given line and
 b) have not already been returned.
-
-It is straightforward. ts.leading_string is a convenience method that returns ''.join(self.leading_lines). The visitors of the CoffeeScriptTraverser class show how to use these methods.
+ts.leading_string is a convenience method that returns ''.join(self.leading_lines). The visitors of the CoffeeScriptTraverser class show how to use these methods.
 
 ### Using the TokenSync class
 
@@ -90,19 +89,9 @@ The leading_string and trailing_comment methods simply redirect to the correspon
 
 The line:
 
-   tail = self.tail_after_body(node.body, node.orelse, result)
+        tail = self.tail_after_body(node.body, node.orelse, result)
 
 is a hack needed to compensate for the lack of an actual ast.Else node.
-
-The TokenSync.sync_string method deserves special mention. It ensures that the do_Str visitor gets the proper spelling of strings. It is a completely solid alternative to using the ast.col_offset field, which is a big deal, imo.
-
-    def do_Str(self, node):
-        '''A string constant, including docstrings.'''
-        if hasattr(node, 'lineno'):
-            return self.sync_string(node)
-        else: # never happens.
-            g.trace('==== no lineno', node.s)
-            return node.s
 
 ### Summary
 

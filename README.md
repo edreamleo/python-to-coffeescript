@@ -12,9 +12,7 @@ This script already does much of the grunt work of converting python to coffeesc
 
 ### Rationale
 
-The proximate cause for this script were the notes from a [DropBox sprint](https://blogs.dropbox.com/tech/2012/09/dropbox-dives-into-coffeescript/). Coffeescript is obviously successful. Numerous python-to-javascript systems seem unlikely ever to gain traction.
-
-Googling 'python to javascript' or 'python to coffeescript' yields no similar tools, despite many similar searches. This script will be useful to me.
+The proximate cause for this script were the notes from a [DropBox sprint](https://blogs.dropbox.com/tech/2012/09/dropbox-dives-into-coffeescript/). Coffeescript is obviously successful. Numerous python-to-javascript systems seem unlikely ever to gain traction. Googling 'python to javascript' or 'python to coffeescript' yields no similar tools, despite many similar searches. This script will be useful to me.
 
 ### Quick Start
 
