@@ -5,7 +5,7 @@ on the command line (wildcard file names are supported).
 
 For full details, see README.md.
 
-Released under the MIT Licence.
+Released under the MIT License.
 
 Written by Edward K. Ream.
 '''

@@ -131,19 +131,6 @@
 <v t="ekr.20160223132520.1"><vh>@@clean test.py</vh></v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 </v>
-<v t="ekr.20160220050053.2"><vh>@clean README.md</vh>
-<v t="ekr.20160221071334.1"><vh>Overview</vh></v>
-<v t="ekr.20160221071354.1"><vh>Rationale</vh></v>
-<v t="ekr.20160221070924.1"><vh>Quick start</vh></v>
-<v t="ekr.20160221071222.1"><vh>Command-line arguments</vh></v>
-<v t="ekr.20160221071735.1"><vh>Summary</vh></v>
-</v>
-<v t="ekr.20160222040422.1"><vh>@clean theory.md</vh>
-<v t="ekr.20160225103140.1"><vh>The problem</vh></v>
-<v t="ekr.20160225104246.1"><vh>The design</vh></v>
-<v t="ekr.20160225103047.1"><vh>Using TokenSync class</vh></v>
-<v t="ekr.20160225103215.1"><vh>Summary</vh></v>
-</v>
 <v t="ekr.20160220050321.1"><vh>@clean py2cs.py</vh>
 <v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
 <v t="ekr.20160220050433.2"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
@@ -288,6 +275,19 @@
 <v t="ekr.20160223102112.1"><vh>ts.trailing_lines</vh></v>
 </v>
 </v>
+<v t="ekr.20160220050053.2"><vh>@clean README.md</vh>
+<v t="ekr.20160221071334.1"><vh>Overview</vh></v>
+<v t="ekr.20160221071354.1"><vh>Rationale</vh></v>
+<v t="ekr.20160221070924.1"><vh>Quick start</vh></v>
+<v t="ekr.20160221071222.1"><vh>Command-line arguments</vh></v>
+<v t="ekr.20160221071735.1"><vh>Summary</vh></v>
+</v>
+<v t="ekr.20160222040422.1"><vh>@clean theory.md</vh>
+<v t="ekr.20160225103140.1"><vh>The problem</vh></v>
+<v t="ekr.20160225104246.1"><vh>The design</vh></v>
+<v t="ekr.20160225103047.1"><vh>Using TokenSync class</vh></v>
+<v t="ekr.20160225103215.1"><vh>Summary</vh></v>
+</v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language rest
@@ -303,7 +303,7 @@ on the command line (wildcard file names are supported).
 
 For full details, see README.md.
 
-Released under the MIT Licence.
+Released under the MIT License.
 
 Written by Edward K. Ream.
 '''
