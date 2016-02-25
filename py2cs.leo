@@ -138,10 +138,14 @@
 <v t="ekr.20160221071354.1"><vh>Rationale</vh></v>
 <v t="ekr.20160221070924.1"><vh>Quick start</vh></v>
 <v t="ekr.20160221071222.1"><vh>Command-line arguments</vh></v>
-<v t="ekr.20160221071408.1"><vh>Code notes</vh></v>
 <v t="ekr.20160221071735.1"><vh>Summary</vh></v>
 </v>
-<v t="ekr.20160222040422.1"><vh>@clean design.md</vh></v>
+<v t="ekr.20160222040422.1"><vh>@clean theory.md</vh>
+<v t="ekr.20160225103140.1"><vh>The problem</vh></v>
+<v t="ekr.20160225104246.1"><vh>The design</vh></v>
+<v t="ekr.20160225103047.1"><vh>Using TokenSync class</vh></v>
+<v t="ekr.20160225103215.1"><vh>Summary</vh></v>
+</v>
 <v t="ekr.20160222030015.1"><vh>2.1.5 Explicit line joining</vh></v>
 <v t="ekr.20160222030107.1"><vh>ast differences</vh></v>
 </v>
@@ -293,15 +297,12 @@
 </v>
 <v t="ekr.20160220050053.2"></v>
 <v t="ekr.20160222040422.1"></v>
-<v t="ekr.20160221143000.1"></v>
-<v t="ekr.20160220050433.16"></v>
 </vnodes>
 <tnodes>
-<t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
+<t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language rest
 @wrap
 
-This is the readme file for python_to_coffeescript.py. It explains what
-the script does, why I created it, and how to use the script. A last section explains why the code is as it is and how it may evolve. Full source code for the script is in its [github repository](https://github.com/edreamleo/python-to-coffeescript). This script is offered under the terms of [Leo's MIT License](http://leoeditor.com/license.html).
+This is the readme file for py2cs.py. It explains what the script does, why I created it, and how to use the script. A last section explains why the code is as it is and how it may evolve. Full source code for the script is in its [github repository](https://github.com/edreamleo/python-to-coffeescript). This script is offered under the terms of [Leo's MIT License](http://leoeditor.com/license.html).
 
 @others</t>
 <t tx="ekr.20160220050321.1">#!/usr/bin/env python
@@ -2430,11 +2431,9 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
-- post about success
-* Update theory.md and readme.md.
-    - Discuss TokenSync class.
-Later:
 - Respond to http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node
+
+Later or never:
 - Unit tests.
 * Handle more coffeescript xforms.
     - Peephole: last return from def.
@@ -2443,7 +2442,6 @@ Later:
 - `###` means something (invalid) to coffeescript
 - Remove type hints from arg lists.
 - Change `is not` to `isnt`
-- Move TokenSync class into leoAst.py.
 </t>
 <t tx="ekr.20160220143251.1">
 def gen_class_or_def(self, name):
@@ -2624,7 +2622,7 @@ def pop(self):
 <t tx="ekr.20160221070924.1">
 ### Quick Start
 
-1. Put `python_to_coffeescript.py` on your path.
+1. Put `py2cs.py` on your path.
 
 2. Enter a directory containing .py files:
 
@@ -2632,7 +2630,7 @@ def pop(self):
     
 3. Generate foo.coffee from foo.py:
 
-        python_to_coffeescript foo.py
+        py2cs foo.py
 
 4. Look at foo.coffee to see the generated coffeescript code:
 
@@ -2644,16 +2642,16 @@ def pop(self):
 
 6. Regenerate foo.coffee, overwriting the previous .coffee file:
 
-        python_to_coffeescript.py foo.py -o
+        py2cs.py foo.py -o
    
 7. (Optional) Specify a configuration file containing defaults:
 
-        python_to_coffeescript.py -c myConfigFile.cfg -o
+        py2cs.py -c myConfigFile.cfg -o
 </t>
 <t tx="ekr.20160221071222.1">
 ### Command-line arguments
 
-    Usage: python_to_coffeescript.py [options] file1, file2, ...
+    Usage: py2cs.py [options] file1, file2, ...
     
     Options:
       -h, --help          show this help message and exit
@@ -2671,38 +2669,22 @@ This script makes a [coffeescript](http://coffeescript.org/) (.coffee) file in t
 
 This script merely converts python syntax to the roughly equivalent coffeescript syntax. It knows nothing about coffeescript semantics. It is intended *only* to help start creating coffeescript code from an existing python code base.
 
-This script already does much of the grunt work of converting python to coffeescript. The script processes itself without error, but coffeescript itself complains about some results.  This is to be expected at this time.
+This script already does much of the grunt work of converting python to coffeescript. The script processes itself without error, but coffeescript itself complains about some results.
 </t>
 <t tx="ekr.20160221071354.1">
 ### Rationale
 
-This script is a *one day prototype*, intended only as a proof of concept. In that sense, it has already succeeded.
-
 The proximate cause for this script were the notes from a [DropBox sprint](https://blogs.dropbox.com/tech/2012/09/dropbox-dives-into-coffeescript/). Coffeescript is obviously successful. Numerous python-to-javascript systems seem unlikely ever to gain traction.
 
 Googling 'python to javascript' or 'python to coffeescript' yields no similar tools, despite many similar searches. This script will be useful to me.
-
-</t>
-<t tx="ekr.20160221071408.1">
-### Code notes
-
-The present code is based on Leo's token-based beautifier command, with substantial modifications brought about by having to parse the code. Using tokens is reasonable. This approach preserves line breaks, comments and the spelling of strings. On the minus side, it requires ad-hoc parsing of Python, which becomes increasingly difficult as more complex syntactic transformations are attempted.
-
-The initial version of this script was based on ast trees. It is in the attic (the Unused Code section of the python_to_coffeescript.leo). The great disadvantage of parse trees is that it is *extremely* difficult to associate tokens with parse nodes. See [this discussion](http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node) and [this proposed solution](https://bitbucket.org/plas/thonny/src/3b71fda7ac0b66d5c475f7a668ffbdc7ae48c2b5/thonny/common.py?at=master). Imo, the solution is not good enough.
-
-**Important**: Even if there were no holes in the ast api, it would still be tricky to associate tokens with parse trees. My present plan is to experiment with using *both* parse-trees and tokens. The idea will be for the ast visitors to **sync** tokens with keywords and strings. This will allow the accumulation of properly-formatted comments preceding keywords, and will allow the perfect reconstruction of strings, something that appears difficult or impossible with a purely parse-tree-oriented approach.
-
-Finally, note that no matter how the code list is generated, it would be possible to use a real peephole pass on it if required.
 </t>
 <t tx="ekr.20160221071735.1">
 ### Summary
 
-This has been a success proof of concept. It is surely useful as is.
-
-I have years of experience working with tokens and parse trees. Nevertheless, it remains unclear whether tokens or parse trees will come to dominate the code. Only further work will reveal the best way.
+py2cs.py could be improved, but it is useful as is. 
 
 Edward K. Ream  
-February 21, 2016
+February 21 to 25, 2016
 </t>
 <t tx="ekr.20160221143000.1">
 
@@ -2755,48 +2737,13 @@ discusses the differences in ast trees between Python 2 and 3. Helpful, but poss
 <t tx="ekr.20160222040422.1">@language rest
 @wrap
 
-The initial version of python_to_coffeescript.py (the script) used only tokens. This solves all token-related problems, but makes parsing difficult. Conversely, basing the code on ast trees solves all parsing-related problems, but makes recovering token-related information difficult. Yesterday I started experimenting with using parse trees.
+This is the theory of operation document for py2cs.py.
 
-This posting gives a preliminary design for a way of associating important token-related data with parse trees. Doing this *cleanly* and *reliably* is far from a trivial project. Imo, it's fascinating and well worth doing for its own sake. I'm starting to have a good feeling about this...
+@others
 
-The script needs the following token-related data:
 
-- The **ignored lines** (comment lines and blank lines) that precede or follow any given **statement line**.
 
-- The **line breaks** occurring within lines. This is not absolutely essential--the script could break lines automatically, but it would be best if the original line breaks were respected.
-
-- The exact spelling of all strings. Essential in general, though perhaps not for python_to_coffeescript.py.
-
-The present plan is as follows:
-
-1. Use *only* the ast.lineno fields and the tokenizer module to recreate token data. The design requires that both the ast.lineno field and Python's tokenizer module are absolutely solid.
-
-2. Ignore the ast.col_offset field. It's notoriously hard to recreate token-related data using col_offset. col_offset is buggy and differs in Python 2 and 3. 
-
-3. Recreate the spelling of strings by traversing the tree in **string order**. That is, we assume that the Str visitor will be called in the order in which strings appear in the source file. This is an important constraint on the traverser class. I *think* it is possible to satisfy this constraint, but I wouldn't bet my life on it. Given the list of tokens, we create another list containing only string tokens:
-
-        def tok_name(the_token):
-            return token.tok_name[the_token[0]].lower()
-    
-        string_toks = [z for z in tokens if tok_name(z) == 'string']
-    
-   The ast.Str visitor gets the strings spelling by popping the next token from the start of the string_toks list.
-
-4. Associate ignored lines with statements by traversing the tree in **line order**. Again, this is a non-trivial constraint on the traversal. Assuming that this constraint can be met, we can preprocess the tokens in various ways. For example, it may be useful to tokenize the input line-by-line:
-
-        line_tokens = [list(tokenize.generate_tokens(z)) for z in s.splitlines(True)]
-    
-   We shall have to munge this list if the ast.lineno is a logical line number instead of a physical line number.
-
-5. Insert line breaks within statements using the line_tokens array. Details omitted. Invention may be required.
-
-### Summary
-
-The overall plan is to sync tokens with statements in the ast tree by preprocessing tokens. There are a number of complicating factors, including continued lines and lines containing multiple statements. Nevertheless, syncing tokens appears more promising than using the ast.col_offset field.
-
-This design is preliminary and experimental. Gotcha's may lurk. Another one-day prototype should prove revealing. I am cautiously optimistic at 4 a.m  ;-)
-
-Edward</t>
+</t>
 <t tx="ekr.20160222041249.1"></t>
 <t tx="ekr.20160222081027.1">
 def line_at(self, node, continued_lines=True):
@@ -3605,5 +3552,120 @@ def check_strings(self):
     for i, aList in enumerate(self.string_tokens):
         if aList:
             g.trace('warning: line %s. unused strings: %s' % (i, aList))</t>
+<t tx="ekr.20160225103047.1">
+### Using the TokenSync class
+
+The present code is driven by ast trees, but each visitor of the CoffeeScriptTraverser class takes care to preserve **otherwise-ignored tokens**. These are tokens that would otherwise be ignored: namely blank lines and comments, both entire-line comments and trailing comments.
+
+The visitor for each statement intersperses otherwise ignored tokens using calls to the TokenSync class.  The simplest cases are like this:
+
+    def do_Break(self, node):
+        head = self.leading_string(node)
+        tail = self.trailing_comment(node)
+        return head + self.indent('break') + tail
+
+The leading_string and trailing_comment methods simply redirect to the corresponding methods in the TokenSync class.  Saves a bit of typing. Compound statements are a bit more bother, but not overly so. For example:
+
+    def do_If(self, node):
+   
+        result = self.leading_lines(node)
+        tail = self.trailing_comment(node)
+        s = 'if %s:%s' % (self.visit(node.test), tail)
+        result.append(self.indent(s))
+        for z in node.body:
+            self.level += 1
+            result.append(self.visit(z))
+            self.level -= 1
+        if node.orelse:
+            tail = self.tail_after_body(node.body, node.orelse, result)
+            result.append(self.indent('else:' + tail))
+            for z in node.orelse:
+                self.level += 1
+                result.append(self.visit(z))
+                self.level -= 1
+        return ''.join(result)
+
+The line:
+
+   tail = self.tail_after_body(node.body, node.orelse, result)
+
+is a hack needed to compensate for the lack of an actual ast.Else node.
+
+The TokenSync.sync_string method deserves special mention. It ensures that the do_Str visitor gets the proper spelling of strings. It is a completely solid alternative to using the ast.col_offset field, which is a big deal, imo.
+
+    def do_Str(self, node):
+        '''A string constant, including docstrings.'''
+        if hasattr(node, 'lineno'):
+            return self.sync_string(node)
+        else: # never happens.
+            g.trace('==== no lineno', node.s)
+            return node.s
+</t>
+<t tx="ekr.20160225103140.1">
+### The problem
+
+The initial version of py2cs.py (the script) used only tokens. This solved all token-related problems, but made parsing difficult. Alas, it is [difficult](http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node) to associate tokens with ast nodes.
+
+The script needs the following token-related data:
+
+- The **ignored lines** (comment lines and blank lines) that precede any statement.
+
+- The **trailing comment** strings that might follow any line.
+
+- Optionally, the **line breaks** occurring within lines. At present, this script does not preserve such breaks, and it's probably not worth doing. Indeed, automatically breaking long lines seems more useful, especially considering that coffeescript lines may be substantially shorter than the corresponding python lines.
+
+- The **exact spelling** of all strings.
+
+The [ast_utils module](
+https://bitbucket.org/plas/thonny/src/3b71fda7ac0b66d5c475f7a668ffbdc7ae48c2b5/thonny/ast_utils.py?at=master) purports to solve this problem with convoluted adjustments to the col_offset field. This approach is subject to subtle Python bugs, and subtle differences between Python 2 and Python 3. There is a better way...
+</t>
+<t tx="ekr.20160225103215.1">
+### Summary
+
+The TokenSync class is, a new, elegant, unexpected and happy development. It is a relatively easy-to-use helper that allows parser-based code to preserve data that is not easily accessible in parse trees.
+
+The TokenSync class avoids [problems with the col_offset field](
+http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node) in ast nodes. The TokenSync class depends only on the ast.lineno field and the tokenize module. We can expect it to be rock solid.
+
+Edward K. Ream  
+February 20 to 25, 2016
+</t>
+<t tx="ekr.20160225104246.1">
+### Design
+
+The main idea is to use *only* the ast.lineno fields and the tokenizer module to recreate token data. The design assumes only that both the ast.lineno field and Python's tokenizer module are solid. This is a much more reasonable assumption than assuming that the col_offset field always tells the truth. In short, this design *ignores* the ast.col_offset field.
+
+At startup, the TokenSync ctor assigns all the incoming tokens to various lists.  These lists are indexed by lineno:
+
+    ts.line_tokens[i]: all the tokens on line i
+    ts.string_tokens[i]: all string tokens on line i
+    st.ignored_lines: the blank or comment line on line i
+    
+It is very easy to create these lists. The code does not depend on any arcane details. In addition, ts.blank_lines contains a list of the line numbers of all blank lines.
+
+#### Recovering the exact spelling of stings.
+
+ts.synch_string returns the *next* string on the line. To make this work, it must be called in **string order**. In practice, it would be hard *not* to call st.sync_string out of order. Here it is, stripped of defensive code:
+
+    def sync_string(self, node):
+        '''Return the spelling of the string at the given node.'''
+        tokens = self.string_tokens[node.lineno-1]
+        token = tokens.pop(0)
+        self.string_tokens[node.lineno-1] = tokens
+        return self.token_val(token)
+       
+Stripped of defensive code, the do_Str visitor is just:
+
+    def do_Str(self, node):
+        '''A string constant, including docstrings.'''
+        return self.sync_string(node)
+        
+#### Recovering otherwise ignored nodes
+
+ts.leading_lines returns a list of otherwise ignored that
+a) preceded a given line and
+b) have not already been returned.
+
+It is straightforward. ts.leading_string is a convenience method that returns ''.join(self.leading_lines). The visitors of the CoffeeScriptTraverser class show how to use these methods.</t>
 </tnodes>
 </leo_file>
