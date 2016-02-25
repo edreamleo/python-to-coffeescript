@@ -145,6 +145,7 @@
 <v t="ekr.20160222030015.1"><vh>2.1.5 Explicit line joining</vh></v>
 <v t="ekr.20160222030107.1"><vh>ast differences</vh></v>
 </v>
+<v t="ekr.20160220131008.1"><vh>** To do</vh></v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 <v t="ekr.20160220050321.1"><vh>@clean py2cs.py</vh>
 <v t="ekr.20160220050745.1"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
@@ -274,7 +275,7 @@
 <v t="ekr.20160223031552.1"><vh>ts.make_nl_token</vh></v>
 <v t="ekr.20160222084401.1"><vh>ts.make_string_tokens</vh></v>
 </v>
-<v t="ekr.20160223061445.1"><vh>trailing_comment_at_lineno</vh></v>
+<v t="ekr.20160225071548.1"><vh>ts.check_strings</vh></v>
 <v t="ekr.20160223013055.1"><vh>ts.dump_token</vh></v>
 <v t="ekr.20160223022613.1"><vh>ts.is_line_comment</vh></v>
 <v t="ekr.20160224053149.1"><vh>ts.join</vh></v>
@@ -286,12 +287,14 @@
 <v t="ekr.20160222124401.1"><vh>ts.token_kind/raw_val/val</vh></v>
 <v t="ekr.20160224044823.1"><vh>ts.tokens_for_statement</vh></v>
 <v t="ekr.20160223042247.1"><vh>ts.trailing_comment</vh></v>
+<v t="ekr.20160223061445.1"><vh>ts.trailing_comment_at_lineno</vh></v>
 <v t="ekr.20160223102112.1"><vh>ts.trailing_lines</vh></v>
 </v>
 </v>
-<v t="ekr.20160220131008.1"><vh>** To do</vh></v>
+<v t="ekr.20160220050053.2"></v>
 <v t="ekr.20160222040422.1"></v>
-<v t="ekr.20160224100419.1"><vh>** Discuss TokenSync class in design.md</vh></v>
+<v t="ekr.20160221143000.1"></v>
+<v t="ekr.20160220050433.16"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100550e756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103550123710473732e">@language md
@@ -619,6 +622,7 @@ def format(self, node, s, tokens):
     self.trailing_comment_at_lineno = sync.trailing_comment_at_lineno
     # Compute the result.
     val = self.visit(node)
+    sync.check_strings()
     # if isinstance(val, list): # testing:
         # val = ' '.join(val)
     val += ''.join(sync.trailing_lines())
@@ -2426,11 +2430,11 @@ class ReadLinesClass:
 <t tx="ekr.20160220131008.1">@language rest
 @wrap
 
+- post about success
 * Update theory.md and readme.md.
-- Respond to http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node
-- cv.format should check that all strings have been consumed.
-
+    - Discuss TokenSync class.
 Later:
+- Respond to http://stackoverflow.com/questions/16748029/how-to-get-source-corresponding-to-a-python-ast-node
 - Unit tests.
 * Handle more coffeescript xforms.
     - Peephole: last return from def.
@@ -3156,7 +3160,7 @@ def tokens_for_statement(self, node):
     name = node.__class__.__name__
     if hasattr(node, 'lineno'):
         tokens = self.line_tokens[node.lineno-1]
-        g.trace(' '.self.dump_token(z) for z in tokens)
+        g.trace(' '.join([self.dump_token(z) for z in tokens]))
     else:
         g.trace('no lineno', name)
 
@@ -3594,6 +3598,12 @@ def visit(self, node):
                 assert isinstance(s, (str, unicode))
             return s
 </t>
-<t tx="ekr.20160224100419.1"># Should TokenSync be mentioned in Ast docs?</t>
+<t tx="ekr.20160225071548.1">
+def check_strings(self):
+    '''Check that all strings have been consumed.'''
+    # g.trace(len(self.string_tokens))
+    for i, aList in enumerate(self.string_tokens):
+        if aList:
+            g.trace('warning: line %s. unused strings: %s' % (i, aList))</t>
 </tnodes>
 </leo_file>

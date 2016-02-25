@@ -167,6 +167,7 @@ class CoffeeScriptTraverser(object):
         self.trailing_comment_at_lineno = sync.trailing_comment_at_lineno
         # Compute the result.
         val = self.visit(node)
+        sync.check_strings()
         # if isinstance(val, list): # testing:
             # val = ' '.join(val)
         val += ''.join(sync.trailing_lines())
@@ -1390,19 +1391,12 @@ class TokenSync(object):
         assert len(result) == len(self.line_tokens)
         return result
 
-    def trailing_comment_at_lineno(self, lineno):
-        '''Return any trailing comment at the given node.lineno.'''
-        trace = False
-        tokens = self.line_tokens[lineno-1]
-        for token in tokens:
-            if self.token_kind(token) == 'comment':
-                raw_val = self.token_raw_val(token).rstrip()
-                if not raw_val.strip().startswith('#'):
-                    val = self.token_val(token).rstrip()
-                    s = ' %s\n' % val
-                    if trace: g.trace(lineno, s.rstrip(), g.callers())
-                    return s
-        return '\n'
+    def check_strings(self):
+        '''Check that all strings have been consumed.'''
+        # g.trace(len(self.string_tokens))
+        for i, aList in enumerate(self.string_tokens):
+            if aList:
+                g.trace('warning: line %s. unused strings: %s' % (i, aList))
 
     def dump_token(self, token, verbose=False):
         '''Dump the token. It is either a string or a 5-tuple.'''
@@ -1535,7 +1529,7 @@ class TokenSync(object):
         name = node.__class__.__name__
         if hasattr(node, 'lineno'):
             tokens = self.line_tokens[node.lineno-1]
-            g.trace(' '.self.dump_token(z) for z in tokens)
+            g.trace(' '.join([self.dump_token(z) for z in tokens]))
         else:
             g.trace('no lineno', name)
 
@@ -1552,6 +1546,20 @@ class TokenSync(object):
         else:
             g.trace('no lineno', node.__class__.__name__, g.callers())
             return '\n'
+
+    def trailing_comment_at_lineno(self, lineno):
+        '''Return any trailing comment at the given node.lineno.'''
+        trace = False
+        tokens = self.line_tokens[lineno-1]
+        for token in tokens:
+            if self.token_kind(token) == 'comment':
+                raw_val = self.token_raw_val(token).rstrip()
+                if not raw_val.strip().startswith('#'):
+                    val = self.token_val(token).rstrip()
+                    s = ' %s\n' % val
+                    if trace: g.trace(lineno, s.rstrip(), g.callers())
+                    return s
+        return '\n'
 
     def trailing_lines(self):
         '''return any remaining ignored lines.'''

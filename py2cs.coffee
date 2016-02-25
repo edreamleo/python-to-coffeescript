@@ -1,4 +1,4 @@
-# python_to_coffeescript: Wed 24 Feb 2016 at 08:23:26
+# python_to_coffeescript: Thu 25 Feb 2016 at 07:25:18
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -173,6 +173,7 @@ class CoffeeScriptTraverser extends object
         @trailing_comment_at_lineno=sync.trailing_comment_at_lineno
         # Compute the result.
         val=@visit(node)
+        sync.check_strings()
         # if isinstance(val, list): # testing:
             # val = ' '.join(val)
         val+=''.join(sync.trailing_lines())
@@ -1392,20 +1393,12 @@ class TokenSync extends object
         assert len(result)==len(@line_tokens)
         return result
 
-    trailing_comment_at_lineno: (self, lineno) ->
-        '''Return any trailing comment at the given node.lineno.'''
-        trace=bool
-        tokens=@line_tokens[lineno-1]
-        for token in tokens:
-            if @token_kind(token)=='comment':
-                raw_val=@token_raw_val(token).rstrip()
-                if  not raw_val.strip().startswith('#'):
-                    val=@token_val(token).rstrip()
-                    s=' %s\n'%val
-                    if trace:
-                        g.trace(lineno,s.rstrip(),g.callers())
-                    return s
-        return '\n'
+    check_strings: (self) ->
+        '''Check that all strings have been consumed.'''
+        # g.trace(len(self.string_tokens))
+        for (i, aList) in enumerate(@string_tokens):
+            if aList:
+                g.trace('warning: line %s. unused strings:'%(i, aList))
 
     dump_token: (self, token, verbose=bool) ->
         '''Dump the token. It is either a string or a 5-tuple.'''
@@ -1557,6 +1550,21 @@ class TokenSync extends object
         else:
             g.trace('no lineno',node.__class__.__name__,g.callers())
             return '\n'
+
+    trailing_comment_at_lineno: (self, lineno) ->
+        '''Return any trailing comment at the given node.lineno.'''
+        trace=bool
+        tokens=@line_tokens[lineno-1]
+        for token in tokens:
+            if @token_kind(token)=='comment':
+                raw_val=@token_raw_val(token).rstrip()
+                if  not raw_val.strip().startswith('#'):
+                    val=@token_val(token).rstrip()
+                    s=' %s\n'%val
+                    if trace:
+                        g.trace(lineno,s.rstrip(),g.callers())
+                    return s
+        return '\n'
 
     trailing_lines: (self) ->
         '''return any remaining ignored lines.'''
