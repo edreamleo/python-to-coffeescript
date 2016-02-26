@@ -2659,7 +2659,7 @@ class TestClass(object):
 <t tx="ekr.20160222040422.1">@language rest
 @wrap
 
-This is the theory of operation document for py2cs.py.
+This is the theory of operation document for py2cs.py. The most interesting aspect of this script is the TokenSync class. This class provides a reliable way of associating tokenizer tokens with ast nodes.
 
 @others
 
