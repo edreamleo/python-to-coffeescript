@@ -131,151 +131,151 @@
 <v t="ekr.20160223132520.1"><vh>@@clean test.py</vh></v>
 <v t="ekr.20160222023117.1"><vh>@clean test.py</vh></v>
 </v>
-<v t="ekr.20160317192503.1"><vh>@clean py2cs.py</vh>
-<v t="ekr.20160317192503.2"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
-<v t="ekr.20160317192503.3"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
-<v t="ekr.20160317192503.4"><vh>  main</vh></v>
-<v t="ekr.20160317192503.5"><vh>  utility functions</vh>
-<v t="ekr.20160317192503.6"><vh>dump</vh></v>
-<v t="ekr.20160317192503.7"><vh>dump_dict</vh></v>
-<v t="ekr.20160317192503.8"><vh>dump_list</vh></v>
-<v t="ekr.20160317192503.9"><vh>op_name</vh></v>
-<v t="ekr.20160317192503.10"><vh>pdb</vh></v>
-<v t="ekr.20160317192503.11"><vh>truncate</vh></v>
+<v t="ekr.20160318140657.1"><vh>@clean py2cs.py</vh>
+<v t="ekr.20160318140657.2"><vh>  &lt;&lt; license &gt;&gt; (python_to_coffeescript.py)</vh></v>
+<v t="ekr.20160318140657.3"><vh>  &lt;&lt; imports &gt;&gt; (python_to_coffeescript.py)</vh></v>
+<v t="ekr.20160318140657.4"><vh>  main</vh></v>
+<v t="ekr.20160318140657.5"><vh>  utility functions</vh>
+<v t="ekr.20160318140657.6"><vh>dump</vh></v>
+<v t="ekr.20160318140657.7"><vh>dump_dict</vh></v>
+<v t="ekr.20160318140657.8"><vh>dump_list</vh></v>
+<v t="ekr.20160318140657.9"><vh>op_name</vh></v>
+<v t="ekr.20160318140657.10"><vh>pdb</vh></v>
+<v t="ekr.20160318140657.11"><vh>truncate</vh></v>
 </v>
-<v t="ekr.20160317192503.12"><vh>class CoffeeScriptTraverser</vh>
-<v t="ekr.20160317192503.13"><vh> cv.ctor</vh></v>
-<v t="ekr.20160317192503.14"><vh> cv.format</vh></v>
-<v t="ekr.20160317192503.15"><vh> cv.indent</vh></v>
-<v t="ekr.20160317192503.16"><vh> cv.visit</vh></v>
-<v t="ekr.20160317192503.17"><vh>cv.Contexts</vh>
-<v t="ekr.20160317192503.18"><vh>cv.ClassDef</vh></v>
-<v t="ekr.20160317192503.19"><vh>cv.FunctionDef</vh></v>
-<v t="ekr.20160317192503.20"><vh>cv.Interactive</vh></v>
-<v t="ekr.20160317192503.21"><vh>cv.Module</vh></v>
-<v t="ekr.20160317192503.22"><vh>cv.Lambda</vh></v>
+<v t="ekr.20160318140657.12"><vh>class CoffeeScriptTraverser</vh>
+<v t="ekr.20160318140657.13"><vh> cv.ctor</vh></v>
+<v t="ekr.20160318140657.14"><vh> cv.format</vh></v>
+<v t="ekr.20160318140657.15"><vh> cv.indent</vh></v>
+<v t="ekr.20160318140657.16"><vh> cv.visit</vh></v>
+<v t="ekr.20160318140657.17"><vh>cv.Contexts</vh>
+<v t="ekr.20160318140657.18"><vh>cv.ClassDef</vh></v>
+<v t="ekr.20160318140657.19"><vh>cv.FunctionDef</vh></v>
+<v t="ekr.20160318140657.20"><vh>cv.Interactive</vh></v>
+<v t="ekr.20160318140657.21"><vh>cv.Module</vh></v>
+<v t="ekr.20160318140657.22"><vh>cv.Lambda</vh></v>
 </v>
-<v t="ekr.20160317192503.23"><vh>cv.Expressions</vh>
-<v t="ekr.20160317192503.24"><vh>cv.Expression</vh></v>
-<v t="ekr.20160317192503.25"><vh>cv.GeneratorExp</vh></v>
+<v t="ekr.20160318140657.23"><vh>cv.Expressions</vh>
+<v t="ekr.20160318140657.24"><vh>cv.Expression</vh></v>
+<v t="ekr.20160318140657.25"><vh>cv.GeneratorExp</vh></v>
 </v>
-<v t="ekr.20160317192503.26"><vh>cv.Operands</vh>
-<v t="ekr.20160317192503.27"><vh>cv.arguments</vh></v>
-<v t="ekr.20160317192503.28"><vh>cv.arg (Python3 only)</vh></v>
-<v t="ekr.20160317192503.29"><vh>cv.Attribute</vh></v>
-<v t="ekr.20160317192503.30"><vh>cv.Bytes</vh></v>
-<v t="ekr.20160317192503.31"><vh>cv.Call &amp; cv.keyword</vh>
-<v t="ekr.20160317192503.32"><vh>cv.keyword</vh></v>
+<v t="ekr.20160318140657.26"><vh>cv.Operands</vh>
+<v t="ekr.20160318140657.27"><vh>cv.arguments</vh></v>
+<v t="ekr.20160318140657.28"><vh>cv.arg (Python3 only)</vh></v>
+<v t="ekr.20160318140657.29"><vh>cv.Attribute</vh></v>
+<v t="ekr.20160318140657.30"><vh>cv.Bytes</vh></v>
+<v t="ekr.20160318140657.31"><vh>cv.Call &amp; cv.keyword</vh>
+<v t="ekr.20160318140657.32"><vh>cv.keyword</vh></v>
 </v>
-<v t="ekr.20160317192503.33"><vh>cv.comprehension</vh></v>
-<v t="ekr.20160317192503.34"><vh>cv.Dict</vh></v>
-<v t="ekr.20160317192503.35"><vh>cv.Ellipsis</vh></v>
-<v t="ekr.20160317192503.36"><vh>cv.ExtSlice</vh></v>
-<v t="ekr.20160317192503.37"><vh>cv.Index</vh></v>
-<v t="ekr.20160317192503.38"><vh>cv.List</vh></v>
-<v t="ekr.20160317192503.39"><vh>cv.ListComp</vh></v>
-<v t="ekr.20160317192503.40"><vh>cv.Name &amp; cv.NameConstant</vh></v>
-<v t="ekr.20160317192503.41"><vh>cv.Num</vh></v>
-<v t="ekr.20160317192503.42"><vh>cv.Repr</vh></v>
-<v t="ekr.20160317192503.43"><vh>cv.Slice</vh></v>
-<v t="ekr.20160317192503.44"><vh>cv.Str</vh></v>
-<v t="ekr.20160317192503.45"><vh>cv.Subscript</vh></v>
-<v t="ekr.20160317192503.46"><vh>cv.Tuple</vh></v>
+<v t="ekr.20160318140657.33"><vh>cv.comprehension</vh></v>
+<v t="ekr.20160318140657.34"><vh>cv.Dict</vh></v>
+<v t="ekr.20160318140657.35"><vh>cv.Ellipsis</vh></v>
+<v t="ekr.20160318140657.36"><vh>cv.ExtSlice</vh></v>
+<v t="ekr.20160318140657.37"><vh>cv.Index</vh></v>
+<v t="ekr.20160318140657.38"><vh>cv.List</vh></v>
+<v t="ekr.20160318140657.39"><vh>cv.ListComp</vh></v>
+<v t="ekr.20160318140657.40"><vh>cv.Name &amp; cv.NameConstant</vh></v>
+<v t="ekr.20160318140657.41"><vh>cv.Num</vh></v>
+<v t="ekr.20160318140657.42"><vh>cv.Repr</vh></v>
+<v t="ekr.20160318140657.43"><vh>cv.Slice</vh></v>
+<v t="ekr.20160318140657.44"><vh>cv.Str</vh></v>
+<v t="ekr.20160318140657.45"><vh>cv.Subscript</vh></v>
+<v t="ekr.20160318140657.46"><vh>cv.Tuple</vh></v>
 </v>
-<v t="ekr.20160317192503.47"><vh>cv.Operators</vh>
-<v t="ekr.20160317192503.48"><vh>cv.BinOp</vh></v>
-<v t="ekr.20160317192503.49"><vh>cv.BoolOp</vh></v>
-<v t="ekr.20160317192503.50"><vh>cv.Compare</vh></v>
-<v t="ekr.20160317192503.51"><vh>cv.ifExp (ternary operator)</vh></v>
-<v t="ekr.20160317192503.52"><vh>cv.UnaryOp</vh></v>
+<v t="ekr.20160318140657.47"><vh>cv.Operators</vh>
+<v t="ekr.20160318140657.48"><vh>cv.BinOp</vh></v>
+<v t="ekr.20160318140657.49"><vh>cv.BoolOp</vh></v>
+<v t="ekr.20160318140657.50"><vh>cv.Compare</vh></v>
+<v t="ekr.20160318140657.51"><vh>cv.ifExp (ternary operator)</vh></v>
+<v t="ekr.20160318140657.52"><vh>cv.UnaryOp</vh></v>
 </v>
-<v t="ekr.20160317192503.53"><vh>cv.Statements</vh>
-<v t="ekr.20160317192503.54"><vh> cv.tail_after_body</vh></v>
-<v t="ekr.20160317192503.55"><vh>cv.Assert</vh></v>
-<v t="ekr.20160317192503.56"><vh>cv.Assign</vh></v>
-<v t="ekr.20160317192503.57"><vh>cv.AugAssign</vh></v>
-<v t="ekr.20160317192503.58"><vh>cv.Break</vh></v>
-<v t="ekr.20160317192503.59"><vh>cv.Continue</vh></v>
-<v t="ekr.20160317192503.60"><vh>cv.Delete</vh></v>
-<v t="ekr.20160317192503.61"><vh>cv.ExceptHandler</vh></v>
-<v t="ekr.20160317192503.62"><vh>cv.Exec</vh></v>
-<v t="ekr.20160317192503.63"><vh>cv.Expr (outer statement)</vh></v>
-<v t="ekr.20160317192503.64"><vh>cv.For</vh></v>
-<v t="ekr.20160317192503.65"><vh>cv.Global</vh></v>
-<v t="ekr.20160317192503.66"><vh>cv.If</vh></v>
-<v t="ekr.20160317192503.67"><vh>cv.Import &amp; helper</vh>
-<v t="ekr.20160317192503.68"><vh>cv.get_import_names</vh></v>
+<v t="ekr.20160318140657.53"><vh>cv.Statements</vh>
+<v t="ekr.20160318140657.54"><vh> cv.tail_after_body</vh></v>
+<v t="ekr.20160318140657.55"><vh>cv.Assert</vh></v>
+<v t="ekr.20160318140657.56"><vh>cv.Assign</vh></v>
+<v t="ekr.20160318140657.57"><vh>cv.AugAssign</vh></v>
+<v t="ekr.20160318140657.58"><vh>cv.Break</vh></v>
+<v t="ekr.20160318140657.59"><vh>cv.Continue</vh></v>
+<v t="ekr.20160318140657.60"><vh>cv.Delete</vh></v>
+<v t="ekr.20160318140657.61"><vh>cv.ExceptHandler</vh></v>
+<v t="ekr.20160318140657.62"><vh>cv.Exec</vh></v>
+<v t="ekr.20160318140657.63"><vh>cv.Expr (outer statement)</vh></v>
+<v t="ekr.20160318140657.64"><vh>cv.For</vh></v>
+<v t="ekr.20160318140657.65"><vh>cv.Global</vh></v>
+<v t="ekr.20160318140657.66"><vh>cv.If</vh></v>
+<v t="ekr.20160318140657.67"><vh>cv.Import &amp; helper</vh>
+<v t="ekr.20160318140657.68"><vh>cv.get_import_names</vh></v>
 </v>
-<v t="ekr.20160317192503.69"><vh>cv.ImportFrom</vh></v>
-<v t="ekr.20160317192503.70"><vh>cv.Nonlocal (Python3)</vh></v>
-<v t="ekr.20160317192503.71"><vh>cv.Pass</vh></v>
-<v t="ekr.20160317192503.72"><vh>cv.Print (Python2)</vh></v>
-<v t="ekr.20160317192503.73"><vh>cv.Raise</vh></v>
-<v t="ekr.20160317192503.74"><vh>cv.Return</vh></v>
-<v t="ekr.20160317192503.75"><vh>cv.Starred (Python3)</vh></v>
-<v t="ekr.20160317192503.76"><vh>cv.Try (Python3)</vh></v>
-<v t="ekr.20160317192503.77"><vh>cv.TryExcept</vh></v>
-<v t="ekr.20160317192503.78"><vh>cv.TryFinally</vh></v>
-<v t="ekr.20160317192503.79"><vh>cv.While</vh></v>
-<v t="ekr.20160317192503.80"><vh>cv.With</vh></v>
-<v t="ekr.20160317192503.81"><vh>cv.Yield</vh></v>
-<v t="ekr.20160317192503.82"><vh>cv.YieldFrom (Python3)</vh></v>
-</v>
-</v>
-<v t="ekr.20160317192503.83"><vh>class LeoGlobals</vh>
-<v t="ekr.20160317192503.84"><vh>class NullObject (Python Cookbook)</vh></v>
-<v t="ekr.20160317192503.85"><vh>class ReadLinesClass</vh></v>
-<v t="ekr.20160317192503.86"><vh>g._callerName</vh></v>
-<v t="ekr.20160317192503.87"><vh>g.callers</vh></v>
-<v t="ekr.20160317192503.88"><vh>g.cls</vh></v>
-<v t="ekr.20160317192503.89"><vh>g.computeLeadingWhitespace</vh></v>
-<v t="ekr.20160317192503.90"><vh>g.computeLeadingWhitespaceWidth</vh></v>
-<v t="ekr.20160317192503.91"><vh>g.isString &amp; isUnicode (py2cs.py)</vh></v>
-<v t="ekr.20160317192503.92"><vh>g.pdb</vh></v>
-<v t="ekr.20160317192503.93"><vh>g.shortFileName</vh></v>
-<v t="ekr.20160317192503.94"><vh>g.splitLines</vh></v>
-<v t="ekr.20160317192503.95"><vh>g.toUnicode</vh></v>
-<v t="ekr.20160317192503.96"><vh>g.trace</vh></v>
-<v t="ekr.20160317192503.97"><vh>g.u &amp; g.ue</vh></v>
-</v>
-<v t="ekr.20160317192503.98"><vh>class MakeCoffeeScriptController</vh>
-<v t="ekr.20160317192503.99"><vh>mcs.ctor</vh></v>
-<v t="ekr.20160317192503.100"><vh>mcs.finalize</vh></v>
-<v t="ekr.20160317192503.101"><vh>mcs.make_coffeescript_file</vh></v>
-<v t="ekr.20160317192503.102"><vh>mcs.output_time_stamp</vh></v>
-<v t="ekr.20160317192503.103"><vh>mcs.run</vh></v>
-<v t="ekr.20160317192503.104"><vh>mcs.run_all_unit_tests</vh></v>
-<v t="ekr.20160317192503.105"><vh>mcs.scan_command_line</vh></v>
-<v t="ekr.20160317192503.106"><vh>mcs.scan_options &amp; helpers</vh>
-<v t="ekr.20160317192503.107"><vh>mcs.create_parser</vh></v>
-<v t="ekr.20160317192503.108"><vh>mcs.get_config_string</vh></v>
-<v t="ekr.20160317192503.109"><vh>mcs.init_parser</vh></v>
-<v t="ekr.20160317192503.110"><vh>mcs.is_section_name</vh></v>
+<v t="ekr.20160318140657.69"><vh>cv.ImportFrom</vh></v>
+<v t="ekr.20160318140657.70"><vh>cv.Nonlocal (Python3)</vh></v>
+<v t="ekr.20160318140657.71"><vh>cv.Pass</vh></v>
+<v t="ekr.20160318140657.72"><vh>cv.Print (Python2)</vh></v>
+<v t="ekr.20160318140657.73"><vh>cv.Raise</vh></v>
+<v t="ekr.20160318140657.74"><vh>cv.Return</vh></v>
+<v t="ekr.20160318140657.75"><vh>cv.Starred (Python3)</vh></v>
+<v t="ekr.20160318140657.76"><vh>cv.Try (Python3)</vh></v>
+<v t="ekr.20160318140657.77"><vh>cv.TryExcept</vh></v>
+<v t="ekr.20160318140657.78"><vh>cv.TryFinally</vh></v>
+<v t="ekr.20160318140657.79"><vh>cv.While</vh></v>
+<v t="ekr.20160318140657.80"><vh>cv.With</vh></v>
+<v t="ekr.20160318140657.81"><vh>cv.Yield</vh></v>
+<v t="ekr.20160318140657.82"><vh>cv.YieldFrom (Python3)</vh></v>
 </v>
 </v>
-<v t="ekr.20160317192503.111"><vh>class ParseState</vh></v>
-<v t="ekr.20160317192503.112"><vh>class TokenSync</vh>
-<v t="ekr.20160317192503.113"><vh> ts.ctor &amp; helpers</vh>
-<v t="ekr.20160317192503.114"><vh>ts.make_blank_lines</vh></v>
-<v t="ekr.20160317192503.115"><vh>ts.make_ignored_lines</vh></v>
-<v t="ekr.20160317192503.116"><vh>ts.make_line_tokens (trace tokens)</vh></v>
-<v t="ekr.20160317192503.117"><vh>ts.make_nl_token</vh></v>
-<v t="ekr.20160317192503.118"><vh>ts.make_string_tokens</vh></v>
+<v t="ekr.20160318140657.83"><vh>class LeoGlobals</vh>
+<v t="ekr.20160318140657.84"><vh>class NullObject (Python Cookbook)</vh></v>
+<v t="ekr.20160318140657.85"><vh>class ReadLinesClass</vh></v>
+<v t="ekr.20160318140657.86"><vh>g._callerName</vh></v>
+<v t="ekr.20160318140657.87"><vh>g.callers</vh></v>
+<v t="ekr.20160318140657.88"><vh>g.cls</vh></v>
+<v t="ekr.20160318140657.89"><vh>g.computeLeadingWhitespace</vh></v>
+<v t="ekr.20160318140657.90"><vh>g.computeLeadingWhitespaceWidth</vh></v>
+<v t="ekr.20160318140657.91"><vh>g.isString &amp; isUnicode (py2cs.py)</vh></v>
+<v t="ekr.20160318140657.92"><vh>g.pdb</vh></v>
+<v t="ekr.20160318140657.93"><vh>g.shortFileName</vh></v>
+<v t="ekr.20160318140657.94"><vh>g.splitLines</vh></v>
+<v t="ekr.20160318140657.95"><vh>g.toUnicode</vh></v>
+<v t="ekr.20160318140657.96"><vh>g.trace</vh></v>
+<v t="ekr.20160318140657.97"><vh>g.u &amp; g.ue</vh></v>
 </v>
-<v t="ekr.20160317192503.119"><vh>ts.check_strings</vh></v>
-<v t="ekr.20160317192503.120"><vh>ts.dump_token</vh></v>
-<v t="ekr.20160317192503.121"><vh>ts.is_line_comment</vh></v>
-<v t="ekr.20160317192503.122"><vh>ts.join</vh></v>
-<v t="ekr.20160317192503.123"><vh>ts.last_node</vh></v>
-<v t="ekr.20160317192503.124"><vh>ts.leading_lines</vh></v>
-<v t="ekr.20160317192503.125"><vh>ts.leading_string</vh></v>
-<v t="ekr.20160317192503.126"><vh>ts.line_at</vh></v>
-<v t="ekr.20160317192503.127"><vh>ts.sync_string</vh></v>
-<v t="ekr.20160317192503.128"><vh>ts.token_kind/raw_val/val</vh></v>
-<v t="ekr.20160317192503.129"><vh>ts.tokens_for_statement</vh></v>
-<v t="ekr.20160317192503.130"><vh>ts.trailing_comment</vh></v>
-<v t="ekr.20160317192503.131"><vh>ts.trailing_comment_at_lineno</vh></v>
-<v t="ekr.20160317192503.132"><vh>ts.trailing_lines</vh></v>
+<v t="ekr.20160318140657.98"><vh>class MakeCoffeeScriptController</vh>
+<v t="ekr.20160318140657.99"><vh>mcs.ctor</vh></v>
+<v t="ekr.20160318140657.100"><vh>mcs.finalize</vh></v>
+<v t="ekr.20160318140657.101"><vh>mcs.make_coffeescript_file</vh></v>
+<v t="ekr.20160318140657.102"><vh>mcs.output_time_stamp</vh></v>
+<v t="ekr.20160318140657.103"><vh>mcs.run</vh></v>
+<v t="ekr.20160318140657.104"><vh>mcs.run_all_unit_tests</vh></v>
+<v t="ekr.20160318140657.105"><vh>mcs.scan_command_line</vh></v>
+<v t="ekr.20160318140657.106"><vh>mcs.scan_options &amp; helpers</vh>
+<v t="ekr.20160318140657.107"><vh>mcs.create_parser</vh></v>
+<v t="ekr.20160318140657.108"><vh>mcs.get_config_string</vh></v>
+<v t="ekr.20160318140657.109"><vh>mcs.init_parser</vh></v>
+<v t="ekr.20160318140657.110"><vh>mcs.is_section_name</vh></v>
+</v>
+</v>
+<v t="ekr.20160318140657.111"><vh>class ParseState</vh></v>
+<v t="ekr.20160318140657.112"><vh>class TokenSync</vh>
+<v t="ekr.20160318140657.113"><vh> ts.ctor &amp; helpers</vh>
+<v t="ekr.20160318140657.114"><vh>ts.make_blank_lines</vh></v>
+<v t="ekr.20160318140657.115"><vh>ts.make_ignored_lines</vh></v>
+<v t="ekr.20160318140657.116"><vh>ts.make_line_tokens (trace tokens)</vh></v>
+<v t="ekr.20160318140657.117"><vh>ts.make_nl_token</vh></v>
+<v t="ekr.20160318140657.118"><vh>ts.make_string_tokens</vh></v>
+</v>
+<v t="ekr.20160318140657.119"><vh>ts.check_strings</vh></v>
+<v t="ekr.20160318140657.120"><vh>ts.dump_token</vh></v>
+<v t="ekr.20160318140657.121"><vh>ts.is_line_comment</vh></v>
+<v t="ekr.20160318140657.122"><vh>ts.join</vh></v>
+<v t="ekr.20160318140657.123"><vh>ts.last_node</vh></v>
+<v t="ekr.20160318140657.124"><vh>ts.leading_lines</vh></v>
+<v t="ekr.20160318140657.125"><vh>ts.leading_string</vh></v>
+<v t="ekr.20160318140657.126"><vh>ts.line_at</vh></v>
+<v t="ekr.20160318140657.127"><vh>ts.sync_string</vh></v>
+<v t="ekr.20160318140657.128"><vh>ts.token_kind/raw_val/val</vh></v>
+<v t="ekr.20160318140657.129"><vh>ts.tokens_for_statement</vh></v>
+<v t="ekr.20160318140657.130"><vh>ts.trailing_comment</vh></v>
+<v t="ekr.20160318140657.131"><vh>ts.trailing_comment_at_lineno</vh></v>
+<v t="ekr.20160318140657.132"><vh>ts.trailing_lines</vh></v>
 </v>
 </v>
 <v t="ekr.20160220050053.2"><vh>@clean README.md</vh>
@@ -1864,7 +1864,7 @@ precede the node's line that have not already been returned.
 **ts.leading_string(node)** is a convenience method that returns ''.join(ts.leading_lines(node)). The visitors of the CoffeeScriptTraverser class show how to use these methods.
 </t>
 <t tx="ekr.20160225122323.1"></t>
-<t tx="ekr.20160317192503.1">#!/usr/bin/env python
+<t tx="ekr.20160318140657.1">#!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
 on the command line (wildcard file names are supported).
@@ -1887,7 +1887,7 @@ if __name__ == "__main__":
     main()
 # A final comment for testing.
 </t>
-<t tx="ekr.20160317192503.10">
+<t tx="ekr.20160318140657.10">
 def pdb(self):
     '''Invoke a debugger during unit testing.'''
     try:
@@ -1897,7 +1897,7 @@ def pdb(self):
         import pdb
         pdb.set_trace()
 </t>
-<t tx="ekr.20160317192503.100">
+<t tx="ekr.20160318140657.100">
 def finalize(self, fn):
     '''Finalize and regularize a filename.'''
     fn = os.path.expanduser(fn)
@@ -1905,7 +1905,7 @@ def finalize(self, fn):
     fn = os.path.normpath(fn)
     return fn
 </t>
-<t tx="ekr.20160317192503.101">
+<t tx="ekr.20160318140657.101">
 def make_coffeescript_file(self, fn, s=None):
     '''
     Make a stub file in the output directory for all source files mentioned
@@ -1940,13 +1940,13 @@ def make_coffeescript_file(self, fn, s=None):
     else:
         print('output directory not not found: %s' % dir_)
 </t>
-<t tx="ekr.20160317192503.102">
+<t tx="ekr.20160318140657.102">
 def output_time_stamp(self, f):
     '''Put a time-stamp in the output file f.'''
     f.write('# python_to_coffeescript: %s\n' %
         time.strftime("%a %d %b %Y at %H:%M:%S"))
 </t>
-<t tx="ekr.20160317192503.103">
+<t tx="ekr.20160318140657.103">
 def run(self):
     '''
     Make stub files for all files.
@@ -1967,7 +1967,7 @@ def run(self):
     elif not self.enable_unit_tests:
         print('no input files')
 </t>
-<t tx="ekr.20160317192503.104">
+<t tx="ekr.20160318140657.104">
 def run_all_unit_tests(self):
     '''Run all unit tests in the python-to-coffeescript/test directory.'''
     import unittest
@@ -1977,7 +1977,7 @@ def run_all_unit_tests(self):
                             top_level_dir=None)
     unittest.TextTestRunner(verbosity=1).run(suite)
 </t>
-<t tx="ekr.20160317192503.105">
+<t tx="ekr.20160318140657.105">
 def scan_command_line(self):
     '''Set ivars from command-line arguments.'''
     # This automatically implements the --help option.
@@ -2016,7 +2016,7 @@ def scan_command_line(self):
         if args:
             self.files = args
 </t>
-<t tx="ekr.20160317192503.106">
+<t tx="ekr.20160318140657.106">
 def scan_options(self):
     '''Set all configuration-related ivars.'''
     trace = False
@@ -2067,14 +2067,14 @@ def scan_options(self):
     # self.general_patterns = self.scan_patterns('General Patterns')
     # self.make_patterns_dict()
 </t>
-<t tx="ekr.20160317192503.107">
+<t tx="ekr.20160318140657.107">
 def create_parser(self):
     '''Create a RawConfigParser and return it.'''
     parser = configparser.RawConfigParser()
     parser.optionxform = str
     return parser
 </t>
-<t tx="ekr.20160317192503.108">
+<t tx="ekr.20160318140657.108">
 def get_config_string(self):
     fn = self.finalize(self.config_fn)
     if os.path.exists(fn):
@@ -2088,7 +2088,7 @@ def get_config_string(self):
         print('\nconfiguration file not found: %s' % fn)
         return ''
 </t>
-<t tx="ekr.20160317192503.109">
+<t tx="ekr.20160318140657.109">
 def init_parser(self, s):
     '''Add double back-slashes to all patterns starting with '['.'''
     trace = False
@@ -2108,12 +2108,12 @@ def init_parser(self, s):
     # pylint: disable=deprecated-method
     self.parser.readfp(file_object)
 </t>
-<t tx="ekr.20160317192503.11">
+<t tx="ekr.20160318140657.11">
 def truncate(s, n):
     '''Return s truncated to n characters.'''
     return s if len(s) &lt;= n else s[:n-3] + '...'
 </t>
-<t tx="ekr.20160317192503.110">
+<t tx="ekr.20160318140657.110">
 def is_section_name(self, s):
 
     def munge(s):
@@ -2127,7 +2127,7 @@ def is_section_name(self, s):
                 return True
     return False
 </t>
-<t tx="ekr.20160317192503.111">
+<t tx="ekr.20160318140657.111">
 
 class ParseState(object):
     '''A class representing items parse state stack.'''
@@ -2141,14 +2141,14 @@ class ParseState(object):
 
     __str__ = __repr__
 </t>
-<t tx="ekr.20160317192503.112">
+<t tx="ekr.20160318140657.112">
 
 class TokenSync(object):
     '''A class to sync and remember tokens.'''
     # To do: handle comments, line breaks...
     @others
 </t>
-<t tx="ekr.20160317192503.113">
+<t tx="ekr.20160318140657.113">
 def __init__(self, s, tokens):
     '''Ctor for TokenSync class.'''
     assert isinstance(tokens, list) # Not a generator.
@@ -2162,7 +2162,7 @@ def __init__(self, s, tokens):
     self.string_tokens = self.make_string_tokens()
     self.ignored_lines = self.make_ignored_lines()
 </t>
-<t tx="ekr.20160317192503.114">
+<t tx="ekr.20160318140657.114">
 def make_blank_lines(self):
     '''Return of list of line numbers of blank lines.'''
     result = []
@@ -2172,7 +2172,7 @@ def make_blank_lines(self):
             result.append(i)
     return result
 </t>
-<t tx="ekr.20160317192503.115">
+<t tx="ekr.20160318140657.115">
 def make_ignored_lines(self):
     '''
     Return a copy of line_tokens containing ignored lines,
@@ -2199,7 +2199,7 @@ def make_ignored_lines(self):
         self.first_leading_line = len(result)
     return result
 </t>
-<t tx="ekr.20160317192503.116">
+<t tx="ekr.20160318140657.116">
 def make_line_tokens(self, tokens):
     '''
     Return a list of lists of tokens for each list in self.lines.
@@ -2220,7 +2220,7 @@ def make_line_tokens(self, tokens):
     assert len(self.lines) + 1 == len(result), len(result)
     return result
 </t>
-<t tx="ekr.20160317192503.117">
+<t tx="ekr.20160318140657.117">
 def make_nl_token(self):
     '''Return a newline token with '\n' as both val and raw_val.'''
     t1 = token_module.NEWLINE
@@ -2230,7 +2230,7 @@ def make_nl_token(self):
     t5 = '\n'
     return t1, t2, t3, t4, t5
 </t>
-<t tx="ekr.20160317192503.118">
+<t tx="ekr.20160318140657.118">
 def make_string_tokens(self):
     '''Return a copy of line_tokens containing only string tokens.'''
     result = []
@@ -2239,7 +2239,7 @@ def make_string_tokens(self):
     assert len(result) == len(self.line_tokens)
     return result
 </t>
-<t tx="ekr.20160317192503.119">
+<t tx="ekr.20160318140657.119">
 def check_strings(self):
     '''Check that all strings have been consumed.'''
     for i, aList in enumerate(self.string_tokens):
@@ -2248,14 +2248,14 @@ def check_strings(self):
             for z in aList:
                 print(self.dump_token(z))
 </t>
-<t tx="ekr.20160317192503.12">
+<t tx="ekr.20160318140657.12">
 
 class CoffeeScriptTraverser(object):
     '''A class to convert python sources to coffeescript sources.'''
     # pylint: disable=consider-using-enumerate
     @others
 </t>
-<t tx="ekr.20160317192503.120">
+<t tx="ekr.20160318140657.120">
 def dump_token(self, token, verbose=False):
     '''Dump the token. It is either a string or a 5-tuple.'''
     if g.isString(token):
@@ -2270,7 +2270,7 @@ def dump_token(self, token, verbose=False):
         else:
             return val
 </t>
-<t tx="ekr.20160317192503.121">
+<t tx="ekr.20160318140657.121">
 def is_line_comment(self, token):
     '''Return True if the token represents a full-line comment.'''
     t1, t2, t3, t4, t5 = token
@@ -2278,7 +2278,7 @@ def is_line_comment(self, token):
     raw_val = t5
     return kind == 'comment' and raw_val.lstrip().startswith('#')
 </t>
-<t tx="ekr.20160317192503.122">
+<t tx="ekr.20160318140657.122">
 def join(self, aList, sep=','):
     '''return the items of the list joined by sep string.'''
     tokens = []
@@ -2288,7 +2288,7 @@ def join(self, aList, sep=','):
             tokens.append(sep)
     return tokens
 </t>
-<t tx="ekr.20160317192503.123">
+<t tx="ekr.20160318140657.123">
 def last_node(self, node):
     '''Return the node of node's tree with the largest lineno field.'''
 
@@ -2314,9 +2314,8 @@ def last_node(self, node):
     w = LineWalker()
     w.visit(node)
     return w.node
-            
-</t>
-<t tx="ekr.20160317192503.124">
+            </t>
+<t tx="ekr.20160318140657.124">
 def leading_lines(self, node):
     '''Return a list of the preceding comment and blank lines'''
     # This can be called on arbitrary nodes.
@@ -2334,12 +2333,11 @@ def leading_lines(self, node):
         self.first_leading_line = i
     return leading
 </t>
-<t tx="ekr.20160317192503.125">
+<t tx="ekr.20160318140657.125">
 def leading_string(self, node):
     '''Return a string containing all lines preceding node.'''
-    return ''.join(self.leading_lines(node))
-</t>
-<t tx="ekr.20160317192503.126">
+    return ''.join(self.leading_lines(node))</t>
+<t tx="ekr.20160318140657.126">
 def line_at(self, node, continued_lines=True):
     '''Return the lines at the node, possibly including continuation lines.'''
     n = getattr(node, 'lineno', None)
@@ -2359,7 +2357,7 @@ def line_at(self, node, continued_lines=True):
     else:
         return self.lines[n-1]
 </t>
-<t tx="ekr.20160317192503.127">
+<t tx="ekr.20160318140657.127">
 def sync_string(self, node):
     '''Return the spelling of the string at the given node.'''
     # g.trace('%-10s %2s: %s' % (' ', node.lineno, self.line_at(node)))
@@ -2370,10 +2368,10 @@ def sync_string(self, node):
         self.string_tokens[n-1] = tokens
         return self.token_val(token)
     else:
-        g.trace('===== underflow', n, node.s)
+        g.trace('===== underflow line:', n, node.s)
         return node.s
 </t>
-<t tx="ekr.20160317192503.128">
+<t tx="ekr.20160318140657.128">
 def token_kind(self, token):
     '''Return the token's type.'''
     t1, t2, t3, t4, t5 = token
@@ -2389,7 +2387,7 @@ def token_val(self, token):
     t1, t2, t3, t4, t5 = token
     return g.toUnicode(t2)
 </t>
-<t tx="ekr.20160317192503.129">
+<t tx="ekr.20160318140657.129">
 def tokens_for_statement(self, node):
     
     assert isinstance(node, ast.AST), node
@@ -2403,7 +2401,7 @@ def tokens_for_statement(self, node):
     
     
 </t>
-<t tx="ekr.20160317192503.13">
+<t tx="ekr.20160318140657.13">
 def __init__(self, controller):
     '''Ctor for CoffeeScriptFormatter class.'''
     self.controller = controller
@@ -2416,9 +2414,8 @@ def __init__(self, controller):
     self.tokens_for_statement = None
     self.trailing_comment = None
     self.trailing_comment_at_lineno = None
-    
-</t>
-<t tx="ekr.20160317192503.130">
+    </t>
+<t tx="ekr.20160318140657.130">
 def trailing_comment(self, node):
     '''
     Return a string containing the trailing comment for the node, if any.
@@ -2430,7 +2427,7 @@ def trailing_comment(self, node):
         # g.trace('no lineno', node.__class__.__name__, g.callers())
         return '\n'
 </t>
-<t tx="ekr.20160317192503.131">
+<t tx="ekr.20160318140657.131">
 def trailing_comment_at_lineno(self, lineno):
     '''Return any trailing comment at the given node.lineno.'''
     trace = False
@@ -2443,9 +2440,8 @@ def trailing_comment_at_lineno(self, lineno):
                 s = ' %s\n' % val
                 if trace: g.trace(lineno, s.rstrip(), g.callers())
                 return s
-    return '\n'
-</t>
-<t tx="ekr.20160317192503.132">
+    return '\n'</t>
+<t tx="ekr.20160318140657.132">
 def trailing_lines(self):
     '''return any remaining ignored lines.'''
     trace = False
@@ -2461,7 +2457,7 @@ def trailing_lines(self):
     self.first_leading_line = i
     return trailing
 </t>
-<t tx="ekr.20160317192503.14">
+<t tx="ekr.20160318140657.14">
 def format(self, node, s, tokens):
     '''Format the node (or list of nodes) and its descendants.'''
     self.level = 0
@@ -2482,7 +2478,7 @@ def format(self, node, s, tokens):
     val += ''.join(sync.trailing_lines())
     return val or ''
 </t>
-<t tx="ekr.20160317192503.15">
+<t tx="ekr.20160318140657.15">
 def indent(self, s):
     '''Return s, properly indented.'''
     # assert not s.startswith('\n'), (g.callers(), repr(s))
@@ -2492,7 +2488,7 @@ def indent(self, s):
         s = s[1:]
     return '%s%s%s' % ('\n' * n, ' ' * 4 * self.level, s)
 </t>
-<t tx="ekr.20160317192503.16">
+<t tx="ekr.20160318140657.16">
 def visit(self, node):
     '''Return the formatted version of an Ast node, or list of Ast nodes.'''
     name = node.__class__.__name__
@@ -2511,17 +2507,19 @@ def visit(self, node):
             assert isinstance(s, (str, unicode))
         return s
 </t>
-<t tx="ekr.20160317192503.17">
+<t tx="ekr.20160318140657.17">
 #
 # CoffeeScriptTraverser contexts...
-#
-</t>
-<t tx="ekr.20160317192503.18">
+#</t>
+<t tx="ekr.20160318140657.18">
 # 2: ClassDef(identifier name, expr* bases,
 #             stmt* body, expr* decorator_list)
 # 3: ClassDef(identifier name, expr* bases,
 #             keyword* keywords, expr? starargs, expr? kwargs
 #             stmt* body, expr* decorator_list)
+#
+# keyword arguments supplied to call (NULL identifier for **kwargs)
+# keyword = (identifier? arg, expr value)
 
 def do_ClassDef(self, node):
 
@@ -2529,16 +2527,13 @@ def do_ClassDef(self, node):
     tail = self.trailing_comment(node)
     name = node.name # Only a plain string is valid.
     bases = [self.visit(z) for z in node.bases] if node.bases else []
-    if hasattr(node, 'keywords'): # Python 3
-        for z in node.keywords:
-            arg, value = z
-            bases.append('%s=%s' % (self.visit(arg), self.visit(value)))
-    if hasattr(node, 'starargs'): # Python 3
-        junk, value = node.starargs
-        bases.append('*%s', self.visit(value))
-    if hasattr(node, 'kwargs'): # Python 3
-        junk, value = node.kwargs
-        bases.append('*%s', self.visit(value))
+    if getattr(node, 'keywords', None): # Python 3
+        for keyword in node.keywords:
+            bases.append('%s=%s' % (keyword.arg, self.visit(keyword.value)))
+    if getattr(node, 'starargs', None): # Python 3
+        bases.append('*%s', self.visit(node.starargs))
+    if getattr(node, 'kwargs', None): # Python 3
+        bases.append('*%s', self.visit(node.kwargs))
     if bases:
         s = 'class %s extends %s' % (name, ', '.join(bases))
     else:
@@ -2552,7 +2547,7 @@ def do_ClassDef(self, node):
     self.class_stack.pop()
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.19">
+<t tx="ekr.20160318140657.19">
 # 2: FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
 # 3: FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list,
 #                expr? returns)
@@ -2572,11 +2567,12 @@ def do_FunctionDef(self, node):
         args = args[1:]
     args = ', '.join(args)
     args = '(%s) ' % args if args else ''
-    # result.append('\n')
+    # Traverse node.returns to keep strings in sync.
+    if getattr(node, 'returns', None):
+        self.visit(node.returns)
     tail = self.trailing_comment(node)
     sep = ': ' if self.class_stack else ' = '
     s = '%s%s%s-&gt;%s' % (name, sep, args, tail)
-        # For now, ignore returns argument.
     result.append(self.indent(s))
     for i, z in enumerate(node.body):
         self.level += 1
@@ -2584,7 +2580,7 @@ def do_FunctionDef(self, node):
         self.level -= 1
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.2">@nocolor-node
+<t tx="ekr.20160318140657.2">@nocolor-node
 @
 All parts of this script are distributed under the following copyright. This is intended to be the same as the MIT license, namely that this script is absolutely free, even for commercial use, including resale. There is no GNU-like "copyleft" restriction. This license is compatible with the GPL.
 
@@ -2596,45 +2592,44 @@ The above copyright notice and this permission notice shall be included in all c
 
 **THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.**
 </t>
-<t tx="ekr.20160317192503.20">
+<t tx="ekr.20160318140657.20">
 def do_Interactive(self, node):
     for z in node.body:
         self.visit(z)
 </t>
-<t tx="ekr.20160317192503.21">
+<t tx="ekr.20160318140657.21">
 def do_Module(self, node):
 
     return ''.join([self.visit(z) for z in node.body])
 </t>
-<t tx="ekr.20160317192503.22">
+<t tx="ekr.20160318140657.22">
 def do_Lambda(self, node):
     return self.indent('lambda %s: %s' % (
         self.visit(node.args),
         self.visit(node.body)))
 </t>
-<t tx="ekr.20160317192503.23">
+<t tx="ekr.20160318140657.23">
 #
 # CoffeeScriptTraverser expressions...
 #
 </t>
-<t tx="ekr.20160317192503.24">
+<t tx="ekr.20160318140657.24">
 def do_Expression(self, node):
     '''An inner expression: do not indent.'''
     return '%s\n' % self.visit(node.body)
 </t>
-<t tx="ekr.20160317192503.25">
+<t tx="ekr.20160318140657.25">
 def do_GeneratorExp(self, node):
     elt = self.visit(node.elt) or ''
     gens = [self.visit(z) for z in node.generators]
     gens = [z if z else '&lt;**None**&gt;' for z in gens] # Kludge: probable bug.
     return '&lt;gen %s for %s&gt;' % (elt, ','.join(gens))
 </t>
-<t tx="ekr.20160317192503.26">
+<t tx="ekr.20160318140657.26">
 #
 # CoffeeScriptTraverser operands...
-#
-</t>
-<t tx="ekr.20160317192503.27">
+#</t>
+<t tx="ekr.20160318140657.27">
 # 2: arguments = (expr* args, identifier? vararg,
 #                 identifier? kwarg, expr* defaults)
 # 3: arguments = (arg*  args, arg? vararg,
@@ -2665,29 +2660,29 @@ def do_arguments(self, node):
             else:
                 args2.append('%s=%s' % (args[i], defaults[i - n_plain]))
         # Add the vararg and kwarg expressions.
-        vararg = getattr(node, 'vararg', None)
-        if vararg: args2.append('*' + self.visit(vararg))
-        kwarg = getattr(node, 'kwarg', None)
-        if kwarg: args2.append('**' + self.visit(kwarg))
+        if getattr(node, 'vararg', None):
+            args2.append('*' + self.visit(node.vararg))
+        if getattr(node, 'kwarg', None):
+            args2.append('**' + self.visit(node.kwarg))
     else:
         # Add the vararg and kwarg names.
-        name = getattr(node, 'vararg', None)
-        if name: args2.append('*' + name)
-        name = getattr(node, 'kwarg', None)
-        if name: args2.append('**' + name)
+        if getattr(node, 'vararg', None):
+            args2.append('*' + node.vararg)
+        if getattr(node, 'kwarg', None):
+            args2.append('**' + node.kwarg)
     return ','.join(args2)
 </t>
-<t tx="ekr.20160317192503.28">
+<t tx="ekr.20160318140657.28">
 # 3: arg = (identifier arg, expr? annotation)
 
 def do_arg(self, node):
+
+    # Visit the node.annotation to keep strings in synch.
+    if getattr(node, 'annotation', None):
+        self.visit(node.annotation)
     return node.arg
-    
-    # Probably don't want annotations.
-    # if getattr(node, 'annotation', None):
-        # return ':' + self.visit(node.annotation)
 </t>
-<t tx="ekr.20160317192503.29">
+<t tx="ekr.20160318140657.29">
 # Attribute(expr value, identifier attr, expr_context ctx)
 
 def do_Attribute(self, node):
@@ -2697,7 +2692,7 @@ def do_Attribute(self, node):
     val = '@' if val == '@' else val + '.'
     return val + node.attr
 </t>
-<t tx="ekr.20160317192503.3">import ast
+<t tx="ekr.20160318140657.3">import ast
 import glob
 import optparse
 import os
@@ -2715,7 +2710,7 @@ try:
 except ImportError:
     import io # Python 3
 </t>
-<t tx="ekr.20160317192503.30">
+<t tx="ekr.20160318140657.30">
 def do_Bytes(self, node): # Python 3.x only.
     if hasattr(node, 'lineno'):
         # Do *not* handle leading lines here.
@@ -2725,7 +2720,7 @@ def do_Bytes(self, node): # Python 3.x only.
         g.trace('==== no lineno', node.s)
         return node.s
 </t>
-<t tx="ekr.20160317192503.31">
+<t tx="ekr.20160318140657.31">
 # Call(expr func, expr* args, keyword* keywords, expr? starargs, expr? kwargs)
 
 def do_Call(self, node):
@@ -2742,7 +2737,7 @@ def do_Call(self, node):
     s = '%s(%s)' % (func, ','.join(args))
     return s
 </t>
-<t tx="ekr.20160317192503.32">
+<t tx="ekr.20160318140657.32">
 # keyword = (identifier arg, expr value)
 
 def do_keyword(self, node):
@@ -2751,7 +2746,7 @@ def do_keyword(self, node):
     # This is a keyword *arg*, not a Python keyword!
     return '%s=%s' % (node.arg, value)
 </t>
-<t tx="ekr.20160317192503.33">
+<t tx="ekr.20160318140657.33">
 def do_comprehension(self, node):
     result = []
     name = self.visit(node.target) # A name.
@@ -2762,7 +2757,7 @@ def do_comprehension(self, node):
         result.append(' if %s' % (''.join(ifs)))
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.34">
+<t tx="ekr.20160318140657.34">
 def do_Dict(self, node):
     assert len(node.keys) == len(node.values)
     items, result = [], []
@@ -2788,19 +2783,19 @@ def do_Dict(self, node):
         result.append('}')
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.35">
+<t tx="ekr.20160318140657.35">
 def do_Ellipsis(self, node):
     return '...'
 </t>
-<t tx="ekr.20160317192503.36">
+<t tx="ekr.20160318140657.36">
 def do_ExtSlice(self, node):
     return ':'.join([self.visit(z) for z in node.dims])
 </t>
-<t tx="ekr.20160317192503.37">
+<t tx="ekr.20160318140657.37">
 def do_Index(self, node):
     return self.visit(node.value)
 </t>
-<t tx="ekr.20160317192503.38">
+<t tx="ekr.20160318140657.38">
 def do_List(self, node):
     # Not used: list context.
     # self.visit(node.ctx)
@@ -2808,14 +2803,14 @@ def do_List(self, node):
     elst = [z for z in elts if z] # Defensive.
     return '[%s]' % ','.join(elts)
 </t>
-<t tx="ekr.20160317192503.39">
+<t tx="ekr.20160318140657.39">
 def do_ListComp(self, node):
     elt = self.visit(node.elt)
     gens = [self.visit(z) for z in node.generators]
     gens = [z if z else '&lt;**None**&gt;' for z in gens] # Kludge: probable bug.
     return '%s for %s' % (elt, ''.join(gens))
 </t>
-<t tx="ekr.20160317192503.4">
+<t tx="ekr.20160318140657.4">
 def main():
     '''
     The driver for the stand-alone version of make-stub-files.
@@ -2828,7 +2823,7 @@ def main():
     controller.run()
     print('done')
 </t>
-<t tx="ekr.20160317192503.40">
+<t tx="ekr.20160318140657.40">
 def do_Name(self, node):
     return '@' if node.id == 'self' else node.id
 
@@ -2836,17 +2831,17 @@ def do_NameConstant(self, node): # Python 3 only.
     s = repr(node.value)
     return 'bool' if s in ('True', 'False') else s
 </t>
-<t tx="ekr.20160317192503.41">
+<t tx="ekr.20160318140657.41">
 def do_Num(self, node):
     return repr(node.n)
 </t>
-<t tx="ekr.20160317192503.42">
+<t tx="ekr.20160318140657.42">
 # Python 2.x only
 
 def do_Repr(self, node):
     return 'repr(%s)' % self.visit(node.value)
 </t>
-<t tx="ekr.20160317192503.43">
+<t tx="ekr.20160318140657.43">
 def do_Slice(self, node):
     lower, upper, step = '', '', ''
     if getattr(node, 'lower', None) is not None:
@@ -2860,7 +2855,7 @@ def do_Slice(self, node):
     else:
         return '%s:%s' % (lower, upper)
 </t>
-<t tx="ekr.20160317192503.44">
+<t tx="ekr.20160318140657.44">
 def do_Str(self, node):
     '''A string constant, including docstrings.'''
     if hasattr(node, 'lineno'):
@@ -2871,7 +2866,7 @@ def do_Str(self, node):
         g.trace('==== no lineno', node.s)
         return node.s
 </t>
-<t tx="ekr.20160317192503.45">
+<t tx="ekr.20160318140657.45">
 # Subscript(expr value, slice slice, expr_context ctx)
 
 def do_Subscript(self, node):
@@ -2879,34 +2874,32 @@ def do_Subscript(self, node):
     the_slice = self.visit(node.slice)
     return '%s[%s]' % (value, the_slice)
 </t>
-<t tx="ekr.20160317192503.46">
+<t tx="ekr.20160318140657.46">
 def do_Tuple(self, node):
     elts = [self.visit(z) for z in node.elts]
     return '(%s)' % ', '.join(elts)
 </t>
-<t tx="ekr.20160317192503.47">
+<t tx="ekr.20160318140657.47">
 #
 # CoffeeScriptTraverser operators...
-#
-</t>
-<t tx="ekr.20160317192503.48">
+#</t>
+<t tx="ekr.20160318140657.48">
 def do_BinOp(self, node):
     return '%s%s%s' % (
         self.visit(node.left),
         op_name(node.op),
         self.visit(node.right))
 </t>
-<t tx="ekr.20160317192503.49">
+<t tx="ekr.20160318140657.49">
 def do_BoolOp(self, node):
     values = [self.visit(z) for z in node.values]
     return op_name(node.op).join(values)
 </t>
-<t tx="ekr.20160317192503.5">
+<t tx="ekr.20160318140657.5">
 #
 # Utility functions...
-#
-</t>
-<t tx="ekr.20160317192503.50">
+#</t>
+<t tx="ekr.20160318140657.50">
 def do_Compare(self, node):
     result = []
     lt = self.visit(node.left)
@@ -2920,25 +2913,24 @@ def do_Compare(self, node):
         print('can not happen: ops', repr(ops), 'comparators', repr(comps))
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.51">
+<t tx="ekr.20160318140657.51">
 def do_IfExp(self, node):
     return '%s if %s else %s ' % (
         self.visit(node.body),
         self.visit(node.test),
         self.visit(node.orelse))
 </t>
-<t tx="ekr.20160317192503.52">
+<t tx="ekr.20160318140657.52">
 def do_UnaryOp(self, node):
     return '%s%s' % (
         op_name(node.op),
         self.visit(node.operand))
 </t>
-<t tx="ekr.20160317192503.53">
+<t tx="ekr.20160318140657.53">
 #
 # CoffeeScriptTraverser statements...
-#
-</t>
-<t tx="ekr.20160317192503.54">
+#</t>
+<t tx="ekr.20160318140657.54">
 def tail_after_body(self, body, aList, result):
     '''
     Return the tail of the 'else' or 'finally' statement following the given body.
@@ -2956,7 +2948,7 @@ def tail_after_body(self, body, aList, result):
         tail = '\n'
     return tail
 </t>
-<t tx="ekr.20160317192503.55">
+<t tx="ekr.20160318140657.55">
 def do_Assert(self, node):
     
     head = self.leading_string(node)
@@ -2968,7 +2960,7 @@ def do_Assert(self, node):
         s = 'assert %s' % test
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.56">
+<t tx="ekr.20160318140657.56">
 def do_Assign(self, node):
 
     head = self.leading_string(node)
@@ -2978,7 +2970,7 @@ def do_Assign(self, node):
         self.visit(node.value))
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.57">
+<t tx="ekr.20160318140657.57">
 def do_AugAssign(self, node):
     
     head = self.leading_string(node)
@@ -2989,28 +2981,28 @@ def do_AugAssign(self, node):
         self.visit(node.value))
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.58">
+<t tx="ekr.20160318140657.58">
 def do_Break(self, node):
     
     head = self.leading_string(node)
     tail = self.trailing_comment(node)
     return head + self.indent('break') + tail
 </t>
-<t tx="ekr.20160317192503.59">
+<t tx="ekr.20160318140657.59">
 def do_Continue(self, node):
     
     head = self.leading_lines(node)
     tail = self.trailing_comment(node)
     return head + self.indent('continue') + tail
 </t>
-<t tx="ekr.20160317192503.6">
+<t tx="ekr.20160318140657.6">
 def dump(title, s=None):
     if s:
         print('===== %s...\n%s\n' % (title, s.rstrip()))
     else:
         print('===== %s...\n' % title)
 </t>
-<t tx="ekr.20160317192503.60">
+<t tx="ekr.20160318140657.60">
 def do_Delete(self, node):
     
     head = self.leading_string(node)
@@ -3019,7 +3011,7 @@ def do_Delete(self, node):
     s = 'del %s' % ','.join(targets)
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.61">
+<t tx="ekr.20160318140657.61">
 def do_ExceptHandler(self, node):
 
     result = self.leading_lines(node)
@@ -3039,7 +3031,7 @@ def do_ExceptHandler(self, node):
         self.level -= 1
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.62">
+<t tx="ekr.20160318140657.62">
 # Python 2.x only
 
 def do_Exec(self, node):
@@ -3058,7 +3050,7 @@ def do_Exec(self, node):
         s = 'exec %s' % body
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.63">
+<t tx="ekr.20160318140657.63">
 def do_Expr(self, node):
     '''An outer expression: must be indented.'''
     head = self.leading_string(node)
@@ -3066,7 +3058,7 @@ def do_Expr(self, node):
     s = '%s' % self.visit(node.value)
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.64">
+<t tx="ekr.20160318140657.64">
 def do_For(self, node):
 
     result = self.leading_lines(node)
@@ -3088,7 +3080,7 @@ def do_For(self, node):
             self.level -= 1
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.65">
+<t tx="ekr.20160318140657.65">
 def do_Global(self, node):
     
     head = self.leading_lines(node)
@@ -3096,7 +3088,7 @@ def do_Global(self, node):
     s = 'global %s' % ','.join(node.names)
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.66">
+<t tx="ekr.20160318140657.66">
 def do_If(self, node):
 
     result = self.leading_lines(node)
@@ -3116,7 +3108,7 @@ def do_If(self, node):
             self.level -= 1
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.67">
+<t tx="ekr.20160318140657.67">
 def do_Import(self, node):
     
     head = self.leading_string(node)
@@ -3130,7 +3122,7 @@ def do_Import(self, node):
     s = 'pass # import %s' % ','.join(names)
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.68">
+<t tx="ekr.20160318140657.68">
 def get_import_names(self, node):
     '''Return a list of the the full file names in the import statement.'''
     result = []
@@ -3140,7 +3132,7 @@ def get_import_names(self, node):
         result.append(data)
     return result
 </t>
-<t tx="ekr.20160317192503.69">
+<t tx="ekr.20160318140657.69">
 def do_ImportFrom(self, node):
 
     head = self.leading_string(node)
@@ -3154,7 +3146,7 @@ def do_ImportFrom(self, node):
     s = 'pass # from %s import %s' % (node.module, ','.join(names))
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.7">
+<t tx="ekr.20160318140657.7">
 def dump_dict(title, d):
     '''Dump a dictionary with a header.'''
     dump(title)
@@ -3162,7 +3154,7 @@ def dump_dict(title, d):
         print('%30s %s' % (z, d.get(z)))
     print('')
 </t>
-<t tx="ekr.20160317192503.70">
+<t tx="ekr.20160318140657.70">
 # 3: Nonlocal(identifier* names)
 
 def do_Nonlocal(self, node):
@@ -3173,14 +3165,14 @@ def do_Nonlocal(self, node):
     names = ', '.join(node.names)
     return head + self.indent('nonlocal') + names + tail
 </t>
-<t tx="ekr.20160317192503.71">
+<t tx="ekr.20160318140657.71">
 def do_Pass(self, node):
     
     head = self.leading_string(node)
     tail = self.trailing_comment(node)
     return head + self.indent('pass') + tail
 </t>
-<t tx="ekr.20160317192503.72">
+<t tx="ekr.20160318140657.72">
 # Python 2.x only
 
 def do_Print(self, node):
@@ -3198,7 +3190,7 @@ def do_Print(self, node):
     s = 'print(%s)' % ','.join(vals)
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.73">
+<t tx="ekr.20160318140657.73">
 def do_Raise(self, node):
     
     head = self.leading_string(node)
@@ -3210,7 +3202,7 @@ def do_Raise(self, node):
     s = 'raise %s' % ', '.join(args) if args else 'raise'
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.74">
+<t tx="ekr.20160318140657.74">
 def do_Return(self, node):
     
     head = self.leading_string(node)
@@ -3221,15 +3213,14 @@ def do_Return(self, node):
         s = 'return'
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.75">
+<t tx="ekr.20160318140657.75">
 # Starred(expr value, expr_context ctx)
 
 def do_Starred(self, node):
 
     # https://www.python.org/dev/peps/pep-3132/
-    return '*' + self.visit(node.value)
-</t>
-<t tx="ekr.20160317192503.76">
+    return '*' + self.visit(node.value)</t>
+<t tx="ekr.20160318140657.76">
 # 3: Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
 def do_Try(self, node): # Python 3
@@ -3263,7 +3254,7 @@ def do_Try(self, node): # Python 3
             self.level -= 1
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.77">
+<t tx="ekr.20160318140657.77">
 def do_TryExcept(self, node):
 
     result = self.leading_lines(node)
@@ -3287,7 +3278,7 @@ def do_TryExcept(self, node):
             self.level -= 1
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.78">
+<t tx="ekr.20160318140657.78">
 def do_TryFinally(self, node):
     
     result = self.leading_lines(node)
@@ -3305,7 +3296,7 @@ def do_TryFinally(self, node):
         self.level -= 1
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.79">
+<t tx="ekr.20160318140657.79">
 def do_While(self, node):
     
     result = self.leading_lines(node)
@@ -3325,7 +3316,7 @@ def do_While(self, node):
             self.level -= 1
     return ''.join(result)
 </t>
-<t tx="ekr.20160317192503.8">
+<t tx="ekr.20160318140657.8">
 def dump_list(title, aList):
     '''Dump a list with a header.'''
     dump(title)
@@ -3333,21 +3324,36 @@ def dump_list(title, aList):
         print(z)
     print('')
 </t>
-<t tx="ekr.20160317192503.80">
+<t tx="ekr.20160318140657.80">
+# 2:  With(expr context_expr, expr? optional_vars, 
+#          stmt* body)
+# 3:  With(withitem* items,
+#          stmt* body)
+# withitem = (expr context_expr, expr? optional_vars)
+
 def do_With(self, node):
 
     result = self.leading_lines(node)
     tail = self.trailing_comment(node)
-    result.append(self.indent('with '))
-    if hasattr(node, 'context_expression'):
-        result.append(self.visit(node.context_expresssion))
     vars_list = []
-    if hasattr(node, 'optional_vars'):
+    result.append(self.indent('with '))
+    if getattr(node, 'context_expression', None):
+        result.append(self.visit(node.context_expresssion))
+    if getattr(node, 'optional_vars', None):
         try:
             for z in node.optional_vars:
                 vars_list.append(self.visit(z))
         except TypeError: # Not iterable.
             vars_list.append(self.visit(node.optional_vars))
+    if getattr(node, 'items', None): # Python 3.
+        for item in node.items:
+            result.append(self.visit(item.context_expr))
+            if getattr(item, 'optional_vars', None):
+                try:
+                    for z in item.optional_vars:
+                        vars_list.append(self.visit(z))
+                except TypeError: # Not iterable.
+                    vars_list.append(self.visit(item.optional_vars))
     result.append(','.join(vars_list))
     result.append(':' + tail)
     for z in node.body:
@@ -3356,7 +3362,7 @@ def do_With(self, node):
         self.level -= 1
     return ''.join(result) + tail
 </t>
-<t tx="ekr.20160317192503.81">
+<t tx="ekr.20160318140657.81">
 def do_Yield(self, node):
     
     head = self.leading_string(node)
@@ -3367,7 +3373,7 @@ def do_Yield(self, node):
         s ='yield'
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.82">
+<t tx="ekr.20160318140657.82">
 # 3: YieldFrom(expr value)
 
 def do_YieldFrom(self, node):
@@ -3378,13 +3384,13 @@ def do_YieldFrom(self, node):
     s = 'yield from %s' % self.visit(node.value)
     return head + self.indent(s) + tail
 </t>
-<t tx="ekr.20160317192503.83">
+<t tx="ekr.20160318140657.83">
 
 class LeoGlobals(object):
     '''A class supporting g.pdb and g.trace for compatibility with Leo.'''
     @others
 </t>
-<t tx="ekr.20160317192503.84">
+<t tx="ekr.20160318140657.84">
 
 class NullObject:
     """
@@ -3401,7 +3407,7 @@ class NullObject:
     def __getattr__(self, attr): return self
     def __setattr__(self, attr, val): return self
 </t>
-<t tx="ekr.20160317192503.85">
+<t tx="ekr.20160318140657.85">
 
 class ReadLinesClass:
     """A class whose next method provides a readline method for Python's tokenize module."""
@@ -3422,7 +3428,7 @@ class ReadLinesClass:
 
     __next__ = next
 </t>
-<t tx="ekr.20160317192503.86">
+<t tx="ekr.20160318140657.86">
 def _callerName(self, n=1, files=False):
     # print('_callerName: %s %s' % (n,files))
     try: # get the function name from the call stack.
@@ -3443,7 +3449,7 @@ def _callerName(self, n=1, files=False):
         # es_exception()
         return '' # "&lt;no caller name&gt;"
 </t>
-<t tx="ekr.20160317192503.87">
+<t tx="ekr.20160318140657.87">
 def callers(self, n=4, count=0, excludeCaller=True, files=False):
     '''Return a list containing the callers of the function that called g.callerList.
 
@@ -3468,13 +3474,13 @@ def callers(self, n=4, count=0, excludeCaller=True, files=False):
     sep = '\n' if files else ','
     return sep.join(result)
 </t>
-<t tx="ekr.20160317192503.88">
+<t tx="ekr.20160318140657.88">
 def cls(self):
     '''Clear the screen.'''
     if sys.platform.lower().startswith('win'):
         os.system('cls')
 </t>
-<t tx="ekr.20160317192503.89">
+<t tx="ekr.20160318140657.89">
 def computeLeadingWhitespace(self, width, tab_width):
     '''Returns optimized whitespace corresponding to width with the indicated tab_width.'''
     if width &lt;= 0:
@@ -3486,7 +3492,7 @@ def computeLeadingWhitespace(self, width, tab_width):
     else: # Negative tab width always gets converted to blanks.
         return (' ' * width)
 </t>
-<t tx="ekr.20160317192503.9">
+<t tx="ekr.20160318140657.9">
 def op_name(node,strict=True):
     '''Return the print name of an operator node.'''
     d = {
@@ -3535,7 +3541,7 @@ def op_name(node,strict=True):
     if strict: assert name, kind
     return name
 </t>
-<t tx="ekr.20160317192503.90">
+<t tx="ekr.20160318140657.90">
 def computeLeadingWhitespaceWidth(self, s, tab_width):
     '''Returns optimized whitespace corresponding to width with the indicated tab_width.'''
     w = 0
@@ -3548,7 +3554,7 @@ def computeLeadingWhitespaceWidth(self, s, tab_width):
             break
     return w
 </t>
-<t tx="ekr.20160317192503.91">
+<t tx="ekr.20160318140657.91">
 def isString(self, s):
     '''Return True if s is any string, but not bytes.'''
     # pylint: disable=no-member
@@ -3565,7 +3571,7 @@ def isUnicode(self, s):
     else:
         return isinstance(s, types.UnicodeType)
 </t>
-<t tx="ekr.20160317192503.92">
+<t tx="ekr.20160318140657.92">
 def pdb(self):
     try:
         import leo.core.leoGlobals as leo_g
@@ -3574,19 +3580,19 @@ def pdb(self):
         import pdb
         pdb.set_trace()
 </t>
-<t tx="ekr.20160317192503.93">
+<t tx="ekr.20160318140657.93">
 def shortFileName(self, fileName, n=None):
     if n is None or n &lt; 1:
         return os.path.basename(fileName)
     else:
         return '/'.join(fileName.replace('\\', '/').split('/')[-n:])
 </t>
-<t tx="ekr.20160317192503.94">
+<t tx="ekr.20160318140657.94">
 def splitLines(self, s):
     '''Split s into lines, preserving trailing newlines.'''
     return s.splitlines(True) if s else []
 </t>
-<t tx="ekr.20160317192503.95">
+<t tx="ekr.20160318140657.95">
 def toUnicode(self, s, encoding='utf-8', reportErrors=False):
     '''Connvert a non-unicode string with the given encoding to unicode.'''
     trace = False
@@ -3614,7 +3620,7 @@ def toUnicode(self, s, encoding='utf-8', reportErrors=False):
         print('toUnicode: returns %s' % s)
     return s
 </t>
-<t tx="ekr.20160317192503.96">
+<t tx="ekr.20160318140657.96">
 def trace(self, *args, **keys):
     try:
         import leo.core.leoGlobals as leo_g
@@ -3622,7 +3628,7 @@ def trace(self, *args, **keys):
     except ImportError:
         print(args, keys)
 </t>
-<t tx="ekr.20160317192503.97">
+<t tx="ekr.20160318140657.97">
 if isPython3:
 
     def u(self, s):
@@ -3641,14 +3647,14 @@ else:
         # pylint: disable = undefined-variable
         return unicode(s, encoding)
 </t>
-<t tx="ekr.20160317192503.98">
+<t tx="ekr.20160318140657.98">
 
 class MakeCoffeeScriptController(object):
     '''The controller class for python_to_coffeescript.py.'''
 
     @others
 </t>
-<t tx="ekr.20160317192503.99">
+<t tx="ekr.20160318140657.99">
 def __init__(self):
     '''Ctor for MakeCoffeeScriptController class.'''
     self.options = {}
