@@ -195,6 +195,7 @@ class CoffeeScriptTraverser(object):
             assert isinstance(node, ast.AST), name
             method = getattr(self, 'do_' + name)
             s = method(node)
+            # pylint: disable = undefined-variable
             if isPython3:
                 assert isinstance(s, str)
             else:
@@ -205,7 +206,11 @@ class CoffeeScriptTraverser(object):
     # CoffeeScriptTraverser contexts...
     #
 
-    # ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
+    # 2: ClassDef(identifier name, expr* bases,
+    #             stmt* body, expr* decorator_list)
+    # 3: ClassDef(identifier name, expr* bases,
+    #             keyword* keywords, expr? starargs, expr? kwargs
+    #             stmt* body, expr* decorator_list)
 
     def do_ClassDef(self, node):
 
@@ -213,6 +218,16 @@ class CoffeeScriptTraverser(object):
         tail = self.trailing_comment(node)
         name = node.name # Only a plain string is valid.
         bases = [self.visit(z) for z in node.bases] if node.bases else []
+        if hasattr(node, 'keywords'): # Python 3
+            for z in node.keywords:
+                arg, value = z
+                bases.append('%s=%s' % (self.visit(arg), self.visit(value)))
+        if hasattr(node, 'starargs'): # Python 3
+            junk, value = node.starargs
+            bases.append('*%s', self.visit(value))
+        if hasattr(node, 'kwargs'): # Python 3
+            junk, value = node.kwargs
+            bases.append('*%s', self.visit(value))
         if bases:
             s = 'class %s extends %s' % (name, ', '.join(bases))
         else:
@@ -226,33 +241,35 @@ class CoffeeScriptTraverser(object):
         self.class_stack.pop()
         return ''.join(result)
 
-    # FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
-
-    def do_FunctionDef(self, node):
-        '''Format a FunctionDef node.'''
-        result = self.leading_lines(node)
-        if node.decorator_list:
-            for z in node.decorator_list:
-                tail = self.trailing_comment(z)
-                s = '@%s' % self.visit(z)
-                result.append(self.indent(s + tail))
-        name = node.name # Only a plain string is valid.
-        args = self.visit(node.args) if node.args else ''
-        args = [z.strip() for z in args.split(',')]
-        if self.class_stack and args and args[0] == '@':
-            args = args[1:]
-        args = ', '.join(args)
-        args = '(%s) ' % args if args else ''
-        # result.append('\n')
-        tail = self.trailing_comment(node)
-        sep = ': ' if self.class_stack else ' = '
-        s = '%s%s%s->%s' % (name, sep, args, tail)
-        result.append(self.indent(s))
-        for i, z in enumerate(node.body):
-            self.level += 1
-            result.append(self.visit(z))
-            self.level -= 1
-        return ''.join(result)
+    # 2: FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
+    # 3: FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list,
+    # 
+    # def do_FunctionDef(self, node):
+    #     '''Format a FunctionDef node.'''
+    #     result = self.leading_lines(node)
+    #     if node.decorator_list:
+    #         for z in node.decorator_list:
+    #             tail = self.trailing_comment(z)
+    #             s = '@%s' % self.visit(z)
+    #             result.append(self.indent(s + tail))
+    #     name = node.name # Only a plain string is valid.
+    #     args = self.visit(node.args) if node.args else ''
+    #     args = [z.strip() for z in args.split(',')]
+    #     if self.class_stack and args and args[0] == '@':
+    #         args = args[1:]
+    #     args = ', '.join(args)
+    #     args = '(%s) ' % args if args else ''
+    #     # result.append('\n')
+    #     tail = self.trailing_comment(node)
+    #     sep = ': ' if self.class_stack else ' = '
+    #     s = '%s%s%s->%s' % (name, sep, args, tail)
+    #         # For now, ignore returns argument.
+    #     result.append(self.indent(s))
+    #     for i, z in enumerate(node.body):
+    #         self.level += 1
+    #         result.append(self.visit(z))
+    #         self.level -= 1
+    #     return ''.join(result)
 
     def do_Interactive(self, node):
         for z in node.body:
@@ -285,7 +302,11 @@ class CoffeeScriptTraverser(object):
     # CoffeeScriptTraverser operands...
     #
 
-    # arguments = (expr* args, identifier? vararg, identifier? kwarg, expr* defaults)
+    # 2: arguments = (expr* args, identifier? vararg,
+    #                 identifier? kwarg, expr* defaults)
+    # 3: arguments = (arg*  args, arg? vararg,
+    #                arg* kwonlyargs, expr* kw_defaults,
+    #                arg? kwarg, expr* defaults)
 
     def do_arguments(self, node):
         '''Format the arguments node.'''
@@ -300,26 +321,37 @@ class CoffeeScriptTraverser(object):
                 args2.append(args[i])
             else:
                 args2.append('%s=%s' % (args[i], defaults[i - n_plain]))
-        # Now add the vararg and kwarg args.
-        name = getattr(node, 'vararg', None)
-        if name:
+        if isPython3:
             # pylint: disable=no-member
-            if isPython3 and isinstance(name, ast.arg):
-                name = name.arg
-            args2.append('*' + name)
-        name = getattr(node, 'kwarg', None)
-        if name:
-            # pylint: disable=no-member
-            if isPython3 and isinstance(name, ast.arg):
-                name = name.arg
-            args2.append('**' + name)
+            args  = [self.visit(z) for z in node.kwonlyargs]
+            defaults = [self.visit(z) for z in node.kw_defaults]
+            n_plain = len(args) - len(defaults)
+            for i in range(len(args)):
+                if i < n_plain:
+                    args2.append(args[i])
+                else:
+                    args2.append('%s=%s' % (args[i], defaults[i - n_plain]))
+            # Add the vararg and kwarg expressions.
+            vararg = getattr(node, 'vararg', None)
+            if vararg: args2.append('*' + self.visit(vararg))
+            kwarg = getattr(node, 'kwarg', None)
+            if kwarg: args2.append('**' + self.visit(kwarg))
+        else:
+            # Add the vararg and kwarg names.
+            name = getattr(node, 'vararg', None)
+            if name: args2.append('*' + name)
+            name = getattr(node, 'kwarg', None)
+            if name: args2.append('**' + name)
         return ','.join(args2)
 
-    # Python 3:
-    # arg = (identifier arg, expr? annotation)
+    # 3: arg = (identifier arg, expr? annotation)
 
     def do_arg(self, node):
         return node.arg
+        
+        # Probably don't want annotations.
+        # if getattr(node, 'annotation', None):
+            # return ':' + self.visit(node.annotation)
 
     # Attribute(expr value, identifier attr, expr_context ctx)
 
@@ -704,7 +736,7 @@ class CoffeeScriptTraverser(object):
         s = 'pass # from %s import %s' % (node.module, ','.join(names))
         return head + self.indent(s) + tail
 
-    # Nonlocal(identifier* names)
+    # 3: Nonlocal(identifier* names)
 
     def do_Nonlocal(self, node):
         
@@ -765,7 +797,7 @@ class CoffeeScriptTraverser(object):
         # https://www.python.org/dev/peps/pep-3132/
         return '*' + self.visit(node.value)
 
-    # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
+    # 3: Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
     def do_Try(self, node): # Python 3
 
@@ -889,7 +921,7 @@ class CoffeeScriptTraverser(object):
             s ='yield'
         return head + self.indent(s) + tail
 
-    # YieldFrom(expr value)
+    # 3: YieldFrom(expr value)
 
     def do_YieldFrom(self, node):
         
@@ -1013,17 +1045,19 @@ class LeoGlobals(object):
 
     def isString(self, s):
         '''Return True if s is any string, but not bytes.'''
-        if isPython3:
-            return type(s) == type('a')
+        # pylint: disable=no-member
+        if g.isPython3:
+            return isinstance(s, str)
         else:
-            return type(s) in types.StringTypes
+            return isinstance(s, types.StringTypes)
 
     def isUnicode(self, s):
         '''Return True if s is a unicode string.'''
-        if isPython3:
-            return type(s) == type('a')
+        # pylint: disable=no-member
+        if g.isPython3:
+            return isinstance(s, str)
         else:
-            return type(s) == types.UnicodeType
+            return isinstance(s, types.UnicodeType)
 
     def pdb(self):
         try:
@@ -1088,9 +1122,11 @@ class LeoGlobals(object):
     else:
 
         def u(self, s):
+            # pylint: disable = undefined-variable
             return unicode(s)
 
         def ue(self, s, encoding):
+            # pylint: disable = undefined-variable
             return unicode(s, encoding)
 
 
@@ -1309,6 +1345,7 @@ class MakeCoffeeScriptController(object):
         s = '\n'.join(aList) + '\n'
         if trace: g.trace(s)
         file_object = io.StringIO(s)
+        # pylint: disable=deprecated-method
         self.parser.readfp(file_object)
 
     def is_section_name(self, s):
