@@ -243,33 +243,34 @@ class CoffeeScriptTraverser(object):
 
     # 2: FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
     # 3: FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list,
-    # 
-    # def do_FunctionDef(self, node):
-    #     '''Format a FunctionDef node.'''
-    #     result = self.leading_lines(node)
-    #     if node.decorator_list:
-    #         for z in node.decorator_list:
-    #             tail = self.trailing_comment(z)
-    #             s = '@%s' % self.visit(z)
-    #             result.append(self.indent(s + tail))
-    #     name = node.name # Only a plain string is valid.
-    #     args = self.visit(node.args) if node.args else ''
-    #     args = [z.strip() for z in args.split(',')]
-    #     if self.class_stack and args and args[0] == '@':
-    #         args = args[1:]
-    #     args = ', '.join(args)
-    #     args = '(%s) ' % args if args else ''
-    #     # result.append('\n')
-    #     tail = self.trailing_comment(node)
-    #     sep = ': ' if self.class_stack else ' = '
-    #     s = '%s%s%s->%s' % (name, sep, args, tail)
-    #         # For now, ignore returns argument.
-    #     result.append(self.indent(s))
-    #     for i, z in enumerate(node.body):
-    #         self.level += 1
-    #         result.append(self.visit(z))
-    #         self.level -= 1
-    #     return ''.join(result)
+    #                expr? returns)
+
+    def do_FunctionDef(self, node):
+        '''Format a FunctionDef node.'''
+        result = self.leading_lines(node)
+        if node.decorator_list:
+            for z in node.decorator_list:
+                tail = self.trailing_comment(z)
+                s = '@%s' % self.visit(z)
+                result.append(self.indent(s + tail))
+        name = node.name # Only a plain string is valid.
+        args = self.visit(node.args) if node.args else ''
+        args = [z.strip() for z in args.split(',')]
+        if self.class_stack and args and args[0] == '@':
+            args = args[1:]
+        args = ', '.join(args)
+        args = '(%s) ' % args if args else ''
+        # result.append('\n')
+        tail = self.trailing_comment(node)
+        sep = ': ' if self.class_stack else ' = '
+        s = '%s%s%s->%s' % (name, sep, args, tail)
+            # For now, ignore returns argument.
+        result.append(self.indent(s))
+        for i, z in enumerate(node.body):
+            self.level += 1
+            result.append(self.visit(z))
+            self.level -= 1
+        return ''.join(result)
 
     def do_Interactive(self, node):
         for z in node.body:
@@ -1046,7 +1047,7 @@ class LeoGlobals(object):
     def isString(self, s):
         '''Return True if s is any string, but not bytes.'''
         # pylint: disable=no-member
-        if g.isPython3:
+        if isPython3:
             return isinstance(s, str)
         else:
             return isinstance(s, types.StringTypes)
@@ -1054,7 +1055,7 @@ class LeoGlobals(object):
     def isUnicode(self, s):
         '''Return True if s is a unicode string.'''
         # pylint: disable=no-member
-        if g.isPython3:
+        if isPython3:
             return isinstance(s, str)
         else:
             return isinstance(s, types.UnicodeType)

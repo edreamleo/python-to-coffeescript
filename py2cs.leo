@@ -2314,7 +2314,8 @@ def last_node(self, node):
     w = LineWalker()
     w.visit(node)
     return w.node
-            </t>
+            
+</t>
 <t tx="ekr.20160317192503.124">
 def leading_lines(self, node):
     '''Return a list of the preceding comment and blank lines'''
@@ -2336,7 +2337,8 @@ def leading_lines(self, node):
 <t tx="ekr.20160317192503.125">
 def leading_string(self, node):
     '''Return a string containing all lines preceding node.'''
-    return ''.join(self.leading_lines(node))</t>
+    return ''.join(self.leading_lines(node))
+</t>
 <t tx="ekr.20160317192503.126">
 def line_at(self, node, continued_lines=True):
     '''Return the lines at the node, possibly including continuation lines.'''
@@ -2414,7 +2416,8 @@ def __init__(self, controller):
     self.tokens_for_statement = None
     self.trailing_comment = None
     self.trailing_comment_at_lineno = None
-    </t>
+    
+</t>
 <t tx="ekr.20160317192503.130">
 def trailing_comment(self, node):
     '''
@@ -2440,7 +2443,8 @@ def trailing_comment_at_lineno(self, lineno):
                 s = ' %s\n' % val
                 if trace: g.trace(lineno, s.rstrip(), g.callers())
                 return s
-    return '\n'</t>
+    return '\n'
+</t>
 <t tx="ekr.20160317192503.132">
 def trailing_lines(self):
     '''return any remaining ignored lines.'''
@@ -2510,7 +2514,8 @@ def visit(self, node):
 <t tx="ekr.20160317192503.17">
 #
 # CoffeeScriptTraverser contexts...
-#</t>
+#
+</t>
 <t tx="ekr.20160317192503.18">
 # 2: ClassDef(identifier name, expr* bases,
 #             stmt* body, expr* decorator_list)
@@ -2550,7 +2555,7 @@ def do_ClassDef(self, node):
 <t tx="ekr.20160317192503.19">
 # 2: FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
 # 3: FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list,
-@                expr? returns)
+#                expr? returns)
 
 def do_FunctionDef(self, node):
     '''Format a FunctionDef node.'''
@@ -2627,7 +2632,8 @@ def do_GeneratorExp(self, node):
 <t tx="ekr.20160317192503.26">
 #
 # CoffeeScriptTraverser operands...
-#</t>
+#
+</t>
 <t tx="ekr.20160317192503.27">
 # 2: arguments = (expr* args, identifier? vararg,
 #                 identifier? kwarg, expr* defaults)
@@ -2881,7 +2887,8 @@ def do_Tuple(self, node):
 <t tx="ekr.20160317192503.47">
 #
 # CoffeeScriptTraverser operators...
-#</t>
+#
+</t>
 <t tx="ekr.20160317192503.48">
 def do_BinOp(self, node):
     return '%s%s%s' % (
@@ -2897,7 +2904,8 @@ def do_BoolOp(self, node):
 <t tx="ekr.20160317192503.5">
 #
 # Utility functions...
-#</t>
+#
+</t>
 <t tx="ekr.20160317192503.50">
 def do_Compare(self, node):
     result = []
@@ -2928,7 +2936,8 @@ def do_UnaryOp(self, node):
 <t tx="ekr.20160317192503.53">
 #
 # CoffeeScriptTraverser statements...
-#</t>
+#
+</t>
 <t tx="ekr.20160317192503.54">
 def tail_after_body(self, body, aList, result):
     '''
@@ -3218,7 +3227,8 @@ def do_Return(self, node):
 def do_Starred(self, node):
 
     # https://www.python.org/dev/peps/pep-3132/
-    return '*' + self.visit(node.value)</t>
+    return '*' + self.visit(node.value)
+</t>
 <t tx="ekr.20160317192503.76">
 # 3: Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
@@ -3542,7 +3552,7 @@ def computeLeadingWhitespaceWidth(self, s, tab_width):
 def isString(self, s):
     '''Return True if s is any string, but not bytes.'''
     # pylint: disable=no-member
-    if g.isPython3:
+    if isPython3:
         return isinstance(s, str)
     else:
         return isinstance(s, types.StringTypes)
@@ -3550,7 +3560,7 @@ def isString(self, s):
 def isUnicode(self, s):
     '''Return True if s is a unicode string.'''
     # pylint: disable=no-member
-    if g.isPython3:
+    if isPython3:
         return isinstance(s, str)
     else:
         return isinstance(s, types.UnicodeType)

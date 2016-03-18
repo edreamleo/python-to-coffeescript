@@ -1,4 +1,4 @@
-# python_to_coffeescript: Thu 25 Feb 2016 at 07:25:18
+# python_to_coffeescript: Thu 17 Mar 2016 at 19:33:20
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -6,9 +6,11 @@ on the command line (wildcard file names are supported).
 
 For full details, see README.md.
 
-Released under the MIT Licence.
+Released under the MIT License.
 
 Written by Edward K. Ream.
+
+Hosted at: https://github.com/edreamleo/python-to-coffeescript
 '''
 # All parts of this script are distributed under the following copyright. This is intended to be the same as the MIT license, namely that this script is absolutely free, even for commercial use, including resale. There is no GNU-like "copyleft" restriction. This license is compatible with the GPL.
 #
@@ -200,6 +202,7 @@ class CoffeeScriptTraverser extends object
                 assert isinstance(node,ast.AST), name
                 method=getattr(@,'do_'+name)
                 s=method(node)
+            # pylint: disable = undefined-variable
                 if isPython3:
                     assert isinstance(s,str)
                 else:
@@ -210,7 +213,11 @@ class CoffeeScriptTraverser extends object
     # CoffeeScriptTraverser contexts...
     #
 
-    # ClassDef(identifier name, expr* bases, stmt* body, expr* decorator_list)
+    # 2: ClassDef(identifier name, expr* bases,
+    #             stmt* body, expr* decorator_list)
+    # 3: ClassDef(identifier name, expr* bases,
+    #             keyword* keywords, expr? starargs, expr? kwargs
+    #             stmt* body, expr* decorator_list)
 
     do_ClassDef: (self, node) ->
 
@@ -218,6 +225,16 @@ class CoffeeScriptTraverser extends object
         tail=@trailing_comment(node)
         name=node.name # Only a plain string is valid.
         bases=@visit(z) for z in node.bases if node.bases else [] 
+        if hasattr(node,'keywords'): # Python 3
+            for z in node.keywords:
+                (arg, value)=z
+                bases.append('%s=%s'%(@visit(arg), @visit(value)))
+        if hasattr(node,'starargs'): # Python 3
+            (junk, value)=node.starargs
+            bases.append('*%s',@visit(value))
+        if hasattr(node,'kwargs'): # Python 3
+            (junk, value)=node.kwargs
+            bases.append('*%s',@visit(value))
         if bases:
             s='class %s extends %s'%(name, ', '.join(bases))
         else:
@@ -231,7 +248,9 @@ class CoffeeScriptTraverser extends object
         @class_stack.pop()
         return ''.join(result)
 
-    # FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
+    # 2: FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list)
+    # 3: FunctionDef(identifier name, arguments args, stmt* body, expr* decorator_list,
+    #                expr? returns)
 
     do_FunctionDef: (self, node) ->
         '''Format a FunctionDef node.'''
@@ -252,6 +271,7 @@ class CoffeeScriptTraverser extends object
         tail=@trailing_comment(node)
         sep=': ' if @class_stack else ' = ' 
         s='%s%s%s->%s'%(name, sep, args, tail)
+            # For now, ignore returns argument.
         result.append(@indent(s))
         for (i, z) in enumerate(node.body):
             @level+=1
@@ -288,7 +308,11 @@ class CoffeeScriptTraverser extends object
     # CoffeeScriptTraverser operands...
     #
 
-    # arguments = (expr* args, identifier? vararg, identifier? kwarg, expr* defaults)
+    # 2: arguments = (expr* args, identifier? vararg,
+    #                 identifier? kwarg, expr* defaults)
+    # 3: arguments = (arg*  args, arg? vararg,
+    #                arg* kwonlyargs, expr* kw_defaults,
+    #                arg? kwarg, expr* defaults)
 
     do_arguments: (self, node) ->
         '''Format the arguments node.'''
@@ -303,26 +327,41 @@ class CoffeeScriptTraverser extends object
                 args2.append(args[i])
             else:
                 args2.append('%s=%s'%(args[i], defaults[i-n_plain]))
-        # Now add the vararg and kwarg args.
-        name=getattr(node,'vararg',None)
-        if name:
+        if isPython3:
             # pylint: disable=no-member
-            if isPython3 and isinstance(name,ast.arg):
-                name=name.arg
-            args2.append('*'+name)
-        name=getattr(node,'kwarg',None)
-        if name:
-            # pylint: disable=no-member
-            if isPython3 and isinstance(name,ast.arg):
-                name=name.arg
-            args2.append('**'+name)
+            args=@visit(z) for z in node.kwonlyargs
+            defaults=@visit(z) for z in node.kw_defaults
+            n_plain=len(args)-len(defaults)
+            for i in range(len(args)):
+                if i<n_plain:
+                    args2.append(args[i])
+                else:
+                    args2.append('%s=%s'%(args[i], defaults[i-n_plain]))
+            # Add the vararg and kwarg expressions.
+            vararg=getattr(node,'vararg',None)
+            if vararg:
+                args2.append('*'+@visit(vararg))
+            kwarg=getattr(node,'kwarg',None)
+            if kwarg:
+                args2.append('**'+@visit(kwarg))
+            # Add the vararg and kwarg names.
+        else:
+            name=getattr(node,'vararg',None)
+            if name:
+                args2.append('*'+name)
+            name=getattr(node,'kwarg',None)
+            if name:
+                args2.append('**'+name)
         return ','.join(args2)
 
-    # Python 3:
-    # arg = (identifier arg, expr? annotation)
+    # 3: arg = (identifier arg, expr? annotation)
 
     do_arg: (self, node) ->
         return node.arg
+
+        # Probably don't want annotations.
+        # if getattr(node, 'annotation', None):
+            # return ':' + self.visit(node.annotation)
 
     # Attribute(expr value, identifier attr, expr_context ctx)
 
@@ -334,7 +373,13 @@ class CoffeeScriptTraverser extends object
         return val+node.attr
 
     do_Bytes: (self, node) -> # Python 3.x only.
-        return str(node.s)
+        if hasattr(node,'lineno'):
+            # Do *not* handle leading lines here.
+            # leading = self.leading_string(node)
+            return @sync_string(node)
+        else:
+            g.trace('==== no lineno',node.s)
+            return node.s
 
     # Call(expr func, expr* args, keyword* keywords, expr? starargs, expr? kwargs)
 
@@ -686,6 +731,16 @@ class CoffeeScriptTraverser extends object
         s='pass # from %s import %s'%(node.module, ','.join(names))
         return head+@indent(s)+tail
 
+    # 3: Nonlocal(identifier* names)
+
+    do_Nonlocal: (self, node) ->
+
+        # https://www.python.org/dev/peps/pep-3104/
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
+        names=', '.join(node.names)
+        return head+@indent('nonlocal')+names+tail
+
     do_Pass: (self, node) ->
 
         head=@leading_string(node)
@@ -730,10 +785,18 @@ class CoffeeScriptTraverser extends object
             s='return'
         return head+@indent(s)+tail
 
-    # Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
+    # Starred(expr value, expr_context ctx)
+
+    do_Starred: (self, node) ->
+
+        # https://www.python.org/dev/peps/pep-3132/
+        return '*'+@visit(node.value)
+
+    # 3: Try(stmt* body, excepthandler* handlers, stmt* orelse, stmt* finalbody)
 
     do_Try: (self, node) -> # Python 3
 
+        # https://www.python.org/dev/peps/pep-0341/
         result=@leading_lines(node)
         tail=@trailing_comment(node)
         s='try'+tail
@@ -746,14 +809,14 @@ class CoffeeScriptTraverser extends object
             for z in node.handlers:
                 result.append(@visit(z))
         if node.orelse:
-            tail=@trailing_comment(node.orelse)
+            tail=@tail_after_body(node.body,node.orelse,result)
             result.append(@indent('else:'+tail))
             for z in node.orelse:
                 @level+=1
                 result.append(@visit(z))
                 @level-=1
         if node.finalbody:
-            tail=@trailing_comment(node.finalbody)
+            tail=@tail_after_body(node.body,node.finalbody,result)
             s='finally:'+tail
             result.append(@indent(s))
             for z in node.finalbody:
@@ -851,6 +914,16 @@ class CoffeeScriptTraverser extends object
             s='yield %s'%@visit(node.value)
         else:
             s='yield'
+        return head+@indent(s)+tail
+
+    # 3: YieldFrom(expr value)
+
+    do_YieldFrom: (self, node) ->
+
+        # https://www.python.org/dev/peps/pep-0380/
+        head=@leading_string(node)
+        tail=@trailing_comment(node)
+        s='yield from %s'%@visit(node.value)
         return head+@indent(s)+tail
 
 
@@ -979,17 +1052,19 @@ class LeoGlobals extends object
 
     isString: (self, s) ->
         '''Return True if s is any string, but not bytes.'''
+        # pylint: disable=no-member
         if isPython3:
-            return type(s)==type('a')
+            return isinstance(s,str)
         else:
-            return type(s) in types.StringTypes
+            return isinstance(s,types.StringTypes)
 
     isUnicode: (self, s) ->
         '''Return True if s is a unicode string.'''
+        # pylint: disable=no-member
         if isPython3:
-            return type(s)==type('a')
+            return isinstance(s,str)
         else:
-            return type(s)==types.UnicodeType
+            return isinstance(s,types.UnicodeType)
 
     pdb: (self) ->
         try
@@ -1038,7 +1113,7 @@ class LeoGlobals extends object
     trace: (self, *args, **keys) ->
         try
             pass # import leo.core.leoGlobals as leo_g
-            leo_g.trace(caller_level=2,*args,**keys)
+            leo_g.trace(*args,caller_level=2,None=keys)
         except ImportError:
             print(args,keys)
 
@@ -1053,9 +1128,11 @@ class LeoGlobals extends object
 
     else:
         u: (self, s) ->
+            # pylint: disable = undefined-variable
             return unicode(s)
 
         ue: (self, s, encoding) ->
+            # pylint: disable = undefined-variable
             return unicode(s,encoding)
 
 
@@ -1083,7 +1160,7 @@ class MakeCoffeeScriptController extends object
         fn=os.path.normpath(fn)
         return fn
 
-    make_coffeescript_file: (self, fn) ->
+    make_coffeescript_file: (self, fn, s=None) ->
         '''
         Make a stub file in the output directory for all source files mentioned
         in the [Source Files] section of the configuration file.
@@ -1104,10 +1181,10 @@ class MakeCoffeeScriptController extends object
         else:
             if  not dir_ or os.path.exists(dir_):
                 t1=time.clock()
-                s=open(fn).read()
+                if s is None:
+                    s=open(fn).read()
                 readlines=g.ReadLinesClass(s).next
                 tokens=list(tokenize.generate_tokens(readlines))
-            # s = CoffeeScriptTokenizer(controller=self).format(tokens)
                 node=ast.parse(s,filename=fn,mode='exec')
                 s=CoffeeScriptTraverser(controller=@).format(node,s,tokens)
                 f=open(out_fn,'w')
@@ -1274,6 +1351,7 @@ class MakeCoffeeScriptController extends object
         if trace:
             g.trace(s)
         file_object=io.StringIO(s)
+        # pylint: disable=deprecated-method
         @parser.readfp(file_object)
 
     is_section_name: (self, s) ->
@@ -1395,10 +1473,11 @@ class TokenSync extends object
 
     check_strings: (self) ->
         '''Check that all strings have been consumed.'''
-        # g.trace(len(self.string_tokens))
         for (i, aList) in enumerate(@string_tokens):
             if aList:
-                g.trace('warning: line %s. unused strings:'%(i, aList))
+                g.trace('warning: line %s. unused strings'%i)
+                for z in aList:
+                    print(@dump_token(z))
 
     dump_token: (self, token, verbose=bool) ->
         '''Dump the token. It is either a string or a 5-tuple.'''
@@ -1533,7 +1612,7 @@ class TokenSync extends object
         name=node.__class__.__name__
         if hasattr(node,'lineno'):
             tokens=@line_tokens[node.lineno-1]
-            g.trace(<gen ' '.self.dump_token(z) for z in tokens>)
+            g.trace(' '.join(@dump_token(z) for z in tokens))
         else:
             g.trace('no lineno',name)
 
@@ -1547,8 +1626,8 @@ class TokenSync extends object
         '''
         if hasattr(node,'lineno'):
             return @trailing_comment_at_lineno(node.lineno)
+            # g.trace('no lineno', node.__class__.__name__, g.callers())
         else:
-            g.trace('no lineno',node.__class__.__name__,g.callers())
             return '\n'
 
     trailing_comment_at_lineno: (self, lineno) ->
