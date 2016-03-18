@@ -1,4 +1,4 @@
-# python_to_coffeescript: Thu 17 Mar 2016 at 19:33:20
+# python_to_coffeescript: Fri 18 Mar 2016 at 14:09:58
 #!/usr/bin/env python
 '''
 This script makes a coffeescript file for every python source file listed
@@ -218,6 +218,9 @@ class CoffeeScriptTraverser extends object
     # 3: ClassDef(identifier name, expr* bases,
     #             keyword* keywords, expr? starargs, expr? kwargs
     #             stmt* body, expr* decorator_list)
+    #
+    # keyword arguments supplied to call (NULL identifier for **kwargs)
+    # keyword = (identifier? arg, expr value)
 
     do_ClassDef: (self, node) ->
 
@@ -225,16 +228,13 @@ class CoffeeScriptTraverser extends object
         tail=@trailing_comment(node)
         name=node.name # Only a plain string is valid.
         bases=@visit(z) for z in node.bases if node.bases else [] 
-        if hasattr(node,'keywords'): # Python 3
-            for z in node.keywords:
-                (arg, value)=z
-                bases.append('%s=%s'%(@visit(arg), @visit(value)))
-        if hasattr(node,'starargs'): # Python 3
-            (junk, value)=node.starargs
-            bases.append('*%s',@visit(value))
-        if hasattr(node,'kwargs'): # Python 3
-            (junk, value)=node.kwargs
-            bases.append('*%s',@visit(value))
+        if getattr(node,'keywords',None): # Python 3
+            for keyword in node.keywords:
+                bases.append('%s=%s'%(keyword.arg, @visit(keyword.value)))
+        if getattr(node,'starargs',None): # Python 3
+            bases.append('*%s',@visit(node.starargs))
+        if getattr(node,'kwargs',None): # Python 3
+            bases.append('*%s',@visit(node.kwargs))
         if bases:
             s='class %s extends %s'%(name, ', '.join(bases))
         else:
@@ -267,11 +267,12 @@ class CoffeeScriptTraverser extends object
             args=args[1:]
         args=', '.join(args)
         args='(%s) '%args if args else '' 
-        # result.append('\n')
+        # Traverse node.returns to keep strings in sync.
+        if getattr(node,'returns',None):
+            @visit(node.returns)
         tail=@trailing_comment(node)
         sep=': ' if @class_stack else ' = ' 
         s='%s%s%s->%s'%(name, sep, args, tail)
-            # For now, ignore returns argument.
         result.append(@indent(s))
         for (i, z) in enumerate(node.body):
             @level+=1
@@ -338,30 +339,26 @@ class CoffeeScriptTraverser extends object
                 else:
                     args2.append('%s=%s'%(args[i], defaults[i-n_plain]))
             # Add the vararg and kwarg expressions.
-            vararg=getattr(node,'vararg',None)
-            if vararg:
-                args2.append('*'+@visit(vararg))
-            kwarg=getattr(node,'kwarg',None)
-            if kwarg:
-                args2.append('**'+@visit(kwarg))
+            if getattr(node,'vararg',None):
+                args2.append('*'+@visit(node.vararg))
+            if getattr(node,'kwarg',None):
+                args2.append('**'+@visit(node.kwarg))
             # Add the vararg and kwarg names.
         else:
-            name=getattr(node,'vararg',None)
-            if name:
-                args2.append('*'+name)
-            name=getattr(node,'kwarg',None)
-            if name:
-                args2.append('**'+name)
+            if getattr(node,'vararg',None):
+                args2.append('*'+node.vararg)
+            if getattr(node,'kwarg',None):
+                args2.append('**'+node.kwarg)
         return ','.join(args2)
 
     # 3: arg = (identifier arg, expr? annotation)
 
     do_arg: (self, node) ->
-        return node.arg
 
-        # Probably don't want annotations.
-        # if getattr(node, 'annotation', None):
-            # return ':' + self.visit(node.annotation)
+        # Visit the node.annotation to keep strings in synch.
+        if getattr(node,'annotation',None):
+            @visit(node.annotation)
+        return node.arg
 
     # Attribute(expr value, identifier attr, expr_context ctx)
 
@@ -884,20 +881,35 @@ class CoffeeScriptTraverser extends object
                 @level-=1
         return ''.join(result)
 
+    # 2:  With(expr context_expr, expr? optional_vars,
+    #          stmt* body)
+    # 3:  With(withitem* items,
+    #          stmt* body)
+    # withitem = (expr context_expr, expr? optional_vars)
+
     do_With: (self, node) ->
 
         result=@leading_lines(node)
         tail=@trailing_comment(node)
-        result.append(@indent('with '))
-        if hasattr(node,'context_expression'):
-            result.append(@visit(node.context_expresssion))
         vars_list=[]
-        if hasattr(node,'optional_vars'):
+        result.append(@indent('with '))
+        if getattr(node,'context_expression',None):
+            result.append(@visit(node.context_expresssion))
+        if getattr(node,'optional_vars',None):
             try
                 for z in node.optional_vars:
                     vars_list.append(@visit(z))
             except TypeError: # Not iterable.
                 vars_list.append(@visit(node.optional_vars))
+        if getattr(node,'items',None): # Python 3.
+            for item in node.items:
+                result.append(@visit(item.context_expr))
+                if getattr(item,'optional_vars',None):
+                    try
+                        for z in item.optional_vars:
+                            vars_list.append(@visit(z))
+                    except TypeError: # Not iterable.
+                        vars_list.append(@visit(item.optional_vars))
         result.append(','.join(vars_list))
         result.append(':'+tail)
         for z in node.body:
@@ -1588,7 +1600,7 @@ class TokenSync extends object
             @string_tokens[n-1]=tokens
             return @token_val(token)
         else:
-            g.trace('===== underflow',n,node.s)
+            g.trace('===== underflow line:',n,node.s)
             return node.s
 
     token_kind: (self, token) ->
