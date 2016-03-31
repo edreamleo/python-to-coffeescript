@@ -3670,25 +3670,25 @@ def __init__(self):
 </t>
 <t tx="ekr.20160330202313.1">Metadata-Version: 1.0
 Name: python-to-coffeescript
-Version: 5.2
+Version: 0.1
 Summary: Tool for converting python syntax to coffeescript syntax
 Home-page: https://github.com/edreamleo/python-to-coffeescript
 Author: Edward K. Ream
 Author-email: edreamleo@gmail.com
 License: MIT
 Description:
+::   
+    Usage: python_to_coffeescript.py [options] file1, file2, ...
     
-Usage: python_to_coffeescript.py [options] file1, file2, ...
-
-Options:
-  -h, --help          show this help message and exit
-  -c FN, --config=FN  full path to configuration file
-  -d DIR, --dir=DIR   full path to the output directory
-  -o, --overwrite     overwrite existing .coffee files
-  -v, --verbose       verbose output
+    Options:
+      -h, --help          show this help message and exit
+      -c FN, --config=FN  full path to configuration file
+      -d DIR, --dir=DIR   full path to the output directory
+      -o, --overwrite     overwrite existing .coffee files
+      -v, --verbose       verbose output
 
 Download URL: https://github.com/edreamleo/python-to-coffeescript
-Keywords: Outliner, IDE, PIM
+Keywords: Language conversion
 Platform: Windows, Linux, MacOS
 Categories:
     Development Status :: 4 - Beta
@@ -3698,7 +3698,6 @@ Categories:
     Operating System :: POSIX :: Linux
     Programming Language :: Python
     Topic :: Software Development
-    Topic :: Text Processing
 </t>
 </tnodes>
 </leo_file>
