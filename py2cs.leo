@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Created by Leo: http://leoeditor.com/leo_toc.html -->
-<?xml-stylesheet ekr_test ?>
 <leo_file xmlns:leo="http://leoeditor.com/namespaces/leo-python-editor/1.1" >
 <leo_header file_format="2" tnodes="0" max_tnode_index="0" clone_windows="0"/>
 <globals body_outline_ratio="0.5" body_secondary_ratio="0.5">
@@ -291,6 +290,7 @@
 <v t="ekr.20160225103047.1"><vh>Using TokenSync class</vh></v>
 <v t="ekr.20160225103215.1"><vh>Summary</vh></v>
 </v>
+<v t="ekr.20160330202313.1"><vh>@clean PKG-INFO.TXT</vh></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20160220050053.2" markdown-import="7d7100580e000000756e6465726c696e655f6469637471017d7102581700000020707974686f6e2d746f2d636f666665657363726970747103580100000023710473732e">@language rest
@@ -3667,6 +3667,38 @@ def __init__(self):
     self.output_directory = self.finalize('.')
     self.overwrite = False
     self.verbose = False # Trace config arguments.
+</t>
+<t tx="ekr.20160330202313.1">Metadata-Version: 1.0
+Name: python-to-coffeescript
+Version: 5.2
+Summary: Tool for converting python syntax to coffeescript syntax
+Home-page: https://github.com/edreamleo/python-to-coffeescript
+Author: Edward K. Ream
+Author-email: edreamleo@gmail.com
+License: MIT
+Description:
+    
+Usage: python_to_coffeescript.py [options] file1, file2, ...
+
+Options:
+  -h, --help          show this help message and exit
+  -c FN, --config=FN  full path to configuration file
+  -d DIR, --dir=DIR   full path to the output directory
+  -o, --overwrite     overwrite existing .coffee files
+  -v, --verbose       verbose output
+
+Download URL: https://github.com/edreamleo/python-to-coffeescript
+Keywords: Outliner, IDE, PIM
+Platform: Windows, Linux, MacOS
+Categories:
+    Development Status :: 4 - Beta
+    License :: OSI Approved :: MIT License
+    Operating System :: MacOS
+    Operating System :: Microsoft :: Windows
+    Operating System :: POSIX :: Linux
+    Programming Language :: Python
+    Topic :: Software Development
+    Topic :: Text Processing
 </t>
 </tnodes>
 </leo_file>
